@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Paketleme çıktıları
+build/
+dist/
+*.manifest
+
+# Çeviri dil paketleri (dosya başına 87-285 MB; GitHub'ın 100 MB sınırını aşar)
+# İndirmek için:  .venv\Scripts\python.exe araclar\dil_paketleri_indir.py de it es
+sozcuk/diller/*.argosmodel
+
+# Geçici / kişisel
+ss.png
+*.log

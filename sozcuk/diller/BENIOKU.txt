@@ -1,0 +1,7 @@
+Bu klasöre konan .argosmodel dil paketleri Sözcük ilk açıldığında kendiliğinden kurulur;
+kullanıcının indirmesi gerekmez ("gömülü diller").
+
+Paketleri indirmek için:
+    .venv\Scripts\python.exe araclar\dil_paketleri_indir.py en de fr
+
+Dosya adlarını değiştirmeyin (ör. translate-en_tr-1_9.argosmodel).
