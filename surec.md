@@ -353,6 +353,16 @@ Format:
 - Doğrulandı: gömülü paketler kendiliğinden kurulduktan sonra tr→de, tr→it, tr→es çevirileri çalışıyor (İngilizce üzerinden; ilk çeviri 6-20 sn, sonrası hızlı)
 - Yardım: dil tablosu ve "uygulamayla gelir" bilgisi güncellendi
 
+## [2026-09-19] — Faz 4: Künye, ikon, .exe paketi, kurulum paketi ve GitHub
+- **Künye:** `sozcuk/__init__.py` içinde sürüm (1.0) ve "Developed By Usta ve Ata"; Yardım → **Sözcük Hakkında** penceresi (sürüm, künye, gizlilik notu, kullanılan açık kaynak bileşenler ve lisansları)
+- Düzeltme: künye önce `QApplication.setOrganizationName` ile de atanmıştı; bu, Windows'un kullanıcı verisi klasörünü `%APPDATA%\Developed By Usta ve Ata\Sözcük` yapıyor ve mevcut ayarları/kişisel sözlüğü öksüz bırakıyordu. Geri alındı, oluşan boş klasör silindi (paketlenmiş sürüm denemesinde yakalandı)
+- **İkon:** `araclar/ikon_uret.py` — Word mavisi şeritli sayfa ve "S"; 16-256 px altı boyutlu gerçek ICO (PNG gömülü). İlk denemede QBuffer geçici QByteArray ile çöküyordu, düzeltildi
+- **PyInstaller** (`sozcuk.spec`): klasör biçiminde paket, `dist/Sozcuk/` 2,0 GB. Yardım metni ve `sozcuk/diller/*.argosmodel` pakete gömülür; gereksiz Qt modülleri dışlanır. Paketlenmiş sürümde veri dosyalarının yolu için `sozcuk.resource_dir()` eklendi (PyInstaller `_MEIPASS`); `help.HELP_FILE` ve `translate.bundle_dirs()` bunu kullanıyor
+- **Inno Setup** (`kurulum/sozcuk.iss`): `dist/Sozcuk-1.0-kurulum.exe` 1,31 GB. Türkçe sihirbaz, Başlat menüsü kısayolu, isteğe bağlı masaüstü kısayolu ve .docx ilişkilendirmesi, "Birlikte aç" listesine kayıt, kaldırma
+- **Denemeler:** paketlenmiş .exe belge açarak sınandı (13 paragraf, yazım denetimi hazır, hata kaydı yok); paket içi yollar ayrı bir testle doğrulandı (yardım metni + 8 dil paketi bulunuyor, 24 yardım konusu okunuyor); kurulum paketi geçici klasöre sessizce kurulup çalıştırıldı (1,90 GB, pencere başlığı "ornek.docx - Sözcük"), sonra sessizce kaldırıldı ve kayıt defteri girdisinin kalmadığı doğrulandı
+- **GitHub:** depo başlatıldı, `.gitignore` (venv, build/dist, *.argosmodel — GitHub 100 MB sınırı), `README.md` (özellikler, çalıştırma, paketleme, bileşen lisansları) eklendi ve https://github.com/ataeyvaz/sozcuk adresine `main` dalı olarak yüklendi. Commit kimliği gizlilik için GitHub noreply adresiyle
+- Bilinen sınırlar: paket ve kurulum dosyası dil paketleri yüzünden büyük (2,0 GB / 1,31 GB); dilsiz bir sürüm için `sozcuk/diller` boşaltılıp yeniden derlemek yeterli. Kurulum paketi imzalanmadı: Windows SmartScreen ilk çalıştırmada uyarı gösterebilir
+
 ---
 
 *(Yeni girişler en alta eklenir.)*

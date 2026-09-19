@@ -102,9 +102,12 @@ Bu eski ikili biçimleri biçimlendirmesiyle okuyan güvenilir, lisansı uygun b
 Önerilen sıra: 6A kolaylar (.docm/.dotx/.dotm, .txt, .html) → .doc/.rtf/.odt için Word ile dönüştürme (6B-1) → .odt okuyucu → LibreOffice desteği → .rtf okuyucu → .doc metin yedeği. Yardım (Dosya İşlemleri + Yenilikler) her adımda güncellenir.
 
 ### Faz 4 — Cilalama ve paketleme
-**Durum:** Bekliyor
-- İncelemeler, küçük hata düzeltmeleri
-- PyInstaller ile tek dosyalık .exe paketleme
+**Durum:** Uygulandı (2026-09-19)
+- Künye: **Developed By Usta ve Ata** — Yardım → Sözcük Hakkında penceresinde, sürüm ve kullanılan açık kaynak bileşenlerle birlikte
+- Uygulama ikonu: `araclar/ikon_uret.py` ile üretilen çok boyutlu `sozcuk.ico`
+- **PyInstaller** paketi (`sozcuk.spec`, klasör biçiminde): `dist/Sozcuk/` ≈ 2,0 GB (gömülü dil paketleri dahil); yardım metni ve diller pakete konur, konuşma tanıma modeli ilk kullanımda indirilir
+- **Inno Setup** kurulum paketi (`kurulum/sozcuk.iss`): `dist/Sozcuk-1.0-kurulum.exe` ≈ 1,31 GB; Başlat menüsü ve isteğe bağlı masaüstü kısayolu, "Birlikte aç" listesine kayıt, isteğe bağlı .docx ilişkilendirmesi, kaldırma desteği
+- Kaynak kodu GitHub'a yüklendi: https://github.com/ataeyvaz/sozcuk (dil paketleri ve dist/ depoya girmez)
 
 ## Notlar / Kararlar
 - Ribbon değil, tek satır sade araç çubuğu tercih edildi.
