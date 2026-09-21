@@ -879,7 +879,8 @@ class AboutDialog(QDialog):
         ("olefile", "eski Word belgeleri (.doc) metni", "BSD"),
         ("comtypes", "Windows yazım denetimi ve dönüştürme", "MIT"),
         ("faster-whisper + Whisper modeli", "sesle yazma", "MIT"),
-        ("Argos Translate + OPUS-MT modelleri", "çeviri", "MIT / CC-BY 4.0"),
+        ("CTranslate2 + SentencePiece", "çeviri motoru", "MIT / Apache 2.0"),
+        ("Argos Translate dil paketleri + OPUS-MT modelleri", "çeviri", "MIT / CC-BY 4.0"),
     ]
 
     def __init__(self, parent=None, version="", developers=""):

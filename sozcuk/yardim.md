@@ -33,9 +33,15 @@ Sözcük, Word belgeleriyle (.docx) çalışan, sade ve tamamen **bilgisayarın�
 
 Sözcük'e eklenen özellikler, en yenisi en üstte.
 
+## 21 Eylül 2026 — Sürüm 1.1
+
+- **Çok daha küçük kurulum:** kurulum paketi 1,3 GB'tan yaklaşık 300 MB'a, kurulu hali 2 GB'tan yaklaşık 500 MB'a indi. Çeviri motoru sadeleştirildi; ilk çeviri de artık saniyeler içinde hazır.
+- **Dilleri kurulumda seçin:** uygulamayla yalnızca Türkçe ⇄ İngilizce gelir. Kurulumda **Özel kurulum**'u seçip Almanca, İtalyanca, İspanyolca, Fransızca, Rusça, Çince, Japonca, Hintçe, Korece, Arapça ve Portekizce'den istediklerinizi işaretleyebilirsiniz; kurulum onları indirir. Sonradan **Gözden Geçir → Dil Paketleri…** ile de eklenebilir. Bkz. [Çeviri](konu:ceviri).
+- İspanyolca ve Fransızca çevirilerde görülen bozuk çıktılar düzeltildi.
+
 ## 19 Eylül 2026
 
-- **Çeviri ve dil paketleri:** `Ctrl+Shift+T` ile seçili metni ya da belgenin tamamını çevirin; **Gözden Geçir → Dil Paketleri…** ile başka dilleri indirin. Türkçe ⇄ İngilizce, Almanca, İtalyanca ve İspanyolca uygulamayla birlikte gelir. Çeviri bilgisayarınızda yapılır; internet yalnızca dil paketini bir kez indirmek için gerekir. Bkz. [Çeviri](konu:ceviri).
+- **Çeviri ve dil paketleri:** `Ctrl+Shift+T` ile seçili metni ya da belgenin tamamını çevirin; **Gözden Geçir → Dil Paketleri…** ile başka dilleri indirin. Türkçe ⇄ İngilizce uygulamayla birlikte gelir. Çeviri bilgisayarınızda yapılır; internet yalnızca dil paketini bir kez indirmek için gerekir. Bkz. [Çeviri](konu:ceviri).
 - **Bağlantı (köprü):** `Ctrl+K` ile web adresi ya da belgede bir yer (ör. "2. sayfa, 5. satır") bağlantısı; `Ctrl` ile tıklayarak açılır. Bkz. [Bağlantılar](konu:baglanti).
 - **Sayfa numarası:** Sayfa Düzeni menüsünden açılır; konum (alt/üst — sol, orta, sağ), biçim ("1", "Sayfa 1", "1 / 12") ve başlangıç numarası seçilebilir. Ekranda, yazdırmada, PDF'te ve .docx'te görünür. Bkz. [Sayfa Düzeni](konu:sayfa).
 - **Bul ve Değiştir:** `Ctrl+F` ile arama, `Ctrl+H` ile değiştirme; tüm eşleşmeler sayfada sarıyla işaretlenir, Türkçe harf kuralları gözetilir. Bkz. [Bul ve Değiştir](konu:bul).
@@ -502,24 +508,27 @@ Paragraf ve satır yapısı korunur. Pencere açık kalabilir; belgede başka bi
 
 ## Diller ve dil paketleri
 
-Her dil için bir **dil paketi** gerekir. **İngilizce, Almanca, İtalyanca ve İspanyolca** uygulamayla birlikte gelir: bu diller için indirme yapmanız gerekmez, internet olmadan da çalışır.
+Her dil için bir **dil paketi** gerekir. **Türkçe ⇄ İngilizce** uygulamayla birlikte gelir: indirme gerekmez, internet olmadan da çalışır.
 
-Diğer dilleri eklemek için **Gözden Geçir → Dil Paketleri…** (ya da çeviri penceresindeki **Dil Paketleri…** düğmesi): listede her dilin hazır olup olmadığı ve indirilecekse kaç MB yer kaplayacağı yazar. İstediklerinizi işaretleyip **Seçilenleri İndir** deyin; indirme arka planda yapılır, sonrasında o diller çevrimdışı çalışır.
+Diğer dilleri iki yoldan ekleyebilirsiniz:
+
+- **Kurulum sırasında:** kurulumda **Özel kurulum**'u seçip istediğiniz dilleri işaretleyin; kurulum onları internetten indirir.
+- **Sonradan:** **Gözden Geçir → Dil Paketleri…** (ya da çeviri penceresindeki **Dil Paketleri…** düğmesi). Listede her dilin hazır olup olmadığı ve indirilecekse kaç MB yer kaplayacağı yazar. İstediklerinizi işaretleyip **Seçilenleri İndir** deyin; indirme arka planda yapılır, sonrasında o diller çevrimdışı çalışır.
 
 | Dil | İndirme boyutu (Türkçe ⇄) |
 |---|---|
 | İngilizce | uygulamayla gelir |
-| Almanca | uygulamayla gelir |
-| İtalyanca | uygulamayla gelir |
-| İspanyolca | uygulamayla gelir |
+| Almanca | ≈301 MB |
+| İtalyanca | ≈175 MB |
+| İspanyolca | ≈373 MB |
 | Fransızca | ≈132 MB |
 | Çince | ≈145 MB |
 | Hintçe | ≈209 MB |
-| Japonca | ≈237 MB |
+| Japonca | ≈238 MB |
 | Korece | ≈240 MB |
 | Rusça | ≈352 MB |
-| Arapça | ≈210 MB |
-| Portekizce | ≈210 MB |
+| Arapça | ≈170 MB |
+| Portekizce | ≈136 MB |
 
 Türkçe ile diğer diller arasındaki çeviri İngilizce üzerinden yapılır; bu yüzden bir dili eklediğinizde hem o dile hem o dilden çeviri yapabilirsiniz.
 

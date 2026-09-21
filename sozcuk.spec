@@ -1,12 +1,13 @@
 # Sözcük — PyInstaller paketi (klasör biçiminde; kurulum paketi bu klasörü kurar)
 # Derleme:  .venv\Scripts\python.exe -m PyInstaller sozcuk.spec --noconfirm
 #
-# Not: dil paketleri (sozcuk/diller/*.argosmodel) ve yardım metni uygulamayla birlikte gelir.
+# Not: pakete yalnızca Türkçe ⇄ İngilizce dil paketleri (sozcuk/diller/translate-*/, açılmış klasör) konur;
+# diğer diller kurulumda seçilirse Inno Setup indirir, sonradan uygulama içinden de indirilebilir.
 # Konuşma tanıma modeli pakete konmaz: ilk dikte kullanımında bir kez indirilir.
 
 from pathlib import Path
 
-from PyInstaller.utils.hooks import collect_data_files, collect_submodules
+from PyInstaller.utils.hooks import collect_data_files
 
 project = Path(SPECPATH)
 
@@ -14,25 +15,28 @@ datas = [
     (str(project / "sozcuk" / "yardim.md"), "sozcuk"),
     (str(project / "sozcuk.ico"), "."),
 ]
-for model in (project / "sozcuk" / "diller").glob("*.argosmodel"):
-    datas.append((str(model), "sozcuk/diller"))
-datas.append((str(project / "sozcuk" / "diller" / "BENIOKU.txt"), "sozcuk/diller"))
+# gömülü dil paketleri: açılmış klasörler (stanza/ cümle bölücüsü kullanılmadığı için alınmaz)
+for package in sorted((project / "sozcuk" / "diller").glob("translate-*")):
+    if not (package / "metadata.json").is_file():
+        continue
+    for file in package.rglob("*"):
+        if file.is_file() and "stanza" not in file.relative_to(package).parts:
+            datas.append((str(file), str(Path("sozcuk/diller") / file.parent.relative_to(project / "sozcuk" / "diller"))))
 
-# çeviri ve dikte bileşenlerinin veri dosyaları
-for package in ("argostranslate", "ctranslate2", "sentencepiece", "stanza", "sacremoses", "faster_whisper"):
-    try:
-        datas += collect_data_files(package)
-    except Exception:
-        pass
+# çeviri ve dikte bileşenlerinin veri dosyaları (sacremoses: kısaltma listeleri; faster_whisper: sessizlik modeli)
+for package in ("ctranslate2", "sacremoses", "faster_whisper"):
+    datas += collect_data_files(package)
 
-hiddenimports = ["comtypes", "comtypes.client", "olefile", "docx", "pdfminer", "argostranslate",
-                 "argostranslate.package", "argostranslate.translate", "ctranslate2", "sentencepiece",
-                 "faster_whisper", "sounddevice"]
-for package in ("argostranslate", "ctranslate2"):
-    try:
-        hiddenimports += collect_submodules(package)
-    except Exception:
-        pass
+hiddenimports = ["comtypes", "comtypes.client", "olefile", "docx", "pdfminer", "ctranslate2", "sentencepiece",
+                 "sacremoses", "faster_whisper", "sounddevice", "tokenizers"]
+
+# Kullanılmayan büyük bileşenler. torch/stanza/spacy eskiden Argos Translate ile geliyordu (çeviri artık onlarsız);
+# av (PyAV) dikte için gerekmez (dictation._stub_av). Qt'nin QML/Quick, PDF ve ağ modülleri kullanılmıyor.
+excludes = ["tkinter", "matplotlib", "torch", "torchaudio", "torchvision", "stanza", "spacy", "thinc", "blis",
+            "argostranslate", "minisbd", "av", "sympy", "networkx", "emoji",
+            "PySide6.QtQuick", "PySide6.QtQml", "PySide6.Qt3DCore", "PySide6.QtWebEngineCore", "PySide6.QtCharts",
+            "PySide6.QtDataVisualization", "PySide6.QtMultimedia", "PySide6.QtNetwork", "PySide6.QtPdf",
+            "PySide6.QtOpenGL"]
 
 analysis = Analysis(
     [str(project / "main.py")],
@@ -41,10 +45,29 @@ analysis = Analysis(
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
-    excludes=["tkinter", "matplotlib", "PySide6.QtQuick", "PySide6.Qt3DCore", "PySide6.QtWebEngineCore",
-              "PySide6.QtCharts", "PySide6.QtDataVisualization", "PySide6.QtMultimedia", "PySide6.QtQml"],
+    excludes=excludes,
     noarchive=False,
 )
+
+# Qt eklentileri ve DLL'lerinden kullanılmayanlar (sanal klavye → QML/Quick'i sürüklüyor; yazılım OpenGL 20 MB;
+# arayüz Qt çevirilerini yüklemiyor)
+UNUSED_QT = ("opengl32sw.dll", "qtvirtualkeyboardplugin", "qt6virtualkeyboard", "qt6quick", "qt6qml",
+             "qt6pdf", "qpdf.dll", "qt6network", "qtnetwork.pyd", "plugins/networkinformation", "plugins/tls",
+             "qdirect2d.dll", "qt6opengl.dll")
+
+
+def _keep(entry):
+    name = entry[0].replace("\\", "/").lower()
+    if "pyside6/" not in name:
+        return True
+    if "pyside6/translations/" in name:
+        return name.endswith(("qtbase_tr.qm", "qt_tr.qm"))
+    return not any(part in name for part in UNUSED_QT)
+
+
+analysis.binaries = [entry for entry in analysis.binaries if _keep(entry)]
+analysis.datas = [entry for entry in analysis.datas if _keep(entry)]
+
 pyz = PYZ(analysis.pure)
 
 exe = EXE(

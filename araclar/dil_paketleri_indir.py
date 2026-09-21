@@ -1,15 +1,14 @@
-"""Çeviri dil paketlerini uygulamanın içine indirir (gömülü diller).
+"""Uygulamayla birlikte gelen (gömülü) çeviri dil paketlerini indirir.
 
 Kullanım (proje klasöründe):
-    .venv\\Scripts\\python.exe araclar\\dil_paketleri_indir.py en de fr
-    .venv\\Scripts\\python.exe araclar\\dil_paketleri_indir.py --hepsi
+    .venv\\Scripts\\python.exe araclar\\dil_paketleri_indir.py
 
-İndirilen .argosmodel dosyaları sozcuk/diller klasörüne konur; Sözcük ilk açılışta bunları kendiliğinden
-kurar, böylece kullanıcı hiçbir şey indirmez. Her dil için Türkçe ⇄ o dil çevirisi İngilizce üzerinden
-yapıldığından tr↔en paketleri her zaman alınır.
+Pakete yalnızca Türkçe ⇄ İngilizce konur (≈260 MB). Paketler açılmış olarak sozcuk/diller/ klasörüne konur;
+Sözcük onları oradan doğrudan okur. Diğer diller kurulumda seçilir (Inno Setup indirir) ya da uygulama içinden
+(Gözden Geçir → Dil Paketleri…) indirilir; başka bir dili denemek için kodu (ör. "de") argüman olarak verin:
+    .venv\\Scripts\\python.exe araclar\\dil_paketleri_indir.py de
 """
 
-import shutil
 import sys
 from pathlib import Path
 
@@ -23,35 +22,27 @@ TARGET = Path(__file__).resolve().parent.parent / "sozcuk" / translate.BUNDLE_DI
 def pairs_for(languages):
     pairs = [("tr", "en"), ("en", "tr")]
     for code in languages:
-        if code in ("tr", "en"):
-            continue
-        pairs += [("en", code), (code, "en")]
+        if code not in ("tr", "en"):
+            pairs += [("en", code), (code, "en")]
     return pairs
 
 
 def main(argv):
-    languages = [a for a in argv if not a.startswith("--")]
-    if "--hepsi" in argv or not languages:
-        languages = translate.UI_LANGUAGES
-    pairs = pairs_for(languages)
-    index = translate.index_pairs(refresh=True)
-    TARGET.mkdir(parents=True, exist_ok=True)
-    total = sum(translate.PACKAGE_SIZES.get(pair, 120) for pair in pairs)
-    print(f"{len(pairs)} paket, yaklaşık {total} MB -> {TARGET}")
-    for source, target in pairs:
-        entry = index.get((source, target))
-        if entry is None:
-            print(f"  {source}->{target}: dizinde yok, atlandı")
+    pairs = pairs_for(argv)
+    installed = set()
+    for folder in TARGET.glob("translate-*"):
+        package = translate._read_package(folder)
+        if package is not None:
+            installed.add(package.pair)
+    total = sum(translate.PACKAGE_SIZES.get(pair, 120) for pair in pairs if pair not in installed)
+    print(f"{len(pairs)} paket, indirilecek ≈{total} MB -> {TARGET}")
+    for pair in pairs:
+        if pair in installed:
+            print(f"  {pair[0]}->{pair[1]}: zaten var")
             continue
-        name = f"translate-{source}_{target}.argosmodel"
-        destination = TARGET / name
-        if destination.exists():
-            print(f"  {source}->{target}: zaten var")
-            continue
-        print(f"  {source}->{target}: indiriliyor…", flush=True)
-        path = entry.download()
-        shutil.copy(path, destination)
-        print(f"    {destination.name} ({destination.stat().st_size / 1e6:.0f} MB)")
+        print(f"  {pair[0]}->{pair[1]}: indiriliyor…", flush=True)
+        folder = translate.download_package(pair, TARGET)
+        print(f"    {folder.name}")
     print("bitti")
 
 

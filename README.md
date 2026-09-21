@@ -17,7 +17,7 @@ Yazım denetimi, sesle yazma ve çeviri dahil her şey **bilgisayarda** çalış
 - **Dosya biçimleri:** .docx, .docm, .dotx/.dotm, .doc/.dot, .rtf, .odt, .txt, .htm/.html/.mht, Word 2003 XML, .wps, .wpd, PDF açma; .docx/.doc/.rtf/.odt/.txt/.html olarak kaydetme; PDF dışa aktarma
 - **Yazım denetimi:** Windows'un Türkçe yazım denetimi (Word ile aynı sonuçlar, çevrimdışı)
 - **Sesle yazma:** faster-whisper ile yerel dikte, susunca otomatik durma, öğrenen kişisel sözlük
-- **Çeviri:** yerel çeviri modelleri; Türkçe ⇄ İngilizce, Almanca, İtalyanca, İspanyolca uygulamayla gelir, diğer diller istenirse indirilir
+- **Çeviri:** yerel çeviri modelleri (CTranslate2); Türkçe ⇄ İngilizce uygulamayla gelir, diğer 11 dil kurulumda seçilir ya da sonradan indirilir
 - **Google Drive / OneDrive:** eşitleme klasöründeki belgelerde canlı kayıt, dışarıdan değişikliği fark etme
 - **Yardım:** uygulama içi, aranabilir "Yardım ve Nasıl Kullanılır" (F1)
 
@@ -29,13 +29,13 @@ python -m venv .venv
 .venv\Scripts\pythonw.exe main.py
 ```
 
-Çeviri dil paketleri depoda yer almaz (dosya başına 87–285 MB). İndirmek için:
+Uygulamayla gelen Türkçe ⇄ İngilizce dil paketleri depoda yer almaz (≈260 MB). İndirmek için:
 
 ```bat
-.venv\Scripts\python.exe araclar\dil_paketleri_indir.py de it es
+.venv\Scripts\python.exe araclar\dil_paketleri_indir.py
 ```
 
-`--hepsi` bütün dilleri indirir (≈2,2 GB). Paketler `sozcuk/diller/` klasörüne konur ve uygulama ilk açılışta bunları kendiliğinden kurar.
+Paketler açılmış klasörler olarak `sozcuk/diller/` içine konur; uygulama onları oradan doğrudan okur. Diğer diller pakete konmaz: kurulumda **Özel kurulum** ile seçilir (Inno Setup indirir) ya da uygulama içinden indirilir (`%LOCALAPPDATA%\Sözcük\diller`).
 
 ## Paketleme
 
@@ -45,7 +45,7 @@ python -m venv .venv
 "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" kurulum\sozcuk.iss
 ```
 
-Sonuç: `dist\Sozcuk\` (taşınabilir klasör) ve `dist\Sozcuk-1.0-kurulum.exe` (kurulum paketi).
+Sonuç: `dist\Sozcuk\` (taşınabilir klasör, ≈510 MB) ve `dist\Sozcuk-1.1-kurulum.exe` (kurulum paketi, ≈300 MB). Kurulum için Inno Setup 6.5 ya da üstü gerekir (dil paketlerini indirip açar).
 
 ## Klasörler
 
@@ -53,13 +53,13 @@ Sonuç: `dist\Sozcuk\` (taşınabilir klasör) ve `dist\Sozcuk-1.0-kurulum.exe` 
 |---|---|
 | `sozcuk/` | uygulama kaynağı (editör, biçimler, çeviri, yardım…) |
 | `sozcuk/yardim.md` | uygulama içi yardım metni |
-| `araclar/` | yardımcı betikler (dil paketi indirme, ikon üretme) |
+| `araclar/` | yardımcı betikler (gömülü dil paketlerini indirme, ikon üretme) |
 | `kurulum/` | Inno Setup kurulum betiği |
 | `plan.md`, `surec.md` | proje planı ve değişiklik günlüğü |
 
 ## Kullanılan açık kaynak bileşenler
 
 PySide6 (Qt, LGPL) · python-docx (MIT) · pdfminer.six (MIT) · olefile (BSD) · comtypes (MIT) ·
-faster-whisper + Whisper modeli (MIT) · Argos Translate (MIT) + OPUS-MT modelleri (CC-BY 4.0)
+faster-whisper + Whisper modeli (MIT) · CTranslate2 (MIT) + SentencePiece (Apache 2.0) · Argos Translate dil paketleri (MIT) + OPUS-MT modelleri (CC-BY 4.0)
 
 Sözcük'ün kendi lisansı henüz belirlenmedi.

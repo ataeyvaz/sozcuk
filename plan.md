@@ -10,10 +10,10 @@ Microsoft Word'ün karmaşık, kalabalık arayüzü yerine — aynı temel yazma
 - **Dosya uyumluluğu:** python-docx (.docx), kendi .rtf/.odt okuyucuları, Qt (HTML, ODF yazma), olefile (.doc metin yedeği), pdfminer.six (PDF); eski biçimler kurulu Word ya da LibreOffice ile dönüştürülür
 - **Yazım denetimi:** Windows Yazım Denetimi API'si (`comtypes`; Word ile aynı Türkçe sonuçlar, çevrimdışı)
 - **Sesle yazma:** faster-whisper (yerel, çevrimdışı) + sounddevice
-- **Çeviri:** Argos Translate / OPUS-MT (yerel; dil paketi bir kez indirilir)
+- **Çeviri:** CTranslate2 + SentencePiece ile Argos Translate / OPUS-MT dil paketleri (yerel; tr⇄en gömülü, diğerleri kurulumda seçilir ya da bir kez indirilir)
 - **Bulut yapay zekâ:** yok (Gemini entegrasyonu kullanıcı kararıyla kaldırıldı)
 - **Bulut depolama:** Google Drive / OneDrive masaüstü eşitleme klasörleri üzerinden (API ve hesap bağlantısı yok)
-- **Paketleme:** PyInstaller (tek dosyalık .exe)
+- **Paketleme:** PyInstaller (klasör) + Inno Setup 6.5+ (ek dilleri kurulumda indirir)
 
 ## Klasör
 `sozcuk/`
@@ -108,6 +108,14 @@ Bu eski ikili biçimleri biçimlendirmesiyle okuyan güvenilir, lisansı uygun b
 - **PyInstaller** paketi (`sozcuk.spec`, klasör biçiminde): `dist/Sozcuk/` ≈ 2,0 GB (gömülü dil paketleri dahil); yardım metni ve diller pakete konur, konuşma tanıma modeli ilk kullanımda indirilir
 - **Inno Setup** kurulum paketi (`kurulum/sozcuk.iss`): `dist/Sozcuk-1.0-kurulum.exe` ≈ 1,31 GB; Başlat menüsü ve isteğe bağlı masaüstü kısayolu, "Birlikte aç" listesine kayıt, isteğe bağlı .docx ilişkilendirmesi, kaldırma desteği
 - Kaynak kodu GitHub'a yüklendi: https://github.com/ataeyvaz/sozcuk (dil paketleri ve dist/ depoya girmez)
+- **Sürüm 1.1 (2026-09-21):** paket 498 MB, kurulum 309 MB (Argos/torch/spacy çıkarıldı, yalnız tr⇄en gömülü); "Özel kurulum"da 11 dil seçilip kurulum sırasında indirilir. Ayrıntı: `surec.md`
+
+### Faz 7 — Sesli okuma (TTS)
+**Durum:** Araştırıldı (2026-09-21), uygulama bekliyor
+- Kullanıcı şartı (kırmızı çizgi): doğal, kaliteli Türkçe **kadın ve erkek** ses; **bulut API yok**
+- Bu bilgisayarda (i5-4210U, 8 GB) ölçüldü: Piper (VITS) sesleri gerçek zamanın ~4 katı hızlı ve kusursuz anlaşılır ama hazır Türkçe Piper seslerinin hepsi erkek; Chatterbox (yükleme 8,5 dk), MOSS-TTS-Nano (Türkçesi bozuk, 10x yavaş), FreyaTTS, XTTS-v2/OmniVoice (yavaş ya da ticari kullanıma kapalı) elendi
+- Plan: kullanıcının `Desktop\BabaKartalVoice` projesindeki XTTS-v2 ince ayarlı sesi (274 kayıt) "öğretmen" olarak kullanıp hızlı bir Piper sesi eğitmek; kadın sesi için aynı kayıt uygulaması (BabaSesiKayit.apk) ve Colab hattı. Piper'ın GPL paketi yerine Türkçe fonem dönüşümü kendi kodumuzla, model onnxruntime ile çalışır
+- Sıradaki: kullanıcı önce sesi dinleyip test edecek, sonra herkese giden standart pakete girer
 
 ## Notlar / Kararlar
 - Ribbon değil, tek satır sade araç çubuğu tercih edildi.

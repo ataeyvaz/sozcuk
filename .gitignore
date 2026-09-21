@@ -9,9 +9,10 @@ build/
 dist/
 *.manifest
 
-# Çeviri dil paketleri (dosya başına 87-285 MB; GitHub'ın 100 MB sınırını aşar)
-# İndirmek için:  .venv\Scripts\python.exe araclar\dil_paketleri_indir.py de it es
+# Çeviri dil paketleri (paket başına ~130 MB; GitHub'ın 100 MB sınırını aşar)
+# İndirmek için:  .venv\Scripts\python.exe araclar\dil_paketleri_indir.py
 sozcuk/diller/*.argosmodel
+sozcuk/diller/translate-*/
 
 # Geçici / kişisel
 ss.png

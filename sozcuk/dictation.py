@@ -7,8 +7,10 @@ gerekir; model sonra yerel önbellekten (Hugging Face önbelleği) yüklenir.
 """
 
 import os
+import sys
 import threading
 import time
+import types
 from pathlib import Path
 
 import numpy as np
@@ -213,12 +215,22 @@ _model = None
 _model_lock = threading.Lock()
 
 
+def _stub_av():
+    """faster-whisper açılışta PyAV'ı (av, ~66 MB) içe aktarır ama onu yalnızca ses dosyası çözmek için kullanır;
+    biz mikrofondan ham ses verdiğimiz için pakete konmaz. Yoksa yerine boş bir modül konur."""
+    try:
+        import av  # noqa: F401
+    except ImportError:
+        sys.modules["av"] = types.ModuleType("av")
+
+
 def _load_model(on_status):
     """Modeli bir kez yükler; önbellekte yoksa önce indirir (yalnızca ilk kullanımda)."""
     global _model
     with _model_lock:
         if _model is not None:
             return _model
+        _stub_av()
         from faster_whisper import WhisperModel  # ağır içe aktarma: uygulama açılışını yavaşlatmasın
 
         # CPU + int8: her bilgisayarda çalışır, ek GPU sürücüsü gerektirmez, small model için yeterince hızlı

@@ -1,7 +1,8 @@
-Bu klasöre konan .argosmodel dil paketleri Sözcük ilk açıldığında kendiliğinden kurulur;
-kullanıcının indirmesi gerekmez ("gömülü diller").
+Uygulamayla birlikte gelen çeviri dil paketleri (yalnızca Türkçe <-> İngilizce), açılmış klasörler halinde:
+    translate-en_tr-1_5/   translate-tr_en-1_5/
+Sözcük bunları buradan doğrudan okur; kopyalamaz, kurmaz.
 
-Paketleri indirmek için:
-    .venv\Scripts\python.exe araclar\dil_paketleri_indir.py en de fr
+İndirmek için (depoda yer almazlar, ≈260 MB):
+    .venv\Scripts\python.exe araclar\dil_paketleri_indir.py
 
-Dosya adlarını değiştirmeyin (ör. translate-en_tr-1_9.argosmodel).
+Diğer diller pakete konmaz: kurulumda seçilirse Inno Setup indirir, sonradan uygulama içinden indirilebilir.

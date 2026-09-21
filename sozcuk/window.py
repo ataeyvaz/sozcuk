@@ -1009,7 +1009,7 @@ class MainWindow(QMainWindow):
         """Çeviri penceresi — metin bilgisayarda çevrilir, hiçbir yere gönderilmez (translate.py)."""
         if not translate_module.available():
             QMessageBox.information(self, "Çeviri", "Çeviri bileşeni kurulu değil. Kurmak için: "
-                                                    "pip install argostranslate")
+                                                    "pip install ctranslate2 sentencepiece sacremoses")
             return
         window = getattr(self, "_translate_dialog", None)
         if window is None:
@@ -1024,7 +1024,7 @@ class MainWindow(QMainWindow):
     def show_language_packs(self):
         """Çeviri dil paketleri: hangileri hazır, hangileri indirilecek."""
         if not translate_module.available():
-            QMessageBox.information(self, "Çeviri", "Çeviri bileşeni kurulu değil (pip install argostranslate).")
+            QMessageBox.information(self, "Çeviri", "Çeviri bileşeni kurulu değil (pip install ctranslate2 sentencepiece sacremoses).")
             return
         translate_module.LanguagePacksDialog(self).exec()
 

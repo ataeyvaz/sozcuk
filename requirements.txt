@@ -4,5 +4,7 @@ pdfminer.six>=20231228
 olefile>=0.47
 faster-whisper>=1.2
 sounddevice>=0.5
-argostranslate>=1.9
+ctranslate2>=4.0
+sentencepiece>=0.2
+sacremoses>=0.1
 comtypes>=1.4 ; sys_platform == "win32"
