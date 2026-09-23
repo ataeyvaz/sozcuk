@@ -241,6 +241,7 @@ class Editor(QGraphicsView):
         self.issues = []              # başlangıç konumuna göre sıralı
         self.highlights = []          # Bul ve Değiştir eşleşmeleri: (başlangıç, bitiş)
         self.highlight_current = -1
+        self.reading_range = None     # sesli okunan cümle: (başlangıç, bitiş)
         self.bulk_loading = False     # belge yüklenirken: paragraf paragraf değişiklik işlenmesin
         self.context_menu_hooks = []  # hook(menu, cursor): sağ tık menüsüne öğe ekler
         self.issue_menu_hooks = []    # hook(menu, issue): altı çizili bulgunun önerilerinin altına öğe ekler
@@ -385,9 +386,12 @@ class Editor(QGraphicsView):
         """1'den başlayan sayfa numarasının sahnedeki üst kenarı."""
         return (page - 1) * self.slot() + PAGE_GAP
 
-    def cursor_rect(self):
-        """İmlecin belge (sahne) koordinatlarındaki dikdörtgeni."""
+    def cursor_rect(self, position=None):
+        """İmlecin (ya da verilen konumun) belge (sahne) koordinatlarındaki dikdörtgeni."""
         cursor = self.textCursor()
+        if position is not None:
+            cursor = QTextCursor(self.document())
+            cursor.setPosition(min(position, self.document().characterCount() - 1))
         block = cursor.block()
         doc_layout = self.document().documentLayout()
         block_rect = doc_layout.blockBoundingRect(block)
@@ -412,6 +416,10 @@ class Editor(QGraphicsView):
 
     def ensure_cursor_visible(self):
         self.ensureVisible(self.cursor_rect(), 20, 40)
+
+    def ensure_position_visible(self, position):
+        """Sesli okunan cümle görünür kalsın (imleç yerinden oynamaz)."""
+        self.ensureVisible(self.cursor_rect(position), 20, 80)
 
     # =========================================================================
     # Yazım / dilbilgisi bulguları (kırmızı dalgalı çizgi)
@@ -545,7 +553,17 @@ class Editor(QGraphicsView):
             block = block.next()
         return rects
 
+    def set_reading_range(self, span):
+        """Sesli okunan cümleyi açık maviyle işaretler (None: işareti kaldırır)."""
+        self.reading_range = span
+        self.viewport().update()
+
     def paint_highlights(self, painter, exposed):
+        if self.reading_range:
+            painter.save()
+            for rect in self._range_rects(*self.reading_range, exposed):
+                painter.fillRect(rect, QColor("#cde4fa"))
+            painter.restore()
         if not self.highlights:
             return
         painter.save()

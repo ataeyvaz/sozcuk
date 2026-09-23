@@ -54,6 +54,7 @@ Sonuç: `dist\Sozcuk\` (taşınabilir klasör, ≈510 MB) ve `dist\Sozcuk-1.1-ku
 | `sozcuk/` | uygulama kaynağı (editör, biçimler, çeviri, yardım…) |
 | `sozcuk/yardim.md` | uygulama içi yardım metni |
 | `araclar/` | yardımcı betikler (gömülü dil paketlerini indirme, ikon üretme) |
+| `araclar/ses_egitimi/` | sesli okuma sesinin eğitimi (Kaggle); bkz. içindeki `BENIOKU.md` |
 | `kurulum/` | Inno Setup kurulum betiği |
 | `plan.md`, `surec.md` | proje planı ve değişiklik günlüğü |
 

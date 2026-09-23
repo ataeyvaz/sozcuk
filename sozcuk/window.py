@@ -74,6 +74,7 @@ from . import (
     translate as translate_module,
 )
 from .dictation import DictationController, vocabulary_path
+from .read_aloud import ReadAloudController
 from .help import show_help as open_help
 from .spellcheck import SpellCheckController
 from .vocabulary import Vocabulary
@@ -186,6 +187,9 @@ class MainWindow(QMainWindow):
         # Sesle yazma — tamamen yerel: ses ve dönüştürülen metin hiçbir sunucuya gönderilmez (dictation.py)
         self.dictation = DictationController(self.editor, self.act_dictate, self.mic_button, self.statusBar(),
                                              self.settings, self.vocabulary, notify=self.show_message, parent=self)
+        # Sesli okuma — tamamen yerel: metin bu bilgisayarda sese çevrilir (read_aloud.py)
+        self.read_aloud = ReadAloudController(self.editor, self.act_read_aloud, self.read_button, self.settings,
+                                              notify=self.show_message, parent=self)
         # Yazım denetimi — Windows'un yerleşik Türkçe denetimi, çevrimdışı (spellcheck.py)
         self.spellcheck = SpellCheckController(self.editor, self.vocabulary, self.statusBar(), self.settings, self)
         self.editor.context_menu_hooks.append(self._link_menu)
@@ -431,6 +435,8 @@ class MainWindow(QMainWindow):
         review_menu.addSeparator()
         review_menu.addAction(self.act_translate)
         action(review_menu, None, "Dil Paketleri…", self.show_language_packs)
+        review_menu.addSeparator()
+        review_menu.addAction(self.act_read_aloud)
         add_menu("Gözden Geçir", review_menu)
 
         # --- Yardım
@@ -604,6 +610,17 @@ class MainWindow(QMainWindow):
         self.mic_button.setFocusPolicy(Qt.NoFocus)
         self.mic_button.setPopupMode(QToolButton.MenuButtonPopup)  # ok: otomatik durdurma, gösterge, sözlük
         self._bar_add("dictate", "Sesle Yaz", self.mic_button)
+
+        # sesli okuma: denetleyici pencere kurulunca bağlanır (bkz. __init__)
+        self.act_read_aloud = self._action("read_aloud", "Sesli Oku", "Ctrl+Alt+Space", checkable=True,
+                                           tip="Sesli Oku (bilgisayarda çalışır)")
+        self.addAction(self.act_read_aloud)
+        self.read_button = QToolButton()
+        self.read_button.setDefaultAction(self.act_read_aloud)
+        self.read_button.setIconSize(QSize(20, 20))
+        self.read_button.setFocusPolicy(Qt.NoFocus)
+        self.read_button.setPopupMode(QToolButton.MenuButtonPopup)  # ok: duraklat, ses, hız
+        self._bar_add("read_aloud", "Sesli Oku", self.read_button)
 
         self._bar_start_group("Yazı Tipleri")
         self._bar_add("add_font", "Yazı Tipi Ekle…", self._action("add_font", "Yazı Tipi Ekle…", None, self._add_font,
@@ -1569,6 +1586,7 @@ class MainWindow(QMainWindow):
         if self._maybe_save():
             self._discard_recovery()
             self.dictation.shutdown()
+            self.read_aloud.shutdown()
             event.accept()
         else:
             event.ignore()

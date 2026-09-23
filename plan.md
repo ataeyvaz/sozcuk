@@ -111,11 +111,46 @@ Bu eski ikili biçimleri biçimlendirmesiyle okuyan güvenilir, lisansı uygun b
 - **Sürüm 1.1 (2026-09-21):** paket 498 MB, kurulum 309 MB (Argos/torch/spacy çıkarıldı, yalnız tr⇄en gömülü); "Özel kurulum"da 11 dil seçilip kurulum sırasında indirilir. Ayrıntı: `surec.md`
 
 ### Faz 7 — Sesli okuma (TTS)
-**Durum:** Araştırıldı (2026-09-21), uygulama bekliyor
-- Kullanıcı şartı (kırmızı çizgi): doğal, kaliteli Türkçe **kadın ve erkek** ses; **bulut API yok**
-- Bu bilgisayarda (i5-4210U, 8 GB) ölçüldü: Piper (VITS) sesleri gerçek zamanın ~4 katı hızlı ve kusursuz anlaşılır ama hazır Türkçe Piper seslerinin hepsi erkek; Chatterbox (yükleme 8,5 dk), MOSS-TTS-Nano (Türkçesi bozuk, 10x yavaş), FreyaTTS, XTTS-v2/OmniVoice (yavaş ya da ticari kullanıma kapalı) elendi
-- Plan: kullanıcının `Desktop\BabaKartalVoice` projesindeki XTTS-v2 ince ayarlı sesi (274 kayıt) "öğretmen" olarak kullanıp hızlı bir Piper sesi eğitmek; kadın sesi için aynı kayıt uygulaması (BabaSesiKayit.apk) ve Colab hattı. Piper'ın GPL paketi yerine Türkçe fonem dönüşümü kendi kodumuzla, model onnxruntime ile çalışır
-- Sıradaki: kullanıcı önce sesi dinleyip test edecek, sonra herkese giden standart pakete girer
+**Durum:** Uygulama hazır, ses modeli eğitiliyor (2026-09-22). Kod commit edilmedi.
+
+**Kullanıcı şartı (kırmızı çizgi):** doğal, kaliteli Türkçe **kadın ve erkek** ses; **bulut API yok**, her şey bu bilgisayarda.
+
+**Seçilen yol:** Piper (VITS) ses modeli + kendi Türkçe telaffuz kodumuz. Ölçüldü (2026-09-21, i5-4210U):
+Piper gerçek zamanın ~4 katı hızlı ve anlaşılır; Chatterbox (yükleme 8,5 dk), MOSS-TTS-Nano (Türkçesi bozuk,
+10x yavaş), FreyaTTS, XTTS-v2/OmniVoice (yavaş ya da ticari kullanıma kapalı) elendi. Hazır Türkçe Piper
+seslerinin hepsi erkek ve "robotik, aksanlı" bulundu (İngilizce sesten türetilmişler) → kendi sesimizi eğitiyoruz.
+
+**Uygulanan (Sözcük tarafı, commit bekliyor):**
+- `sozcuk/pronunciation.py` — Türkçe metin → ses birimi (IPA). Sayı/saat/tarih/yüzde/kısaltma okuma, vurgu
+  kuralları, ince-kalın ünsüz, ğ, düzeltme işareti. espeak'in 5.600 kelimelik çıktısıyla ölçüldü: ses birimi
+  uyumu %96, vurgu %78 (farkların çoğunda espeak yanlış, biz doğru). espeak-ng kullanılmıyor: GPL ve Türkçe
+  hataları var (bkz. modül başlığı)
+- `sozcuk/read_aloud.py` — ses modeli bulma/yükleme (onnxruntime), cümle cümle sentez + çalma (sounddevice),
+  bir sonraki cümleyi arka planda hazırlama, duraklat/durdur, ses ve hız menüsü
+- `sozcuk/editor.py` — okunan cümlenin açık mavi vurgusu (`set_reading_range`, `ensure_position_visible`)
+- `sozcuk/window.py`, `icons.py` — "Sesli Oku" düğmesi (`Ctrl+Alt+Space`), Gözden Geçir menüsü, hoparlör ikonu
+- `sozcuk/yardim.md` — "Sesli Okuma" konusu, kısayol tablosu, menü tablosu
+
+**Ses modeli (Ata'nın sesi):**
+- Veri: `Desktop\BabaKartalVoice` — 273 cümle / 27 dk (kullanıcının kendi kayıtları)
+- Eğitim: Kaggle GPU (ücretsiz, haftada 30 sa). Betik ve araçlar `araclar/ses_egitimi/`, veri seti
+  `ataeyvaz/sozcuk-ata-ses-verisi` (özel), kernel'ler `sozcuk-ata-ses-egitimi` (pilot 3 sa) ve
+  `-2` (devam, 8 sa). Temel model: Piper tr_TR dfki medium checkpoint
+- Eğitim ve uygulama **aynı** telaffuz kodunu kullanır (`--data.phoneme_type text`): Piper'ın espeak'iyle
+  uyuşmazlık olmaz (BabaKartalVoice'ta eski denemeyi bu uyuşmazlık bozmuştu)
+- Sonuç (11 saat): kelime hatası %21 → **%13** (Whisper ile ölçüldü). Kullanıcı tercihi: **%25 yavaş**
+  (`length_scale 1.25`, ses dosyasının json'unda varsayılan). Kurulu: `%LOCALAPPDATA%\Sözcük\seslerta.onnx`
+
+**Açık iş — buradan devam:**
+1. Kullanıcı telefonda 28 yeni cümleyi kaydedecek ("Kartal", "Beşiktaş", kalın ünlüler). Sebep: model "Kartal"ı
+   hiç duymadığı için ince okuyor; kullanıcı o kelimeyi coşkulu söylüyor, model bunu ancak kayıttan öğrenir
+2. Kayıtlar `adb` ile çekilecek, veri setine eklenecek, Kaggle'a yüklenecek, 11 saatlik modelden devam eden
+   3-4 saatlik bir tur yapılacak (ayrıntılı komutlar: `surec.md`, 2026-09-22 girdisi)
+3. Sonuç beğenilirse ses `sozcuk/sesler/` altına konup pakete eklenecek (+63 MB), yardım "Yenilikler"
+   güncellenecek, hepsi tek commit
+4. **Kadın sesi:** aynı hat. Rızası olan bir kadın aynı kayıt uygulamasıyla cümleleri okur
+5. Lisans notu: dfki temel modeli CC BY-NC-SA → türetilen ses ticari kullanıma kapalı. Ticari gerekirse
+   fettah/fahrettin (CC0 veri) temelinden ya da sıfırdan eğitmek gerekir
 
 ## Notlar / Kararlar
 - Ribbon değil, tek satır sade araç çubuğu tercih edildi.

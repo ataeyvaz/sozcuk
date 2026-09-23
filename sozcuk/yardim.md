@@ -82,7 +82,7 @@ Başlığın altındaki menü şeridinde komutlar konularına göre toplanmışt
 | **Ekle** | Tablo, Resim, Simge, Bağlantı, Sesle Yaz |
 | **Sayfa Düzeni** | Kenar Boşlukları, Yönlendirme (Dikey/Yatay), Boyut (A4, A5, A3, B5, Letter, Legal, Executive), Sayfa Numarası, Sayfa Yapısı… |
 | **Görünüm** | Cetvel, Yakınlaştır/Uzaklaştır, %100, Sayfa Genişliği, Tam Sayfa, Komut Çubuğunu Özelleştir, Düğme Sırasını Sıfırla |
-| **Gözden Geçir** | Yazarken Yazım Denetimi, Sonraki Yazım Hatası, Dikte Sözlüğü, Çeviri, Dil Paketleri |
+| **Gözden Geçir** | Yazarken Yazım Denetimi, Sonraki Yazım Hatası, Dikte Sözlüğü, Çeviri, Dil Paketleri, Sesli Oku |
 | **Yardım** | Yardım ve Nasıl Kullanılır (F1), Klavye Kısayolları, Tanılama Günlüğü Klasörünü Aç |
 
 Menülerde komutların kısayolları da yazar.
@@ -597,6 +597,32 @@ Dikte edilen metni `Ctrl+Z` ile tek adımda geri alabilirsiniz.
 - Net ve normal hızda konuşun; noktalama işaretleri çoğunlukla kendiliğinden konur.
 - "Mikrofon bulunamadı" uyarısında Windows ses ayarlarından mikrofonun bağlı ve izinli olduğunu denetleyin.
 
+<!-- konu: sesli | Sesli Okuma | read_aloud -->
+# Sesli Okuma
+
+Sözcük, yazdığınız Türkçe metni doğal bir sesle okur. Okuma **tamamen bilgisayarınızda** yapılır: metniniz hiçbir sunucuya gönderilmez, internet gerekmez.
+
+## Kullanım
+
+1. Okunmasını istediğiniz yeri seçin. Seçim yapmazsanız okuma, imlecin bulunduğu cümleden başlayıp belgenin sonuna kadar sürer.
+2. Komut çubuğundaki **Sesli Oku** düğmesine tıklayın ya da `Ctrl+Alt+Space` tuşlarına basın. Okunan cümle sayfada açık maviyle işaretlenir ve görünür kalır.
+3. Durdurmak için düğmeye yeniden tıklayın ya da `Ctrl+Alt+Space`'e basın.
+
+Okuma sürerken belgeyi değiştirirseniz okuma durur (işaretlenen yerler kaymasın diye).
+
+## Düğmenin menüsü (yanındaki ok)
+
+- **Duraklat / Devam Et**
+- **Okumayı Durdur**
+- **Ses:** kurulu seslerden birini seçin (kadın / erkek).
+- **Hız:** Yavaş, Normal, Hızlı, Çok hızlı.
+
+## Nasıl okur?
+
+Sayılar, tarihler, saatler, yüzdeler ve kısaltmalar Türkçe okunur: "21.09.2026" → *yirmi bir eylül iki bin yirmi altı*, "10:30'da" → *on otuzda*, "%15" → *yüzde on beş*, "Dr." → *doktor*, "3. sayfa" → *üçüncü sayfa*, "THY" → *te he ye*. Türkçenin söyleyiş kuralları (vurgu, ince ve kalın ünsüzler, "ğ", düzeltme işaretli "kâr / hâlâ") gözetilir.
+
+İlk okumada ses modeli yüklendiği için birkaç saniye beklenir; sonrası akıcıdır.
+
 <!-- konu: sozluk | Dikte Sözlüğü | spell_check -->
 # Dikte Sözlüğü
 
@@ -711,6 +737,7 @@ Sığmayan düğmeler çubuğun sağındaki **»** düğmesinin menüsüne taş�
 | İşlem | Kısayol |
 |---|---|
 | Sesle yaz (başlat/durdur) | `Ctrl+Shift+M` |
+| Sesli oku (başlat/durdur) | `Ctrl+Alt+Space` |
 | Tabloda sonraki / önceki hücre | `Tab` / `Shift+Tab` |
 | Liste seviyesi indir / çıkar | `Tab` / `Shift+Tab` (madde başında) |
 | Aynı paragrafta alt satır | `Shift+Enter` |

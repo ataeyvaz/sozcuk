@@ -378,6 +378,61 @@ Format:
 - Eski sürümün `~\.local\share\argos-translate` klasörü (1,2 GB, artık kullanılmıyor) kullanıcı onayıyla silindi
 - Açık kalan: kurulum indirmelerinde SHA-256 denetimi yok (HTTPS'e güveniliyor)
 
+## [2026-09-21/22] — Faz 7: Sesli okuma (Türkçe telaffuz + Ata'nın sesiyle Piper modeli)
+
+### Karar: neden kendi sesimizi eğitiyoruz
+- Kullanıcı şartı: doğal, kaliteli Türkçe **kadın ve erkek** ses, **bulut API yok**. Bu bilgisayarda (i5-4210U, 2 çekirdek, 8 GB, 2014) ölçüldü: **Piper (VITS)** 8 sn sesi 2 sn'de üretiyor (kullanılabilir); **MOSS-TTS-Nano** 13 sn sesi 3 dk'da ve Türkçesi bozuk; **Chatterbox** yalnızca yüklenmesi 8,5 dk; **FreyaTTS** tek (kadın) ses, torch; **XTTS-v2 / OmniVoice** yavaş ve ticari kullanıma kapalı → hepsi elendi
+- Hazır Türkçe Piper sesleri (dfki, fahrettin, fettah, 99eren99) kullanıcı tarafından "robotik ve aksanlı" bulundu — üçü de İngilizce lessac sesinden az Türkçe veriyle türetilmiş. Lisans: dfki CC BY-NC-SA, fettah/fahrettin CC0 veri
+- Kullanıcının `Desktop\BabaKartalVoice` projesinde kendi sesiyle 273 kayıt (27 dk) ve XTTS ince ayarlı bir model var (oğlu Kartal'a miras amaçlı). XTTS doğal ama 7,2x yavaş ve 2 GB → **XTTS'i değil, kayıtları** kullanıp hızlı bir Piper modeli eğitmeye karar verildi
+
+### Türkçe telaffuz (`sozcuk/pronunciation.py`)
+- Piper metni espeak-ng ile ses birimine çeviriyor; espeak GPL (uygulamayı GPL yapardı) ve Türkçede yanlışları var ("Dr." → "dere", "konuşmaya"yı olumsuzluk sanıyor, "hâlâ"yı kalın l ile okuyor) → kendi kodumuz
+- Kurallar tahminle değil ölçümle çıkarıldı: espeak'in 5.600 kelimelik Türkçe çıktısı üretildi, harfler ses birimleriyle hizalandı, bağlam istatistikleri çıkarıldı. Sonuç: kapalı hecede e→ɛ (l/m/n önünde æ), i→ɪ, o→ɔ, u→ʊ, ü→ø; l kalın ünlü yanında ɫ; r iki ünlü arasında ɾ; g ince ünlü yanında ɟ; ğ e/i'den sonra j, ı'dan sonra ɯ, diğer ünlüleri uzatır; çift patlamalı ünsüz Cː, çift sürekli CC
+- Vurgu: kural son hece + vurgusuz ek listesi (-ma/-me olumsuzluğu, -yor, -dır, -ken, -(y)la, -sa, -ca, -sınız, ortaç -dığ/-acağ, gereklilik -malı) + kendi vurgusunu taşıyan sözcük sözlüğü (şimdi, Ankara…)
+- Ölçüm: espeak ile ses birimi uyumu **%96**, vurgu uyumu **%78**. İncelenen farklarda çoğunlukla espeak yanlış ("almaz" → ALmaz, "arama" → araMA, "belge" ince g)
+- Metin hazırlama: sayı (bin/milyon, ondalık, sıra sayısı), saat, tarih, yüzde, para/birim, kısaltma sözlüğü, büyük harfli kısaltmaların harf harf okunması (THY → te he ye; NATO sözcük gibi)
+- Doğrulama: fettah modeliyle üretilen ses Whisper'a yazdırıldı, metin neredeyse birebir geri geldi
+
+### Sözcük tarafı
+- `read_aloud.py`: ses modeli klasörleri (uygulama içi / exe yanı / `%LOCALAPPDATA%\Sözcük\sesler`), onnxruntime ile sentez, `sounddevice` ile çalma, bir sonraki cümleyi arka planda hazırlama (kuyruk), duraklat/durdur, ses ve hız menüsü, ilk yüklemede "ses hazırlanıyor" bilgisi (model ilk açılışta ~12 sn yükleniyor)
+- Okunan cümle açık maviyle vurgulanır (`editor.set_reading_range`), görünür tutulur; belge değişirse okuma durur
+- Kısayol `Ctrl+Alt+Space`, komut çubuğunda hoparlör düğmesi, Gözden Geçir menüsünde. Yardım konusu eklendi
+
+### Eğitim hattı (Kaggle)
+- Colab yerine **Kaggle**: tarayıcı kapalıyken de çalışıyor, haftada 30 sa ücretsiz GPU (Colab kullanıcının 25 dk'lık eğitimini öldürmüştü). Giriş: `kaggle auth login` (OAuth; anahtar dosyası gerekmez)
+- Veri seti (özel): `ataeyvaz/sozcuk-ata-ses-verisi` — `wav/` + `metadata.csv` (`utt|ses birimleri`, bizim dönüştürücümüzle) + `pronunciation.py`. Eğitim `--data.phoneme_type text` ile bu ses birimlerini kullanır: eğitim ve uygulama aynı dönüştürücü → eski Piper denemesini bozan fonem uyuşmazlığı imkânsız
+- Kernel'ler: `sozcuk-ata-ses-egitimi` (pilot, 3 sa) ve `sozcuk-ata-ses-egitimi-2` (devam, 8 sa; `kernel_sources` ile öncekinin `last.ckpt`'ini girdi alır). Betik ve araçlar projede: `araclar/ses_egitimi/` (bkz. oradaki BENIOKU.md)
+- Betikteki tuzak kapatmaları (BabaKartalVoice Colab notlarından + yenileri): `torch.load` gevşek kip, `val_mos` geri çağrımının kaldırılması, ONNX eski dışa aktarıcı, eski checkpoint ayarlarının süzülmesi, **devam ederken Timer durumunun silinmesi** (yoksa `max_time`ın bir kısmı harcanmış sayılır), indirilen arşivin `.zip` uzantısıyla kaydedilmesi (Inno gibi Kaggle da türü uzantıdan tanıyor)
+- Önce 3 dakikalık deneme koşusu yapıldı (kurulum hatalarını 3 saatlik kotayı yakmadan görmek için)
+
+### Sonuçlar
+- Pilot (3 sa): kelime hatası **%21**. Devam (toplam 11 sa): **%13** (Whisper + Levenshtein ile ölçüldü)
+- Kullanıcı dinledi: ses kendisine benziyor; **%25 yavaş** (`length_scale 1.25`) tercih edildi, ses json'una varsayılan olarak yazıldı. Model `%LOCALAPPDATA%\Sözcük\sesler\ata.onnx`'e kuruldu (pilot yedeği yanındaki klasörde)
+- Kalan kusur: **"Kartal"** ince okunuyor (a'lar e'ye kaçıyor). Sebep: kelime 273 cümlenin hiçbirinde geçmiyor; dönüştürücü doğru veriyor (`kartˈaɫ`), model tahmin ediyor. noise_scale düşürme ve hitap vurgusu denendi, fark etmedi → **çözüm: kullanıcının o kelimeyi kendi sesiyle kaydetmesi**
+
+### Kayıt uygulaması (BabaKartalVoice, kullanıcı onayıyla değiştirildi)
+- `docs/prompts_tr.txt` sonuna 28 cümle eklendi: "Kartal" (16), "Beşiktaş" (5), kalın ünlüler (7) → 301 cümle. Yedek: `docs/prompts_tr.yedek-2026-09-22.txt`
+- Gmail ve Drive APK'yı "virüs" diye engelledi. İnceleme: kod Ağustos'taki APK ile **birebir aynı** (896 dosyadan yalnızca cümle metni değişmiş), tek izin RECORD_AUDIO, internet izni yok → yanlış alarm. Muhtemel sebep: herkeste aynı olan **"Android Debug" imzası** + hata ayıklama işareti
+- Çözüm: **yayın sürümü, kullanıcıya özel anahtarla** (`android-recorder/imza/babavoice-yayin.jks`, şifre `imza.properties`, ikisi de .gitignore'da — **YEDEKLENMELİ**, kaybolursa güncelleme kurulamaz). `allowBackup=false` + `dataExtractionRules` (kayıtlar Google yedeğine gitmesin), sürüm 0.2.0, `build_apk.ps1` artık `assembleRelease` yapıyor ve bellek darlığı için Gradle'ı 1 GB + tek süreçte çalıştırıyor. Değiştirilen dosyaların eski halleri: `yedek-2026-09-22/`
+- Kurulum: Gmail yayın sürümünü de engelledi → **adb** ile kuruldu. Önce telefondaki 275 dosya bilgisayara çekilip MD5 ile doğrulandı (`telefon-yedek-2026-09-22/`), sonra eski uygulama kaldırılıp 0.2.0 kuruldu. Xiaomi'de ilk iki deneme `INSTALL_FAILED_USER_RESTRICTED` verdi: telefon ekranı açık olmalı ve çıkan onay penceresi onaylanmalı
+- Google'ın "geliştirici doğrulaması" araştırıldı (Eylül 2026 Brezilya/Endonezya/Singapur/Tayland, 2027 dünya): hobi/öğrenci için **ücretsiz sınırlı dağıtım hesabı** (20 cihaz, kimlik istemiyor), tam hesap 25 dolar; **adb ile kurulum muaf**. Türkiye'de henüz zorunlu değil
+
+### Buradan devam (kullanıcı 28 kaydı yaptıktan sonra)
+1. Kayıtları çek (Git Bash'te `export MSYS_NO_PATHCONV=1`):
+   `adb pull /sdcard/Android/data/com.kartal.babavoice/files <hedef>`
+2. BabaKartalVoice veri setine ekle (mevcut kayıtlara dokunmadan): `scripts/prepare_dataset.py`
+3. Kaggle veri klasörünü üret ve yükle: `araclar/ses_egitimi/veri_hazirla.py`, sonra `kaggle datasets version -p <klasör> -r zip -m "28 yeni kayıt"`
+4. `araclar/ses_egitimi/egitim.py`'yi `TRAIN_HOURS=3` ve `kernel_sources = ["ataeyvaz/sozcuk-ata-ses-egitimi-2"]` ile yeni bir kernel'e gönder (`sozcuk-ata-ses-egitimi-3`)
+5. Çıktıyı indir, Whisper ile ölç, "Kartal"ı dinle
+6. Beğenilirse: ses `sozcuk/sesler/` altına, `sozcuk.spec`'e (+63 MB), yardım "Yenilikler"e; hepsi tek commit
+7. Kadın sesi: aynı hat, rızası olan bir kadın aynı uygulamayla cümleleri okur
+
+### Commit edilmemiş durum (2026-09-22 itibarıyla)
+- Yeni: `sozcuk/pronunciation.py`, `sozcuk/read_aloud.py`
+- Değişen: `sozcuk/editor.py`, `sozcuk/icons.py`, `sozcuk/window.py`, `sozcuk/yardim.md`
+- Kök dizindeki `va.png` geçici ekran görüntüsüdür, silinebilir
+- Ses modeli henüz pakete konmadı: yalnızca `%LOCALAPPDATA%\Sözcük\sesler` altında kurulu
+
 ---
 
 *(Yeni girişler en alta eklenir.)*

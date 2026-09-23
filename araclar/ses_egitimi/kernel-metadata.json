@@ -1,0 +1,13 @@
+{
+  "id": "ataeyvaz/sozcuk-ata-ses-egitimi-2",
+  "title": "Sozcuk Ata Ses Egitimi 2",
+  "code_file": "egitim.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["ataeyvaz/sozcuk-ata-ses-verisi"],
+  "competition_sources": [],
+  "kernel_sources": ["ataeyvaz/sozcuk-ata-ses-egitimi"]
+}
