@@ -1,6 +1,6 @@
 {
-  "id": "ataeyvaz/sozcuk-ata-ses-egitimi-2",
-  "title": "Sozcuk Ata Ses Egitimi 2",
+  "id": "ataeyvaz/sozcuk-ata-ses-egitimi-3",
+  "title": "Sozcuk Ata Ses Egitimi 3",
   "code_file": "egitim.py",
   "language": "python",
   "kernel_type": "script",
@@ -9,5 +9,5 @@
   "enable_internet": true,
   "dataset_sources": ["ataeyvaz/sozcuk-ata-ses-verisi"],
   "competition_sources": [],
-  "kernel_sources": ["ataeyvaz/sozcuk-ata-ses-egitimi"]
+  "kernel_sources": ["ataeyvaz/sozcuk-ata-ses-egitimi-2"]
 }

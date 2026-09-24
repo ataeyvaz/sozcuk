@@ -111,7 +111,7 @@ Bu eski ikili biçimleri biçimlendirmesiyle okuyan güvenilir, lisansı uygun b
 - **Sürüm 1.1 (2026-09-21):** paket 498 MB, kurulum 309 MB (Argos/torch/spacy çıkarıldı, yalnız tr⇄en gömülü); "Özel kurulum"da 11 dil seçilip kurulum sırasında indirilir. Ayrıntı: `surec.md`
 
 ### Faz 7 — Sesli okuma (TTS)
-**Durum:** Uygulama hazır, ses modeli eğitiliyor (2026-09-22). Kod commit edilmedi.
+**Durum:** Uygulama hazır ve commit edildi (43a8fde, 2026-09-23); ses modeli 14 saatlik sürümüyle bu bilgisayarda kurulu (2026-09-24), henüz pakete konmadı.
 
 **Kullanıcı şartı (kırmızı çizgi):** doğal, kaliteli Türkçe **kadın ve erkek** ses; **bulut API yok**, her şey bu bilgisayarda.
 
@@ -120,7 +120,7 @@ Piper gerçek zamanın ~4 katı hızlı ve anlaşılır; Chatterbox (yükleme 8,
 10x yavaş), FreyaTTS, XTTS-v2/OmniVoice (yavaş ya da ticari kullanıma kapalı) elendi. Hazır Türkçe Piper
 seslerinin hepsi erkek ve "robotik, aksanlı" bulundu (İngilizce sesten türetilmişler) → kendi sesimizi eğitiyoruz.
 
-**Uygulanan (Sözcük tarafı, commit bekliyor):**
+**Uygulanan (Sözcük tarafı, commit edildi — 43a8fde):**
 - `sozcuk/pronunciation.py` — Türkçe metin → ses birimi (IPA). Sayı/saat/tarih/yüzde/kısaltma okuma, vurgu
   kuralları, ince-kalın ünsüz, ğ, düzeltme işareti. espeak'in 5.600 kelimelik çıktısıyla ölçüldü: ses birimi
   uyumu %96, vurgu %78 (farkların çoğunda espeak yanlış, biz doğru). espeak-ng kullanılmıyor: GPL ve Türkçe
@@ -132,21 +132,23 @@ seslerinin hepsi erkek ve "robotik, aksanlı" bulundu (İngilizce sesten türeti
 - `sozcuk/yardim.md` — "Sesli Okuma" konusu, kısayol tablosu, menü tablosu
 
 **Ses modeli (Ata'nın sesi):**
-- Veri: `Desktop\BabaKartalVoice` — 273 cümle / 27 dk (kullanıcının kendi kayıtları)
+- Veri: `Desktop\BabaKartalVoice` — 300 cümle / 30 dk (kullanıcının kendi kayıtları; 27'si 2026-09-24'te eklenen "Kartal", "Beşiktaş", kalın ünlü cümleleri)
 - Eğitim: Kaggle GPU (ücretsiz, haftada 30 sa). Betik ve araçlar `araclar/ses_egitimi/`, veri seti
   `ataeyvaz/sozcuk-ata-ses-verisi` (özel), kernel'ler `sozcuk-ata-ses-egitimi` (pilot 3 sa) ve
-  `-2` (devam, 8 sa). Temel model: Piper tr_TR dfki medium checkpoint
+  `-2` (devam, 8 sa), `-3` (yeni kayıtlarla devam, 3 sa). Temel model: Piper tr_TR dfki medium checkpoint
 - Eğitim ve uygulama **aynı** telaffuz kodunu kullanır (`--data.phoneme_type text`): Piper'ın espeak'iyle
   uyuşmazlık olmaz (BabaKartalVoice'ta eski denemeyi bu uyuşmazlık bozmuştu)
 - Sonuç (11 saat): kelime hatası %21 → **%13** (Whisper ile ölçüldü). Kullanıcı tercihi: **%25 yavaş**
-  (`length_scale 1.25`, ses dosyasının json'unda varsayılan). Kurulu: `%LOCALAPPDATA%\Sözcük\seslerta.onnx`
+  (`length_scale 1.25`, ses dosyasının json'unda varsayılan)
+- Sonuç (14 saat, 2026-09-24): kullanıcı dinledi, **eskisinden daha iyi** bulundu ve kuruldu:
+  `%LOCALAPPDATA%\Sözcük\sesler\ata.onnx`. Whisper ölçümünde fark çıkmadı (yeni betik, 16 cümle × 3 tur:
+  %25,8 → %27,4, gürültü içinde); "Kartal" 9/9 doğru duyuldu (eskide 6/9). 11 saatlik yedek:
+  `…\sesler\yedek-11saat-2026-09-24\`
 
 **Açık iş — buradan devam:**
-1. Kullanıcı telefonda 28 yeni cümleyi kaydedecek ("Kartal", "Beşiktaş", kalın ünlüler). Sebep: model "Kartal"ı
-   hiç duymadığı için ince okuyor; kullanıcı o kelimeyi coşkulu söylüyor, model bunu ancak kayıttan öğrenir
-2. Kayıtlar `adb` ile çekilecek, veri setine eklenecek, Kaggle'a yüklenecek, 11 saatlik modelden devam eden
-   3-4 saatlik bir tur yapılacak (ayrıntılı komutlar: `surec.md`, 2026-09-22 girdisi)
-3. Sonuç beğenilirse ses `sozcuk/sesler/` altına konup pakete eklenecek (+63 MB), yardım "Yenilikler"
+1. ~~Yeni kayıtlarla eğitim turu~~ — yapıldı (2026-09-24, ayrıntı `surec.md`)
+2. ~~Sonucu dinleyip karar~~ — kullanıcı yeni sesi beğendi, kuruldu
+3. Paketleme: ses `sozcuk/sesler/` altına konup pakete eklenecek (+63 MB), yardım "Yenilikler"
    güncellenecek, hepsi tek commit
 4. **Kadın sesi:** aynı hat. Rızası olan bir kadın aynı kayıt uygulamasıyla cümleleri okur
 5. Lisans notu: dfki temel modeli CC BY-NC-SA → türetilen ses ticari kullanıma kapalı. Ticari gerekirse

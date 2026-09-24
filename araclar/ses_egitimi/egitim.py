@@ -20,7 +20,7 @@ import time
 from pathlib import Path, PurePath
 
 STARTED = time.time()
-TRAIN_HOURS = 8.0                   # eğitim süresi (oturum sınırı 12 sa; kurulum ve dışa aktarma payı kalsın)
+TRAIN_HOURS = 3.0                   # eğitim süresi (oturum sınırı 12 sa; kurulum ve dışa aktarma payı kalsın)
 BATCH_SIZE = 16
 VOICE = "ata"
 BASE_URL = ("https://huggingface.co/datasets/rhasspy/piper-checkpoints/resolve/main/"

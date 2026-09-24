@@ -427,11 +427,18 @@ Format:
 6. Beğenilirse: ses `sozcuk/sesler/` altına, `sozcuk.spec`'e (+63 MB), yardım "Yenilikler"e; hepsi tek commit
 7. Kadın sesi: aynı hat, rızası olan bir kadın aynı uygulamayla cümleleri okur
 
-### Commit edilmemiş durum (2026-09-22 itibarıyla)
-- Yeni: `sozcuk/pronunciation.py`, `sozcuk/read_aloud.py`
-- Değişen: `sozcuk/editor.py`, `sozcuk/icons.py`, `sozcuk/window.py`, `sozcuk/yardim.md`
-- Kök dizindeki `va.png` geçici ekran görüntüsüdür, silinebilir
+### Commit durumu
+- 2026-09-23: kod, yardım ve eğitim araçları `43a8fde` ile commit edildi (`pronunciation.py`, `read_aloud.py`, `editor.py`, `icons.py`, `window.py`, `yardim.md`, `araclar/ses_egitimi/`). Geçici `va.png` silindi
 - Ses modeli henüz pakete konmadı: yalnızca `%LOCALAPPDATA%\Sözcük\sesler` altında kurulu
+
+## [2026-09-24] — Faz 7: yeni kayıtlarla 3. eğitim turu (14 saat)
+- Kullanıcı 28 yeni cümlenin 27'sini kaydetti ("Maç başladı, kartal forma giydik…" dilbilgisi bozuk olduğu için bilerek atlandı). Kayıtlar `adb` yerine zip ile geldi (`babakartalvoice-kayitlar.zip`)
+- BabaKartalVoice: kayıtlar `raw-recordings`'e eklendi (yedek: `transcript.yedek-2026-09-24.csv`, `dataset/metadata.yedek-2026-09-24.csv`); `prepare_dataset.py` → 300 kayıt, 29 dk 47 sn, hepsi denetimden geçti (medyan sinyal/gürültü 31 dB)
+- `veri_hazirla.py` → `BabaKartalVoice\kaggle-veri`; Kaggle veri seti yeni sürümü yüklendi. Not: Kaggle CLI (2.2.4) Windows'ta `-p C:/...` yolunda hata veriyor, klasöre girip `-p .` kullanılmalı. CLI bu bilgisayarda kurulu değildi, geçici bir sanal ortama kuruldu
+- Kernel `sozcuk-ata-ses-egitimi-3`: `kernel_sources` = `-2`, `TRAIN_HOURS = 3` (toplam 14 sa). 17:51'de bitti
+- **Ölçüm** (yeni betik; 16 cümle, hiçbiri eğitimde yok, her model 3 tur — ses modeli her okumada biraz farklı ürettiği için): eski (11 sa) kelime hatası **%25,8**, yeni (14 sa) **%27,4** → fark ölçüm gürültüsü içinde, anlamlı iyileşme yok. "Kartal" kelimesi yenide 9 okumanın 9'unda "Kartal" duyuldu (eskide 6/9: "karta", "kartta"); "Kartal'a bal" ve "Galatasaray'la" yenide daha kötü. Önceki %13 farklı cümle/yöntemle ölçülmüştü, doğrudan karşılaştırılamaz
+- **Kullanıcı dinledi: yeni ses eskisinden daha iyi → kuruldu** (`%LOCALAPPDATA%\Sözcük\sesler\ata.onnx`; uygulamanın `find_voices` yoluyla yüklendiği ve okuduğu doğrulandı, `length_scale 1.25` korundu). Whisper ölçümü farkı yakalamadı; "Kartal"daki ince a sorunu kulakla değerlendirildi
+- Yeni model `%LOCALAPPDATA%\Sözcük\sesler\aday-14saat-2026-09-24\`, eski model yedeği `…\yedek-11saat-2026-09-24\`. Dinleme dosyaları: `BabaKartalVoice\ses-denemesi-2026-09-24\` (`eski/`, `yeni/` aynı 16 cümle, `cumleler.txt`, `kaggle-ornekleri/`)
 
 ---
 
