@@ -109,9 +109,10 @@ Bu eski ikili biçimleri biçimlendirmesiyle okuyan güvenilir, lisansı uygun b
 - **Inno Setup** kurulum paketi (`kurulum/sozcuk.iss`): `dist/Sozcuk-1.0-kurulum.exe` ≈ 1,31 GB; Başlat menüsü ve isteğe bağlı masaüstü kısayolu, "Birlikte aç" listesine kayıt, isteğe bağlı .docx ilişkilendirmesi, kaldırma desteği
 - Kaynak kodu GitHub'a yüklendi: https://github.com/ataeyvaz/sozcuk (dil paketleri ve dist/ depoya girmez)
 - **Sürüm 1.1 (2026-09-21):** paket 498 MB, kurulum 309 MB (Argos/torch/spacy çıkarıldı, yalnız tr⇄en gömülü); "Özel kurulum"da 11 dil seçilip kurulum sırasında indirilir. Ayrıntı: `surec.md`
+- **Sürüm 1.2 (2026-09-24):** sesli okuma ve Ata'nın sesi pakette; paket 559 MB, kurulum 367 MB
 
 ### Faz 7 — Sesli okuma (TTS)
-**Durum:** Uygulama hazır ve commit edildi (43a8fde, 2026-09-23); ses modeli 14 saatlik sürümüyle bu bilgisayarda kurulu (2026-09-24), henüz pakete konmadı.
+**Durum:** Uygulama hazır ve commit edildi (43a8fde, 2026-09-23); 14 saatlik ses (Ata, erkek) Sürüm 1.2 ile pakete kondu (2026-09-24). Açık iş: kadın sesi.
 
 **Kullanıcı şartı (kırmızı çizgi):** doğal, kaliteli Türkçe **kadın ve erkek** ses; **bulut API yok**, her şey bu bilgisayarda.
 
@@ -148,8 +149,7 @@ seslerinin hepsi erkek ve "robotik, aksanlı" bulundu (İngilizce sesten türeti
 **Açık iş — buradan devam:**
 1. ~~Yeni kayıtlarla eğitim turu~~ — yapıldı (2026-09-24, ayrıntı `surec.md`)
 2. ~~Sonucu dinleyip karar~~ — kullanıcı yeni sesi beğendi, kuruldu
-3. Paketleme: ses `sozcuk/sesler/` altına konup pakete eklenecek (+63 MB), yardım "Yenilikler"
-   güncellenecek, hepsi tek commit
+3. ~~Paketleme~~ — Sürüm 1.2 (2026-09-24): ses `sozcuk/sesler/` altında, depoda da (kullanıcı kararı)
 4. **Kadın sesi:** aynı hat. Rızası olan bir kadın aynı kayıt uygulamasıyla cümleleri okur
 5. Lisans notu: dfki temel modeli CC BY-NC-SA → türetilen ses ticari kullanıma kapalı. Ticari gerekirse
    fettah/fahrettin (CC0 veri) temelinden ya da sıfırdan eğitmek gerekir

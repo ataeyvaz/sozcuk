@@ -33,6 +33,10 @@ Sözcük, Word belgeleriyle (.docx) çalışan, sade ve tamamen **bilgisayarın�
 
 Sözcük'e eklenen özellikler, en yenisi en üstte.
 
+## 24 Eylül 2026 — Sürüm 1.2
+
+- **Sesli okuma:** Sözcük artık yazdığınız Türkçe metni sesli okuyor. Seçin ya da imleci bir cümleye koyun, **Sesli Oku** düğmesine tıklayın veya `Ctrl+Alt+Space`'e basın; okunan cümle sayfada maviyle işaretlenir. Sayılar, tarihler, saatler ve kısaltmalar Türkçe okunur. Okuma tamamen bilgisayarınızda yapılır, internet gerekmez. Uygulamayla **Ata**'nın (erkek) sesi gelir. Bkz. [Sesli Okuma](konu:sesli).
+
 ## 21 Eylül 2026 — Sürüm 1.1
 
 - **Çok daha küçük kurulum:** kurulum paketi 1,3 GB'tan yaklaşık 300 MB'a, kurulu hali 2 GB'tan yaklaşık 500 MB'a indi. Çeviri motoru sadeleştirildi; ilk çeviri de artık saniyeler içinde hazır.

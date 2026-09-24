@@ -4,6 +4,7 @@
 # Not: pakete yalnızca Türkçe ⇄ İngilizce dil paketleri (sozcuk/diller/translate-*/, açılmış klasör) konur;
 # diğer diller kurulumda seçilirse Inno Setup indirir, sonradan uygulama içinden de indirilebilir.
 # Konuşma tanıma modeli pakete konmaz: ilk dikte kullanımında bir kez indirilir.
+# Sesli okuma sesleri (sozcuk/sesler/*.onnx + .onnx.json, ~63 MB/ses) pakete konur.
 
 from pathlib import Path
 
@@ -15,6 +16,11 @@ datas = [
     (str(project / "sozcuk" / "yardim.md"), "sozcuk"),
     (str(project / "sozcuk.ico"), "."),
 ]
+# sesli okuma sesleri: model + ayar dosyası çiftleri
+for model in sorted((project / "sozcuk" / "sesler").glob("*.onnx")):
+    config = model.with_name(model.name + ".json")
+    if config.is_file():
+        datas += [(str(model), "sozcuk/sesler"), (str(config), "sozcuk/sesler")]
 # gömülü dil paketleri: açılmış klasörler (stanza/ cümle bölücüsü kullanılmadığı için alınmaz)
 for package in sorted((project / "sozcuk" / "diller").glob("translate-*")):
     if not (package / "metadata.json").is_file():
@@ -28,7 +34,7 @@ for package in ("ctranslate2", "sacremoses", "faster_whisper"):
     datas += collect_data_files(package)
 
 hiddenimports = ["comtypes", "comtypes.client", "olefile", "docx", "pdfminer", "ctranslate2", "sentencepiece",
-                 "sacremoses", "faster_whisper", "sounddevice", "tokenizers"]
+                 "sacremoses", "faster_whisper", "sounddevice", "tokenizers", "onnxruntime"]
 
 # Kullanılmayan büyük bileşenler. torch/stanza/spacy eskiden Argos Translate ile geliyordu (çeviri artık onlarsız);
 # av (PyAV) dikte için gerekmez (dictation._stub_av). Qt'nin QML/Quick, PDF ve ağ modülleri kullanılmıyor.

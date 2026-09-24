@@ -4,7 +4,7 @@ Word'ün kalabalık arayüzü yerine, gerçekten kullanılan özellikleri sade b
 
 **Developed By Usta ve Ata**
 
-Yazım denetimi, sesle yazma ve çeviri dahil her şey **bilgisayarda** çalışır: belgeleriniz hiçbir sunucuya gönderilmez.
+Yazım denetimi, sesle yazma, sesli okuma ve çeviri dahil her şey **bilgisayarda** çalışır: belgeleriniz hiçbir sunucuya gönderilmez.
 
 ## Neler var
 
@@ -17,6 +17,7 @@ Yazım denetimi, sesle yazma ve çeviri dahil her şey **bilgisayarda** çalış
 - **Dosya biçimleri:** .docx, .docm, .dotx/.dotm, .doc/.dot, .rtf, .odt, .txt, .htm/.html/.mht, Word 2003 XML, .wps, .wpd, PDF açma; .docx/.doc/.rtf/.odt/.txt/.html olarak kaydetme; PDF dışa aktarma
 - **Yazım denetimi:** Windows'un Türkçe yazım denetimi (Word ile aynı sonuçlar, çevrimdışı)
 - **Sesle yazma:** faster-whisper ile yerel dikte, susunca otomatik durma, öğrenen kişisel sözlük
+- **Sesli okuma:** Türkçe metni doğal sesle okur (Piper/VITS sesi, ONNX Runtime; sayı, tarih, saat, kısaltma okuma); uygulamayla Ata'nın sesi gelir
 - **Çeviri:** yerel çeviri modelleri (CTranslate2); Türkçe ⇄ İngilizce uygulamayla gelir, diğer 11 dil kurulumda seçilir ya da sonradan indirilir
 - **Google Drive / OneDrive:** eşitleme klasöründeki belgelerde canlı kayıt, dışarıdan değişikliği fark etme
 - **Yardım:** uygulama içi, aranabilir "Yardım ve Nasıl Kullanılır" (F1)
@@ -45,7 +46,7 @@ Paketler açılmış klasörler olarak `sozcuk/diller/` içine konur; uygulama o
 "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" kurulum\sozcuk.iss
 ```
 
-Sonuç: `dist\Sozcuk\` (taşınabilir klasör, ≈510 MB) ve `dist\Sozcuk-1.1-kurulum.exe` (kurulum paketi, ≈300 MB). Kurulum için Inno Setup 6.5 ya da üstü gerekir (dil paketlerini indirip açar).
+Sonuç: `dist\Sozcuk\` (taşınabilir klasör, ≈560 MB) ve `dist\Sozcuk-1.2-kurulum.exe` (kurulum paketi, ≈370 MB). Kurulum için Inno Setup 6.5 ya da üstü gerekir (dil paketlerini indirip açar).
 
 ## Klasörler
 
@@ -53,6 +54,7 @@ Sonuç: `dist\Sozcuk\` (taşınabilir klasör, ≈510 MB) ve `dist\Sozcuk-1.1-ku
 |---|---|
 | `sozcuk/` | uygulama kaynağı (editör, biçimler, çeviri, yardım…) |
 | `sozcuk/yardim.md` | uygulama içi yardım metni |
+| `sozcuk/sesler/` | sesli okuma sesleri (`.onnx` + `.onnx.json`; pakete konur) |
 | `araclar/` | yardımcı betikler (gömülü dil paketlerini indirme, ikon üretme) |
 | `araclar/ses_egitimi/` | sesli okuma sesinin eğitimi (Kaggle); bkz. içindeki `BENIOKU.md` |
 | `kurulum/` | Inno Setup kurulum betiği |
@@ -61,6 +63,9 @@ Sonuç: `dist\Sozcuk\` (taşınabilir klasör, ≈510 MB) ve `dist\Sozcuk-1.1-ku
 ## Kullanılan açık kaynak bileşenler
 
 PySide6 (Qt, LGPL) · python-docx (MIT) · pdfminer.six (MIT) · olefile (BSD) · comtypes (MIT) ·
-faster-whisper + Whisper modeli (MIT) · CTranslate2 (MIT) + SentencePiece (Apache 2.0) · Argos Translate dil paketleri (MIT) + OPUS-MT modelleri (CC-BY 4.0)
+faster-whisper + Whisper modeli (MIT) · CTranslate2 (MIT) + SentencePiece (Apache 2.0) · Argos Translate dil paketleri (MIT) + OPUS-MT modelleri (CC-BY 4.0) ·
+ONNX Runtime (MIT) · Piper tr_TR dfki temel modeli (CC BY-NC-SA 4.0)
+
+Sesli okuma sesi (`sozcuk/sesler/ata.onnx`) Ata'nın kendi kayıtlarıyla, dfki temel modelinden eğitildi; bu yüzden **ticari kullanıma kapalıdır** (CC BY-NC-SA 4.0).
 
 Sözcük'ün kendi lisansı henüz belirlenmedi.

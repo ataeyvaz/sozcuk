@@ -7,4 +7,5 @@ sounddevice>=0.5
 ctranslate2>=4.0
 sentencepiece>=0.2
 sacremoses>=0.1
+onnxruntime>=1.18
 comtypes>=1.4 ; sys_platform == "win32"

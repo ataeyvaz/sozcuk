@@ -7,7 +7,7 @@
 ; Adresler ve boyutlar Argos paket dizininden alındı (https://github.com/argosopentech/argospm-index).
 
 #define AppName "Sözcük"
-#define AppVersion "1.1"
+#define AppVersion "1.2"
 #define AppPublisher "Usta ve Ata"
 #define AppExe "Sozcuk.exe"
 

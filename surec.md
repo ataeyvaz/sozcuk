@@ -440,6 +440,14 @@ Format:
 - **Kullanıcı dinledi: yeni ses eskisinden daha iyi → kuruldu** (`%LOCALAPPDATA%\Sözcük\sesler\ata.onnx`; uygulamanın `find_voices` yoluyla yüklendiği ve okuduğu doğrulandı, `length_scale 1.25` korundu). Whisper ölçümü farkı yakalamadı; "Kartal"daki ince a sorunu kulakla değerlendirildi
 - Yeni model `%LOCALAPPDATA%\Sözcük\sesler\aday-14saat-2026-09-24\`, eski model yedeği `…\yedek-11saat-2026-09-24\`. Dinleme dosyaları: `BabaKartalVoice\ses-denemesi-2026-09-24\` (`eski/`, `yeni/` aynı 16 cümle, `cumleler.txt`, `kaggle-ornekleri/`)
 
+## [2026-09-24] — Sürüm 1.2: sesli okuma pakette
+- Ses (`ata.onnx` + `.onnx.json`, 14 saatlik) `sozcuk/sesler/` altına kondu. **Kullanıcı kararı:** GitHub deposu herkese açık olduğu ve modeli indiren herkesin bu sesle istediği cümleyi okutabileceği anlatıldı; kullanıcı modelin depoya da konmasını seçti
+- `sozcuk.spec`: `sozcuk/sesler/*.onnx` + json çiftleri pakete; `onnxruntime` gizli içe aktarmalara. `requirements.txt`'e `onnxruntime>=1.18` eklendi (Faz 7'de eksik kalmıştı: kaynaktan kuran biri sesli okumayı kullanamazdı)
+- Hakkında penceresi ve README: ONNX Runtime (MIT), dfki temel modeli (CC BY-NC-SA 4.0) ve sesin ticari kullanıma kapalı olduğu notu. Yardım "Yenilikler"e 1.2 maddesi. Sürüm 1.1 → **1.2** (`__init__.py`, `sozcuk.iss`)
+- Sonuç: `dist/Sozcuk/` 498 → **559 MB**, `Sozcuk-1.2-kurulum.exe` 309 → **367 MB**
+- Denemeler: paketlenmiş halde sesin yalnız paketin içinden bulunup okunması (ayrı deneme programı, kullanıcı klasörüne bakmayan uygulama adıyla; 7 sn ses); `Sozcuk.exe` açılışı (günlükte hata yok); kurulum paketi geçici klasöre sessizce kuruldu (562 MB, ses dosyaları yerinde, "Belge1 - Sözcük" açıldı), sessizce kaldırıldı (klasör kalmadı). Bilgisayardaki gerçek 1.1 kurulumunun (`C:\Program Files\Sözcük`, HKLM kaydı) etkilenmediği doğrulandı. Yardım: 25 konu, kırık bağlantı yok
+- Not: gerçek kurulum hâlâ 1.1; 1.2'ye yükseltmek yönetici onayı (UAC) ister
+
 ---
 
 *(Yeni girişler en alta eklenir.)*

@@ -881,6 +881,8 @@ class AboutDialog(QDialog):
         ("faster-whisper + Whisper modeli", "sesle yazma", "MIT"),
         ("CTranslate2 + SentencePiece", "çeviri motoru", "MIT / Apache 2.0"),
         ("Argos Translate dil paketleri + OPUS-MT modelleri", "çeviri", "MIT / CC-BY 4.0"),
+        ("ONNX Runtime", "sesli okuma motoru", "MIT"),
+        ("Piper (VITS) sesi, dfki Türkçe temel modelinden", "sesli okuma sesi", "CC BY-NC-SA 4.0"),
     ]
 
     def __init__(self, parent=None, version="", developers=""):
