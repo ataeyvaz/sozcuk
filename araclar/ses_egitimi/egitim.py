@@ -156,7 +156,8 @@ sh(f"{sys.executable} {TMP / 'bkv_export.py'} --checkpoint {last} --output-file 
 
 config = json.loads(config_path.read_text(encoding="utf-8"))
 config["sozcuk"] = {"name": "Ata", "gender": "erkek"}
-config.setdefault("inference", {})["length_scale"] = 1.25   # Ata'nın tercihi (pilotta dinlendi): %25 yavaş
+# Ata'nın tercihi (2026-09-25, dört ayar dinlendi): %10 yavaş, ton oynaklığı düşük ("sakin")
+config.setdefault("inference", {}).update({"length_scale": 1.1, "noise_scale": 0.5, "noise_w": 0.6})
 config_path.write_text(json.dumps(config, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"model: {onnx_path.stat().st_size / 1e6:.0f} MB, checkpoint: {last.name}", flush=True)
 

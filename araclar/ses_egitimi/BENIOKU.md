@@ -53,8 +53,8 @@ kotayı yakmadan görünür.
 - Denemek için: `ata.onnx` + `ata.onnx.json` → `%LOCALAPPDATA%\Sözcük\sesler\`
 - Pakete koymak için: `sozcuk\sesler\` (PyInstaller bu klasörü alır; `sozcuk.spec` güncellenmeli, +63 MB)
 - `ata.onnx.json` içine Sözcük'ün okuduğu iki alan yazılır:
-  `"sozcuk": {"name": "Ata", "gender": "erkek"}` ve `"inference": {"length_scale": 1.25}` (kullanıcı tercihi:
-  %25 yavaş)
+  `"sozcuk": {"name": "Ata", "gender": "erkek"}` ve `"inference": {"length_scale": 1.1, "noise_scale": 0.5,
+  "noise_w": 0.6}` (kullanıcı tercihi, 2026-09-25: %10 yavaş, sakin; `noise_w` bu modelde süreyi etkilemiyor)
 
 ## Lisans notu
 

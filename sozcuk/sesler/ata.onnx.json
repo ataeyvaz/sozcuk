@@ -9,9 +9,9 @@
   "num_symbols": 256,
   "num_speakers": 1,
   "inference": {
-    "noise_scale": 0.667,
-    "length_scale": 1.25,
-    "noise_w": 0.8
+    "noise_scale": 0.5,
+    "length_scale": 1.1,
+    "noise_w": 0.6
   },
   "phoneme_id_map": {
     "_": [

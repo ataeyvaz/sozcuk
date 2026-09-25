@@ -448,6 +448,14 @@ Format:
 - Denemeler: paketlenmiş halde sesin yalnız paketin içinden bulunup okunması (ayrı deneme programı, kullanıcı klasörüne bakmayan uygulama adıyla; 7 sn ses); `Sozcuk.exe` açılışı (günlükte hata yok); kurulum paketi geçici klasöre sessizce kuruldu (562 MB, ses dosyaları yerinde, "Belge1 - Sözcük" açıldı), sessizce kaldırıldı (klasör kalmadı). Bilgisayardaki gerçek 1.1 kurulumunun (`C:\Program Files\Sözcük`, HKLM kaydı) etkilenmediği doğrulandı. Yardım: 25 konu, kırık bağlantı yok
 - Not: gerçek kurulum hâlâ 1.1; 1.2'ye yükseltmek yönetici onayı (UAC) ister
 
+## [2026-09-25] — Ata'nın sesi: çıkış ayarı "sakin" (KartalSesliKitap oturumundan)
+- KartalSesliKitap'a (Android) aynı ses eklendi; telefonda üretilen sesin Sözcük'ünkiyle aynı olduğu ölçüldü (aynı paragraf: süre örnek örnek aynı, perde medyanı ikisinde 111 Hz). Kullanıcı sesi ince / "Türk gibi değil" buldu → sınır eğitim verisinde (300 kayıt, 30 dk)
+- Aynı paragraf dört ayarla dinletildi; kullanıcı **C "sakin"**i seçti: `length_scale 1.1`, `noise_scale 0.5`, `noise_w 0.6` (eskiden 1.25 / 0.667 / 0.8). `sozcuk/sesler/ata.onnx.json` ve `%LOCALAPPDATA%\Sözcük\seslerta.onnx.json` güncellendi (KartalSesliKitap'taki kopyayla aynı)
+- `egitim.py` artık bu üç değeri yazıyor (eskiden 1.25 yazıp ayarı geri alırdı); `BENIOKU.md` güncellendi
+- Bulgu: `noise_w` bu modelde süreleri hiç değiştirmiyor (0–1 arası aynı süre ve boşluklar)
+- Kullanıcı "yamaçtaki otlağa"yı "topladı" gibi duydu (ses birimleri doğru: `ɔtɫˈaː`) → "ğ"li kelimeler bulanık. BabaKartalVoice `docs/prompts_tr.txt`'e "Yumuşak g (ğ)" bölümü, 20 cümle eklendi. Virgüllerdeki uzun duraklama (0,5–0,9 sn) **kullanıcı kararıyla kısaltılmadı**
+- Not: paketlenmiş 1.2 kurulum dosyası eski json'u taşıyor; yeni ayarın pakete girmesi için yeniden paketlemek gerekir
+
 ---
 
 *(Yeni girişler en alta eklenir.)*
