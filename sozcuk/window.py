@@ -1602,6 +1602,8 @@ class MainWindow(QMainWindow):
                 if provider:
                     self.save_label.setToolTip(f"{provider} klasörüne yazılamadı. {provider} uygulamasının çalıştığını "
                                                "ve oturumun açık olduğunu denetleyin; Sözcük yeniden deneyecek.")
+            elif isinstance(exc, encryption.EncryptedFileError):
+                QMessageBox.critical(self, "Kaydedilemedi", f"“{path.name}” kaydedilemedi.\n\n{exc}")
             else:
                 QMessageBox.critical(
                     self, "Kaydedilemedi",
@@ -1689,8 +1691,10 @@ class MainWindow(QMainWindow):
             message=("<b>Parolayı değiştirin</b><br>Belge bundan sonra yeni parolayla şifrelenir." if changing else
                      "<b>Bu belgenin içeriğini şifreleyin</b><br>Belge yalnızca parolayı bilenler tarafından "
                      "açılabilir; Word de aynı parolayı sorar."),
-            note="Dikkat: Parolayı unutursanız belge kurtarılamaz. Sözcük parolayı hiçbir yere kaydetmez. "
-                 "Büyük/küçük harf fark eder.")
+            note="<b>Dikkat:</b> Parolayı unutursanız belge kurtarılamaz; ne Sözcük ne Word açabilir. Sözcük "
+                 "parolayı hiçbir yere kaydetmez. Büyük/küçük harf fark eder.<br><br>"
+                 "<b>Öneri:</b> Önemli belgelerin şifresiz bir yedeğini güvenli bir yerde (ör. yalnızca sizin "
+                 "eriştiğiniz bir klasörde ya da USB bellekte) saklayın; parolayı da güvenli bir yere not edin.")
         if dialog.exec() != QDialog.Accepted:
             return
         self.password = dialog.password

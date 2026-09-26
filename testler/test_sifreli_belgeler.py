@@ -162,6 +162,33 @@ class EncryptedFiles(unittest.TestCase):
         with self.assertRaises(encryption.WrongPassword):
             encryption.decrypt(self.encrypted, WRONG)
 
+    def test_verify(self):
+        package = self.plain.read_bytes()
+        data = encryption.encrypt(package, PASSWORD)
+        self.assertTrue(encryption.verify(data, PASSWORD, package))
+        self.assertFalse(encryption.verify(data, WRONG, package))
+        self.assertFalse(encryption.verify(data, PASSWORD, package + b"x"))
+        self.assertFalse(encryption.verify(b"bozuk", PASSWORD, package))
+
+    def test_failed_verification_keeps_original(self):
+        """Şifreli kayıt geri açılamıyorsa asıl dosyanın üzerine yazılmaz, geçici dosya kalmaz."""
+        original = self.encrypted.read_bytes()
+        document = load(self.encrypted, encryption.decrypt(self.encrypted, PASSWORD))
+        real_encrypt = encryption.encrypt
+        broken_cases = [
+            lambda package, password: real_encrypt(package, password + "x"),     # başka parolayla
+            lambda package, password: real_encrypt(self.plain.read_bytes(), password),     # başka içerik
+            lambda package, password: real_encrypt(package, password)[:-4096],  # kesik dosya
+        ]
+        for broken in broken_cases:
+            with mock.patch.object(encryption, "encrypt", broken):
+                with self.assertRaises(encryption.EncryptedFileError) as caught:
+                    docx_io.save(document, self.encrypted, PASSWORD)
+            self.assertIsInstance(caught.exception, OSError, "kaydetme yolu OSError olarak yakalar")
+            self.assertIn("üzerine yazılmadı", str(caught.exception))
+            self.assertEqual(self.encrypted.read_bytes(), original, "özgün dosya değişmemeli")
+            self.assertEqual([p.name for p in self.dir.iterdir() if p.name.startswith("~$")], [])
+
     def test_plain_save_without_password(self):
         document = load(self.encrypted, encryption.decrypt(self.encrypted, PASSWORD))
         target = self.dir / "sifresiz.docx"
@@ -343,6 +370,21 @@ class PasswordWindow(unittest.TestCase):
             self.assertEqual(window.password, PASSWORD)
             window._write(window.path)
             self.assertEqual(encryption.probe(self.encrypted), encryption.ENCRYPTED_OOXML)
+
+            # Doğrulanamayan şifreli kayıt: kayıt başarısız sayılır, kullanıcıya söylenir, belge değişmiş kalır
+            window.editor.textCursor().insertText("y")
+            saved = self.encrypted.read_bytes()
+            messages = []
+            real_encrypt = encryption.encrypt
+            with mock.patch.object(encryption, "encrypt", lambda p, pw: real_encrypt(p, pw + "x")), \
+                    mock.patch("sozcuk.window.QMessageBox.critical", lambda *a: messages.append(a[2])):
+                self.assertFalse(window._write(window.path))
+            self.assertEqual(self.encrypted.read_bytes(), saved)
+            self.assertTrue(window.editor.document().isModified())
+            self.assertEqual(len(messages), 1)
+            self.assertIn("doğrulanamadı", messages[0])
+            self.assertNotIn("başka bir programda", messages[0])
+            window._save_failed = False
 
             # Yeni belge: parola unutulur
             window.editor.document().setModified(False)

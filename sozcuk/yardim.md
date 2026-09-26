@@ -35,7 +35,7 @@ Sözcük'e eklenen özellikler, en yenisi en üstte.
 
 ## 26 Eylül 2026
 
-- **Şifreli belgeler:** Word'de parolayla şifrelenmiş (.docx) belgeler artık açılıyor; Sözcük parolayı sorar, belge kaydedilirken aynı parolayla yeniden şifrelenir. **Dosya → Şifre ile Koru…** ile her belgeye parola eklenip değiştirilebilir, **Dosya → Şifreyi Kaldır** ile kaldırılabilir. Şifreli belgede durum çubuğunda kilit ve **Şifreli** yazısı görünür. Word'ün **Düzenlemeyi Kısıtla** ayarı olan belgeler de sorunsuz açılır ve bu ayar kayıtta korunur. Bkz. [Şifreli Belgeler](konu:sifreli).
+- **Şifreli belgeler:** Word'de parolayla şifrelenmiş (.docx) belgeler artık açılıyor; Sözcük parolayı sorar, belge kaydedilirken aynı parolayla yeniden şifrelenir. **Dosya → Şifre ile Koru…** ile her belgeye parola eklenip değiştirilebilir, **Dosya → Şifreyi Kaldır** ile kaldırılabilir. Şifreli belgede durum çubuğunda kilit ve **Şifreli** yazısı görünür. Her şifreli kayıt, dosyanın yerine konmadan önce aynı parolayla geri açılarak denetlenir. Word'ün **Düzenlemeyi Kısıtla** ayarı olan belgeler de sorunsuz açılır ve bu ayar kayıtta korunur. Bkz. [Şifreli Belgeler](konu:sifreli).
 
 ## 24 Eylül 2026 — Sürüm 1.2
 
@@ -197,6 +197,7 @@ Belge açıkken durum çubuğunda kilit simgesi ve **Şifreli** yazısı görün
 ## Kaydetme
 
 - Şifreli açılan belge **aynı parolayla şifreli** kaydedilir; Word'de açarken yine parola sorulur. Otomatik kayıt da şifreli yazar.
+- **Kayıt denetimi:** Sözcük her şifreli kayıttan sonra yazdığı dosyayı aynı parolayla geri açıp içeriğini karşılaştırır; dosya ancak tutarsa eskisinin yerine konur. Tutmazsa "Kaydedilemedi" iletisi çıkar, eski dosyanıza dokunulmaz ve belgeniz Sözcük'te açık kalır. Bu durumda **Farklı Kaydet** ile başka bir yere kaydetmeyi ya da parolayı kaldırıp kaydetmeyi deneyin.
 - **Dosya → Şifre ile Koru…** ile herhangi bir belgeye parola ekleyebilir ya da mevcut parolayı değiştirebilirsiniz; parolayı iki kez yazarsınız. **Dosya → Şifreyi Kaldır** parolayı kaldırır. Otomatik Kaydet açıksa değişiklik dosyaya hemen yazılır; kapalıysa **Kaydet** dediğinizde yazılır.
 - Parolayla yalnızca **Word Belgesi (.docx)** korunabilir. Şifreli bir belgeyi **Farklı Kaydet** ile .odt, .txt, .html, .rtf ya da .doc olarak kaydederseniz Sözcük sizi uyarır; o kopya şifresiz olur.
 
@@ -204,7 +205,12 @@ Belge açıkken durum çubuğunda kilit simgesi ve **Şifreli** yazısı görün
 
 - Şifresi çözülen belge yalnızca bellekte tutulur; diske şifresiz kopyası yazılmaz. Güvenli kayıt sırasındaki geçici dosya da şifrelidir.
 - Şifreli belgenin **kurtarma kopyası** da aynı parolayla şifrelenir. Sözcük beklenmedik şekilde kapanırsa **Geri Yükle** dediğinizde parola sorulur.
-- Parola yalnızca belge açıkken bellekte durur; ayarlara, kurtarma bilgisine ya da tanılama günlüğüne yazılmaz. **Parolayı unutursanız belge açılamaz**, Sözcük de kurtaramaz.
+- Parola yalnızca belge açıkken bellekte durur; ayarlara, kurtarma bilgisine ya da tanılama günlüğüne yazılmaz.
+
+## Parolayı unutursam ya da Word açmazsa?
+
+- **Parolayı unuttuysanız belge açılamaz.** Parola hiçbir yerde saklanmaz; ne Sözcük ne Word ne de Microsoft açabilir. Bu yüzden önemli belgelerin şifresiz bir yedeğini güvenli bir yerde (yalnızca sizin eriştiğiniz bir klasörde ya da USB bellekte) saklayın ve parolayı güvenli bir yere not edin.
+- **Parolayı biliyorsunuz ama Word açmıyorsa:** belgeyi Sözcük'te parolasıyla açın, **Dosya → Şifreyi Kaldır** deyin; belge şifresiz kaydedilir. Sonra Word'de açıp isterseniz Word'de yeniden parola verin.
 
 ## Düzenlemeyi Kısıtla
 

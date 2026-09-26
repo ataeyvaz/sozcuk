@@ -474,6 +474,15 @@ Format:
 - Not: istekte geçen `plan.md` "Görsel Kalite Standardı" bölümü dosyada yok; pencere, `plan.md` Notlar'daki "Word seviyesinde arayüz" ilkesine ve mevcut pencerelerin (Hakkında, Tablo Ekle) düzenine göre yapıldı
 - Sonraki adım: Word'de elle deneme (yanıttaki listeye bakın)
 
+## [2026-09-26] — Faz 2: Şifreli kayıtta doğrulama ve parola uyarısı
+- Neden: kullanıcı sordu — Sözcük'ün şifrelediği dosya Word'de açılmazsa ya da parola unutulursa ne olacak? Unutulan parola kurtarılamaz (AES, parola saklanmıyor); Word açmazsa Sözcük'te açıp **Şifreyi Kaldır** ile şifresiz kaydetmek yolu. Önlem olarak iki şey eklendi
+- **Doğrulama:** `encryption.write_encrypted` şifreli baytları geçici dosyaya yazdıktan sonra dosyayı **diskten geri okuyup** aynı parolayla bellekte çözüyor ve özgün paketle bayt bayt karşılaştırıyor (`encryption.verify`); ancak tutarsa yerine koyuyor. Tutmazsa geçici dosya silinir, **asıl dosyaya dokunulmaz**, "Şifreli kayıt doğrulanamadı… dosyanın üzerine yazılmadı" iletisi çıkar; belge "Değiştirildi" kalır. Otomatik kayıtta başarısızlık durum çubuğunda görünür ve 10 sn sonra yeniden denenir (mevcut akış)
+- `EncryptedFileError` artık `OSError`'dan türüyor: kaydetme yolu onu diğer yazma hataları gibi yakalıyor (önceden yakalanmayıp çökme riski vardı). Bu hatada "Dosya başka bir programda açık olabilir" yerine yalnızca asıl neden gösteriliyor
+- `decrypt()` dosya yolunun yanında bellekteki baytları da kabul ediyor
+- **Uyarı:** Şifre ile Koru penceresindeki not genişletildi — parolayı unutursanız ne Sözcük ne Word açabilir; önemli belgelerin şifresiz yedeğini güvenli bir yerde saklayın, parolayı not edin. Yardım: "Şifreli Belgeler"e "Parolayı unutursam ya da Word açmazsa?" bölümü ve kayıt denetimi maddesi
+- Testler: 15 test geçti (yeni: `verify` doğru/yanlış parola, farklı içerik, bozuk veri; doğrulama tutmadığında — başka parola, başka içerik, kesik dosya — özgün dosyanın değişmemesi ve geçici dosya kalmaması; ana pencerede kaydın başarısız sayılması ve iletinin doğru olması)
+- Not: doğrulama Sözcük'ün kendi okuyabildiğini garanti eder, Word'ün açacağını değil; Word'de elle deneme hâlâ gerekli
+
 ---
 
 *(Yeni girişler en alta eklenir.)*

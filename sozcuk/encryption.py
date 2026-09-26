@@ -26,8 +26,14 @@ class WrongPassword(Exception):
     """Girilen parola belgeyi açmıyor."""
 
 
-class EncryptedFileError(Exception):
-    """Şifreli dosya okunamadı ya da yazılamadı; iletisi kullanıcıya gösterilebilir (Türkçe)."""
+class EncryptedFileError(OSError):
+    """Şifreli dosya okunamadı ya da yazılamadı; iletisi kullanıcıya gösterilebilir (Türkçe).
+    OSError'dan türer: kaydetme yolu bunu diğer yazma hataları gibi "Kaydedilemedi" olarak gösterir."""
+
+
+VERIFY_FAILED = ("Şifreli kayıt doğrulanamadı: yazılan dosya aynı parolayla geri açılamadı ya da içeriği "
+                 "tutmadı. Dosyanın üzerine yazılmadı; belgeniz Sözcük'te açık duruyor. Farklı Kaydet ile "
+                 "başka bir yere kaydetmeyi ya da parolayı kaldırıp kaydetmeyi deneyin.")
 
 
 def probe(path):
@@ -45,18 +51,27 @@ def probe(path):
         return None
 
 
+def _decrypt_handle(handle, password):
+    office = msoffcrypto.OfficeFile(handle)
+    try:
+        office.load_key(password=password, verify_password=True)
+    except crypto_errors.InvalidKeyError as exc:
+        raise WrongPassword() from exc
+    plain = io.BytesIO()
+    office.decrypt(plain)
+    return plain
+
+
 def decrypt(path, password):
     """Parolayı doğrular ve belgeyi yalnızca bellekte çözer. Dönüş: başa sarılmış io.BytesIO (ZIP paketi).
+    path bir dosya yolu ya da bellekteki şifreli baytlar (bytes) olabilir.
     Yanlış parolada WrongPassword, okunamayan dosyada EncryptedFileError verir."""
     try:
-        with open(path, "rb") as handle:
-            office = msoffcrypto.OfficeFile(handle)
-            try:
-                office.load_key(password=password, verify_password=True)
-            except crypto_errors.InvalidKeyError as exc:
-                raise WrongPassword() from exc
-            plain = io.BytesIO()
-            office.decrypt(plain)
+        if isinstance(path, (bytes, bytearray)):
+            plain = _decrypt_handle(io.BytesIO(path), password)
+        else:
+            with open(path, "rb") as handle:
+                plain = _decrypt_handle(handle, password)
     except WrongPassword:
         raise
     except OSError as exc:
@@ -81,15 +96,27 @@ def encrypt(package, password):
     return out.getvalue()
 
 
+def verify(data, password, package):
+    """Şifreli baytlar aynı parolayla çözülünce paketin kendisi mi çıkıyor. Şifreleme kütüphanesinin bu özelliği
+    "deneysel" olduğu için her şifreli kayıt yerine konmadan önce denetlenir."""
+    try:
+        return decrypt(bytes(data), password).getvalue() == package
+    except Exception:
+        return False
+
+
 def write_encrypted(package, password, path):
     """Paketi şifreleyip dosyaya güvenle yazar: aynı klasördeki geçici dosyaya YALNIZCA şifreli baytlar yazılır,
-    sonra tek adımda yerine konur (docx_io'daki düz kayıtla aynı yöntem)."""
+    diskten geri okunup aynı parolayla çözülerek doğrulanır, ancak tutarsa tek adımda yerine konur
+    (docx_io'daki düz kayıtla aynı yöntem). Doğrulanamazsa asıl dosyaya dokunulmaz."""
     from .docx_io import _replace_with_retry
     data = encrypt(package, password)
     path = Path(path)
     tmp = path.with_name(f"~$sozcuk-{os.getpid()}-{path.name}")
     try:
         tmp.write_bytes(data)
+        if not verify(tmp.read_bytes(), password, package):   # diske yazılanı denetle, bellekteki kopyayı değil
+            raise EncryptedFileError(VERIFY_FAILED)
         _replace_with_retry(tmp, path)
     except BaseException:
         try:
