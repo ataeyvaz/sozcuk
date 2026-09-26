@@ -483,6 +483,12 @@ Format:
 - Testler: 15 test geçti (yeni: `verify` doğru/yanlış parola, farklı içerik, bozuk veri; doğrulama tutmadığında — başka parola, başka içerik, kesik dosya — özgün dosyanın değişmemesi ve geçici dosya kalmaması; ana pencerede kaydın başarısız sayılması ve iletinin doğru olması)
 - Not: doğrulama Sözcük'ün kendi okuyabildiğini garanti eder, Word'ün açacağını değil; Word'de elle deneme hâlâ gerekli
 
+## [2026-09-26] — Sürüm 1.3: şifreli belgeler pakette
+- Sürüm 1.2 → **1.3** (`__init__.py`, `kurulum/sozcuk.iss`, README, yardım "Yenilikler" başlığı)
+- `dist/Sozcuk/` 558 MB (cryptography ve msoffcrypto-tool pakette); `Sozcuk-1.3-kurulum.exe` **367 MB**. Paket 1.2'deki "sakin" ses ayarını (`ata.onnx.json`) da içeriyor
+- Deneme: paketlenmiş `Sozcuk.exe` açıldı, günlükte yeni hata yok (`QStatusBar::insertPermanentWidget` uyarısı eskiden beri var)
+- Kurulumu kullanıcı kendisi yapacak (yönetici onayı gerekir). Sonra: Word'de elle deneme listesi
+
 ---
 
 *(Yeni girişler en alta eklenir.)*

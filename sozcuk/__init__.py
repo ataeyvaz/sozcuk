@@ -3,7 +3,7 @@
 import sys
 from pathlib import Path
 
-__version__ = "1.2"
+__version__ = "1.3"
 DEVELOPERS = "Developed By Usta ve Ata"
 
 

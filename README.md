@@ -46,7 +46,7 @@ Paketler açılmış klasörler olarak `sozcuk/diller/` içine konur; uygulama o
 "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" kurulum\sozcuk.iss
 ```
 
-Sonuç: `dist\Sozcuk\` (taşınabilir klasör, ≈560 MB) ve `dist\Sozcuk-1.2-kurulum.exe` (kurulum paketi, ≈370 MB). Kurulum için Inno Setup 6.5 ya da üstü gerekir (dil paketlerini indirip açar).
+Sonuç: `dist\Sozcuk\` (taşınabilir klasör, ≈560 MB) ve `dist\Sozcuk-1.3-kurulum.exe` (kurulum paketi, ≈370 MB). Kurulum için Inno Setup 6.5 ya da üstü gerekir (dil paketlerini indirip açar).
 
 ## Klasörler
 

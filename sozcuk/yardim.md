@@ -33,7 +33,7 @@ Sözcük, Word belgeleriyle (.docx) çalışan, sade ve tamamen **bilgisayarın�
 
 Sözcük'e eklenen özellikler, en yenisi en üstte.
 
-## 26 Eylül 2026
+## 26 Eylül 2026 — Sürüm 1.3
 
 - **Şifreli belgeler:** Word'de parolayla şifrelenmiş (.docx) belgeler artık açılıyor; Sözcük parolayı sorar, belge kaydedilirken aynı parolayla yeniden şifrelenir. **Dosya → Şifre ile Koru…** ile her belgeye parola eklenip değiştirilebilir, **Dosya → Şifreyi Kaldır** ile kaldırılabilir. Şifreli belgede durum çubuğunda kilit ve **Şifreli** yazısı görünür. Her şifreli kayıt, dosyanın yerine konmadan önce aynı parolayla geri açılarak denetlenir. Word'ün **Düzenlemeyi Kısıtla** ayarı olan belgeler de sorunsuz açılır ve bu ayar kayıtta korunur. Bkz. [Şifreli Belgeler](konu:sifreli).
 
