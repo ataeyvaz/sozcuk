@@ -9,9 +9,11 @@ Desteklenmeyenler (üst/alt bilgi, dipnot, yorum vb.) açılışta kullanıcıya
 import io
 import os
 import time
+import zipfile
 from pathlib import Path
 
 from docx import Document
+from docx.opc.exceptions import PackageNotFoundError
 from docx.enum.section import WD_ORIENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_COLOR_INDEX
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
@@ -36,7 +38,7 @@ from PySide6.QtGui import (
     QTextTable,
 )
 
-from . import links, page_numbers, styles
+from . import encryption, links, page_numbers, styles
 from .builder import DocumentBuilder
 
 EMU_PER_PX = 9525
@@ -98,13 +100,46 @@ def _css_length_px(value):
     return None
 
 
+# Word'ün settings.xml'deki koruma ayarları: Sözcük bunları uygulamaz ama kaydederken olduğu gibi geri yazar.
+# (belgeyi şifrelemezler; "Düzenlemeyi Kısıtla" ve "salt okunur önerilsin / değiştirme parolası")
+PROTECTION_PROPERTY = "sozcuk_word_protection"
+PROTECTION_TAGS = ("w:writeProtection", "w:documentProtection")
+# CT_Settings şemasında documentProtection'dan önce gelebilen öğeler (Word öğe sırasına katıdır)
+_BEFORE_DOCUMENT_PROTECTION = (
+    "writeProtection", "view", "zoom", "removePersonalInformation", "removeDateAndTime",
+    "doNotDisplayPageBoundaries", "displayBackgroundShape", "printPostScriptOverText",
+    "printFractionalCharacterWidth", "printFormsData", "embedTrueTypeFonts", "embedSystemFonts",
+    "saveSubsetFonts", "saveFormsData", "mirrorMargins", "alignBordersAndEdges", "bordersDoNotSurroundHeader",
+    "bordersDoNotSurroundFooter", "gutterAtTop", "hideSpellingErrors", "hideGrammaticalErrors",
+    "activeWritingStyle", "proofState", "formsDesign", "attachedTemplate", "linkStyles",
+    "stylePaneFormatFilter", "stylePaneSortMethod", "documentType", "mailMerge", "revisionView",
+    "trackRevisions", "doNotTrackMoves", "doNotTrackFormatting",
+)
+UNREADABLE_PACKAGE = "Dosya geçerli bir Word belgesi değil ya da bozuk."
+
+
+def editing_restricted(document):
+    """Belgede Word'ün "Düzenlemeyi Kısıtla" koruması etkin mi (Word'de açınca uygulanır)."""
+    for xml in document.property(PROTECTION_PROPERTY) or []:
+        root = etree.fromstring(xml)
+        if root.tag == qn("w:documentProtection") and root.get(qn("w:enforcement")) in ("1", "true", "on"):
+            return True
+    return False
+
+
 class Reader:
     """Dosyayı kurucuda açar (hatalı dosya burada hata verir, mevcut belgeye dokunmadan);
-    read() ile içeriği bir QTextDocument'e aktarır."""
+    read() ile içeriği bir QTextDocument'e aktarır. source: şifresi bellekte çözülmüş paket (io.BytesIO) —
+    verilirse dosya diskten okunmaz."""
 
-    def __init__(self, path):
+    def __init__(self, path, source=None):
         from .formats import open_ooxml_package  # .docm/.dotx/.dotm da aynı paket biçimi
-        self.docx = Document(open_ooxml_package(path))
+        try:
+            self.docx = Document(open_ooxml_package(path, source))
+        except (zipfile.BadZipFile, PackageNotFoundError, KeyError) as exc:
+            if source is None and encryption.probe(path):
+                raise ValueError("Belge parolayla şifrelenmiş.") from exc
+            raise ValueError(UNREADABLE_PACKAGE) from exc
         self.warnings = []
         self.numbering = self._numbering()
         self.theme_fonts = self._theme_fonts()
@@ -247,9 +282,23 @@ class Reader:
         self._read_page_setup(document)
         self._blocks(DocumentBuilder(document), self.docx.iter_inner_content())
         links.set_bookmarks(document, self.bookmarks)
+        document.setProperty(PROTECTION_PROPERTY, self._protection())
         if self.skipped:
             self.warnings.append("Desteklenmeyen öğeler atlandı: " + ", ".join(sorted(self.skipped)) + ".")
         return self.warnings
+
+    def _protection(self):
+        """Düzenleme kısıtlaması ve yazma koruması öğeleri (XML metni olarak; kayıtta geri yazılır)."""
+        try:
+            settings = self.docx.settings.element
+        except (KeyError, AttributeError, ValueError):
+            return []
+        found = []
+        for tag in PROTECTION_TAGS:
+            element = settings.find(qn(tag))
+            if element is not None:
+                found.append(etree.tostring(element, encoding="unicode"))
+        return found
 
     def _read_page_setup(self, document):
         """İlk bölümün kâğıt boyutu, yönlendirmesi ve kenar boşlukları (Word'de de bölüm düzeyindedir)."""
@@ -537,9 +586,9 @@ class Reader:
                 self._blocks(builder.cell(qtable, r, c), cell.iter_inner_content())
 
 
-def load(path, document):
+def load(path, document, source=None):
     """docx dosyasını document'e yükler; kullanıcıya gösterilecek uyarıları döndürür."""
-    return Reader(path).read(document)
+    return Reader(path, source).read(document)
 
 
 # =============================================================================
@@ -585,12 +634,19 @@ class _Writer:
             if child.tag != qn("w:sectPr"):
                 body.remove(child)
 
-    def write(self, path):
+    def write(self, path, password=None):
         self._frame(self.qdoc.rootFrame(), self.docx)
         self._write_bookmarks()
+        self._write_protection()
         if not self.docx.paragraphs and not self.docx.tables:
             self.docx.add_paragraph()
         path = Path(path)
+        if password:
+            # Şifreli kayıt: paket yalnızca bellekte kurulur; diske (geçici dosya dahil) yalnızca şifreli baytlar gider
+            package = io.BytesIO()
+            self.docx.save(package)
+            encryption.write_encrypted(package.getvalue(), password, path)
+            return
         # Önce aynı klasörde geçici dosyaya yazılıp tek adımda yerine konur: eşitleme uygulaması (Google Drive,
         # OneDrive) yarım yazılmış belgeyi asla görmez. "~$" ile başlayan adları Office gibi eşitleme
         # uygulamaları da geçici dosya sayıp buluta göndermez.
@@ -604,6 +660,26 @@ class _Writer:
             except OSError:
                 pass
             raise
+
+    def _write_protection(self):
+        """Açılan belgedeki Word korumalarını (Düzenlemeyi Kısıtla, yazma koruması) settings.xml'e geri yazar."""
+        saved = self.qdoc.property(PROTECTION_PROPERTY) or []
+        if not saved:
+            return
+        settings = self.docx.settings.element
+        for xml in saved:
+            element = etree.fromstring(xml)
+            existing = settings.find(element.tag)
+            if existing is not None:
+                settings.remove(existing)
+            if element.tag == qn("w:writeProtection"):
+                settings.insert(0, element)
+                continue
+            index = 0
+            for position, child in enumerate(settings):
+                if etree.QName(child).localname in _BEFORE_DOCUMENT_PROTECTION:
+                    index = position + 1
+            settings.insert(index, element)
 
     def _write_page_numbers(self, section):
         """Sayfa numarasını Word'ün kendi alanı olarak yazar: dosya Word'de açıldığında canlı PAGE / NUMPAGES
@@ -919,5 +995,6 @@ def _page_number_parts(pattern):
     return parts
 
 
-def save(document, path):
-    _Writer(document).write(path)
+def save(document, path, password=None):
+    """password verilirse belge Word'ün "Parolayla Şifrele" biçiminde (ECMA-376) şifreli kaydedilir."""
+    _Writer(document).write(path, password)

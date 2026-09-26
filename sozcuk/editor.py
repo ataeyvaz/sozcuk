@@ -35,7 +35,7 @@ from PySide6.QtWidgets import (
     QStyle,
 )
 
-from . import icons, images, links, page_numbers, styles, tables
+from . import docx_io, icons, images, links, page_numbers, styles, tables
 from .styles import PAGE_GAP
 
 WORD_RE = re.compile(r"\w+(?:['’-]\w+)*", re.UNICODE)
@@ -832,6 +832,7 @@ class Editor(QGraphicsView):
         doc.clear()
         styles.reset_page_setup(doc)  # A4, dikey, 2,5 cm (Word TR)
         page_numbers.reset(doc)
+        doc.setProperty(docx_io.PROTECTION_PROPERTY, None)   # Word korumaları yalnızca açılan belgeye ait
         font = QFont(styles.DEFAULT_FAMILY)
         font.setPointSizeF(styles.DEFAULT_SIZE)
         doc.setDefaultFont(font)

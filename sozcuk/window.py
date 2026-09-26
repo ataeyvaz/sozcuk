@@ -57,6 +57,7 @@ from . import (
     converters,
     doc_text,
     docx_io,
+    encryption,
     fonts,
     formats,
     icons,
@@ -89,6 +90,7 @@ from .widgets import (
     CommandBarDialog,
     InsertTableDialog,
     MessageBar,
+    PasswordDialog,
     TableGridPicker,
     ToggleSwitch,
     ZoomControl,
@@ -147,6 +149,9 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.settings = QSettings("Sözcük", "Sözcük")
         self.path = None
+        # Şifreli belgenin parolası: YALNIZCA bellekte, belge açıkken. Ayarlara, son kullanılanlara, kurtarma
+        # bilgisine ya da günlüğe yazılmaz (encryption.py).
+        self.password = None
         self.display_name = self._next_untitled()
         self.session_id = uuid.uuid4().hex
         self.last_saved = None
@@ -912,6 +917,7 @@ class MainWindow(QMainWindow):
     def _build_file_actions(self):
         self.file_menu = QMenu(self)
         self.file_menu.aboutToShow.connect(lambda: self._update_cloud_actions())
+        self.file_menu.aboutToShow.connect(lambda: self.act_remove_password.setEnabled(self.password is not None))
         m = self.file_menu
         entries = [
             ("new", "Yeni", QKeySequence.New, self.new_document),
@@ -922,6 +928,9 @@ class MainWindow(QMainWindow):
             (None, "Farklı Kaydet…", "F12", self.save_as),
             "cloud_save",
             ("pdf", "PDF Olarak Dışa Aktar…", None, self.export_pdf),
+            None,
+            ("lock", "Şifre ile Koru…", None, self.protect_with_password),
+            ("unlock", "Şifreyi Kaldır", None, self.remove_password),
             None,
             ("print", "Yazdır…", QKeySequence.Print, self.print_document),
             None,
@@ -952,6 +961,8 @@ class MainWindow(QMainWindow):
             action = self._action(icon_name, text, shortcut, slot)
             m.addAction(action)
             self.addAction(action)
+            if slot == self.remove_password:
+                self.act_remove_password = action
 
     def _update_cloud_actions(self):
         available = {f.provider for f in cloud.cloud_folders(refresh=True)}
@@ -967,6 +978,19 @@ class MainWindow(QMainWindow):
         self.save_label = QLabel()
         for label in (self.page_label, self.count_label, language):
             bar.addWidget(label)
+        self.lock_indicator = QWidget()
+        lock_layout = QHBoxLayout(self.lock_indicator)
+        lock_layout.setContentsMargins(10, 0, 0, 0)
+        lock_layout.setSpacing(0)
+        lock_icon = QLabel()
+        lock_icon.setPixmap(icons.icon("lock", theme.TEXT_MUTED).pixmap(16, 16))
+        lock_icon.setStyleSheet("padding: 0 4px 0 0;")
+        lock_layout.addWidget(lock_icon)
+        lock_layout.addWidget(QLabel("Şifreli", styleSheet="padding: 0 10px 0 0;"))
+        self.lock_indicator.setToolTip("Belge parolayla şifreli. Kaydederken aynı parolayla şifrelenir.\n"
+                                       "Değiştirmek ya da kaldırmak için: Dosya → Şifre ile Koru… / Şifreyi Kaldır")
+        self.lock_indicator.hide()
+        bar.addWidget(self.lock_indicator)
         bar.addPermanentWidget(self.save_label)
 
         self.ruler_button = QToolButton()
@@ -1193,6 +1217,7 @@ class MainWindow(QMainWindow):
         self._discard_recovery()
         self.editor.reset()
         self.path = None
+        self.password = None
         self._track(None)
         self.display_name = self._next_untitled()
         self.last_saved = None
@@ -1231,6 +1256,20 @@ class MainWindow(QMainWindow):
         if fmt.kind == "pdf":
             self._open_pdf(path)
             return
+        locked = encryption.probe(path) if fmt.kind in ("docx", "legacy") else None
+        if locked == encryption.ENCRYPTED_LEGACY:
+            QMessageBox.information(
+                self, "Şifreli Belge",
+                f"“{path.name}” parolayla korunan bir Word 97-2003 belgesi (.doc). Sözcük bu eski biçimdeki şifreli "
+                "belgeleri açamaz.\n\nBelgeyi Word'de parolasıyla açıp Dosya → Farklı Kaydet ile Word Belgesi (.docx) "
+                "olarak kaydederseniz Sözcük'te açabilirsiniz. Word'de parolayı koruyarak kaydederseniz Sözcük "
+                "açarken parolayı sorar.")
+            return
+        if locked == encryption.ENCRYPTED_OOXML:
+            if fmt.kind != "docx":   # uzantısı yanlış şifreli .docx
+                fmt = formats.Format(fmt.suffix, fmt.label, "docx", fmt.template)
+            self._open_encrypted(path, fmt)
+            return
         if fmt.kind == "legacy":
             self._open_legacy(path, fmt)
             return
@@ -1248,9 +1287,37 @@ class MainWindow(QMainWindow):
             # kendi okuyucumuz açamadıysa (sıra dışı bir dosya) Word/LibreOffice ile dene
             self._open_legacy(path, fmt)
 
-    def _load_with(self, path, fmt, prepare, source_label=None, quiet=False):
+    def _ask_password(self, path, name, message=None):
+        """Şifreli belgenin parolasını sorar ve belgeyi yalnızca bellekte çözer. Yanlış parolada pencere açık kalır.
+        Dönüş: (io.BytesIO, parola) ya da vazgeçildiyse/açılamadıysa None."""
+        dialog = PasswordDialog(
+            self, title="Şifreli Belge", accept_text="Aç",
+            message=message or f"<b>“{name}”</b> parolayla korunuyor.<br>Belgeyi açmak için parolayı yazın.",
+            verify=lambda password: encryption.decrypt(path, password),
+            wrong_errors=(encryption.WrongPassword,))
+        accepted = dialog.exec() == QDialog.Accepted
+        if dialog.failure is not None:
+            log.error("şifreli belge çözülemedi: %s", type(dialog.failure).__name__)
+            QMessageBox.warning(self, "Dosya açılamadı", f"“{name}” açılamadı.\n\n{dialog.failure}")
+            return None
+        if not accepted:
+            return None
+        return dialog.result_value, dialog.password
+
+    def _open_encrypted(self, path, fmt):
+        """Parolayla şifreli .docx: şifre bellekte çözülür ve normal .docx okuyucusuna bellekten verilir.
+        Düz (şifresiz) içerik diske hiçbir zaman yazılmaz."""
+        opened = self._ask_password(path, path.name)
+        if opened is None:
+            return
+        package, password = opened
+        log.info("şifreli belge açılıyor")
+        self._load_with(path, fmt, lambda: docx_io.Reader(path, package).read, password=password)
+
+    def _load_with(self, path, fmt, prepare, source_label=None, quiet=False, password=None):
         """prepare() dosyayı okuyup çözümler ve build(document) döndürür; hatalı dosya bu aşamada hata verir, böylece
-        açık belgeye dokunulmaz. Başarıda belge durumunu ayarlar; başarı durumunu döndürür."""
+        açık belgeye dokunulmaz. Başarıda belge durumunu ayarlar; başarı durumunu döndürür.
+        password: belge şifreli açıldıysa parolası (kaydederken aynı parolayla şifrelenir)."""
         QApplication.setOverrideCursor(Qt.WaitCursor)
         started = time.monotonic()
         warnings = []
@@ -1270,6 +1337,7 @@ class MainWindow(QMainWindow):
 
         self._discard_recovery()
         self.message_bar.hide()
+        self.password = password
         if fmt.template:
             # Word gibi: şablon yeni, adsız belge olarak açılır; şablonun kendisi değişmez
             self.path = None
@@ -1291,6 +1359,9 @@ class MainWindow(QMainWindow):
                 notes.append("Belgedeki makrolar çalıştırılmaz ve kaydedilen belgede yer almaz.")
         elif warnings:
             notes.append("Kaydederseniz bu öğeler dosyadan çıkarılır.")
+        if docx_io.editing_restricted(self.editor.document()):
+            notes.append("Bu belgede Word'ün <b>Düzenlemeyi Kısıtla</b> koruması var. Sözcük bu kısıtlamayı "
+                         "uygulamaz ama kaydederken korur; belge Word'de yine kısıtlı açılır.")
         if notes:
             self.show_message(" ".join(notes))
         self._after_load()
@@ -1365,6 +1436,7 @@ class MainWindow(QMainWindow):
         self._discard_recovery()
         self.editor.load(lambda doc: pdf_io.build(paragraphs, doc))
         self.path = None
+        self.password = None
         self._track(None)
         self.display_name = path.stem
         self.last_saved = None
@@ -1453,6 +1525,16 @@ class MainWindow(QMainWindow):
                 path.suffix.lower() != chosen.suffix and not (chosen.suffix == ".html" and path.suffix.lower() == ".htm")):
             path = path.with_name(path.name + chosen.suffix) if path.suffix.lower() != chosen.suffix else path
         save_format = formats.SAVE_BY_SUFFIX.get(path.suffix.lower(), chosen)
+        drops_password = self.password is not None and path.suffix.lower() != ".docx"
+        if drops_password:
+            answer = QMessageBox.question(
+                self, "Şifreli Belge",
+                f"{save_format.label} ({save_format.suffix}) biçimi parolayla korunamaz. Belge bu biçimde "
+                "şifresiz kaydedilecek ve dosyayı açan herkes okuyabilecek.\n\nŞifreli kalması için Word Belgesi "
+                "(.docx) olarak kaydedin.",
+                QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Cancel)
+            if answer != QMessageBox.Ok:
+                return False
         if save_format.loses and save_format.suffix != ".docx":
             answer = QMessageBox.question(self, "Sözcük", f"{save_format.label} olarak kaydedilecek.\n\n{save_format.loses}",
                                           QMessageBox.Ok | QMessageBox.Cancel, QMessageBox.Ok)
@@ -1460,14 +1542,18 @@ class MainWindow(QMainWindow):
                 return False
         self.settings.setValue("lastDir", str(path.parent))
         self._keep_format = path.suffix.lower() != ".docx"
-        return self._write(path)
+        written = self._write(path)
+        if written and drops_password:
+            self.password = None      # açık belge artık şifresiz kopya
+            self._update_title()
+        return written
 
     def _save_document(self, path):
         """Uzantıya göre yazar: .docx doğrudan, .txt/.html/.odt Sözcük, .doc/.rtf Word ya da LibreOffice ile."""
         suffix = path.suffix.lower()
         document = self.editor.document()
         if suffix == ".docx":
-            docx_io.save(document, path)
+            docx_io.save(document, path, self.password)   # şifreli belge aynı parolayla şifreli kaydedilir
         elif suffix in formats.WRITERS:
             formats.WRITERS[suffix](document, path)
         elif suffix in converters.WORD_FORMATS and converters.available():
@@ -1592,6 +1678,55 @@ class MainWindow(QMainWindow):
             event.ignore()
 
     # =========================================================================
+    # Parolayla şifreleme
+    # =========================================================================
+
+    def protect_with_password(self):
+        """Word'deki Dosya → Bilgi → Belgeyi Koru → Parolayla Şifrele: parola ekler ya da değiştirir."""
+        changing = self.password is not None
+        dialog = PasswordDialog(
+            self, title="Şifre ile Koru", accept_text="Tamam", confirm=True,
+            message=("<b>Parolayı değiştirin</b><br>Belge bundan sonra yeni parolayla şifrelenir." if changing else
+                     "<b>Bu belgenin içeriğini şifreleyin</b><br>Belge yalnızca parolayı bilenler tarafından "
+                     "açılabilir; Word de aynı parolayı sorar."),
+            note="Dikkat: Parolayı unutursanız belge kurtarılamaz. Sözcük parolayı hiçbir yere kaydetmez. "
+                 "Büyük/küçük harf fark eder.")
+        if dialog.exec() != QDialog.Accepted:
+            return
+        self.password = dialog.password
+        self._password_changed("Parola değiştirildi." if changing else "Belge parolayla şifrelendi.")
+
+    def remove_password(self):
+        if self.password is None:
+            return
+        box = QMessageBox(self)
+        box.setWindowTitle("Şifreyi Kaldır")
+        box.setIcon(QMessageBox.NoIcon)
+        box.setText("<b>Belgenin parolası kaldırılsın mı?</b>")
+        box.setInformativeText("Belge şifresiz kaydedilir; dosyayı açan herkes içeriğini okuyabilir.")
+        remove = box.addButton("Şifreyi Kaldır", QMessageBox.AcceptRole)
+        box.addButton("İptal", QMessageBox.RejectRole)
+        box.setDefaultButton(remove)
+        box.exec()
+        if box.clickedButton() is not remove:
+            return
+        self.password = None
+        self._password_changed("Parola kaldırıldı.")
+
+    def _password_changed(self, message):
+        """Parola eklendi/değişti/kaldırıldı: otomatik kayıt açıksa dosya hemen yeni hâliyle yazılır (eski şifresiz
+        ya da eski parolalı dosya diskte beklemesin); değilse belge değişmiş sayılır ve Kaydet ile yazılır."""
+        log.info("parola koruması %s", "etkin" if self.password is not None else "kaldırıldı")
+        if self._recovery_file().exists():
+            self._write_recovery_copy()   # varsa kurtarma kopyası da yeni duruma göre yeniden yazılır
+        if self._autosaves_to_file() and not self.tracker.conflict and self._write(self.path):
+            self.statusBar().showMessage(message, 5000)
+        else:
+            self.editor.document().setModified(True)
+            self.statusBar().showMessage(f"{message} Değişiklik belgeyi kaydettiğinizde dosyaya yazılır.", 8000)
+        self._update_title()
+
+    # =========================================================================
     # Otomatik kaydetme ve kurtarma
     # =========================================================================
 
@@ -1641,9 +1776,10 @@ class MainWindow(QMainWindow):
         """Kaydedilmemiş belge, kapalı otomatik kayıt ya da başarısız kayıt için kurtarma kopyası."""
         doc = self.editor.document()
         try:
-            docx_io.save(doc, self._recovery_file())
+            # şifreli belgenin kurtarma kopyası da aynı parolayla şifrelenir (düz kopya diske yazılmaz)
+            docx_io.save(doc, self._recovery_file(), self.password)
             meta = {"name": self.display_name, "path": str(self.path) if self.path else None,
-                    "time": datetime.now().isoformat(timespec="minutes")}
+                    "time": datetime.now().isoformat(timespec="minutes"), "encrypted": self.password is not None}
             self._recovery_file().with_suffix(".json").write_text(json.dumps(meta), encoding="utf-8")
         except OSError:
             pass
@@ -1678,9 +1814,25 @@ class MainWindow(QMainWindow):
         position = self.editor.textCursor().position()
         scroll = self.editor.verticalScrollBar().value()
         try:
-            reader = docx_io.Reader(self.path)
+            source = None
+            if encryption.probe(self.path) == encryption.ENCRYPTED_OOXML:
+                if self.password is None:
+                    raise encryption.WrongPassword()
+                source = encryption.decrypt(self.path, self.password)
+            reader = docx_io.Reader(self.path, source)
             warnings = []
             self.editor.load(lambda doc: warnings.extend(reader.read(doc)))
+        except encryption.WrongPassword:
+            # başka yerde farklı bir parolayla (ya da parolayla) kaydedilmiş: sessizce üzerine yazılmasın
+            log.warning("yeniden yüklenemedi: dosya başka bir parolayla şifreli")
+            self.tracker.conflict = True
+            self.show_message(
+                f"<b>“{self.path.name}” başka bir yerde farklı bir parolayla kaydedildi.</b> Sözcük o sürümü açamadı; "
+                "otomatik kayıt, siz karar verene kadar dosyanın üzerine yazmayacak.",
+                [("Benimkini Kaydet", self._overwrite_external),
+                 ("Benimkini Ayrı Kaydet", self._save_mine_separately)])
+            self._update_title()
+            return False
         except Exception as exc:  # eşitleme yarım kalmış olabilir: sonraki yoklamada yeniden dene
             log.warning("yeniden yüklenemedi: %s", type(exc).__name__)
             self.tracker.conflict = False
@@ -1730,12 +1882,24 @@ class MainWindow(QMainWindow):
         def restore():
             if not self._maybe_save():
                 return
+            password = None
             try:
-                reader = docx_io.Reader(latest)
+                if encryption.probe(latest) == encryption.ENCRYPTED_OOXML:
+                    name = meta.get("name") or "Belge"
+                    opened = self._ask_password(
+                        latest, name, f"Kurtarılan <b>“{name}”</b> belgesi parolayla şifreli.<br>"
+                                      "Geri yüklemek için belgenin parolasını yazın.")
+                    if opened is None:
+                        return
+                    package, password = opened
+                    reader = docx_io.Reader(latest, package)
+                else:
+                    reader = docx_io.Reader(latest)
                 self.editor.load(reader.read)
             except Exception as exc:
                 QMessageBox.warning(self, "Kurtarılamadı", f"Kurtarma kopyası açılamadı.\n\n{exc}")
                 return
+            self.password = password
             self.path = Path(meta["path"]) if meta.get("path") else None
             self.display_name = meta.get("name") or "Kurtarılan belge"
             self.editor.document().setModified(True)
@@ -1842,6 +2006,7 @@ class MainWindow(QMainWindow):
                                                   "yalnızca kurtarma kopyası tutar; Kaydet ile dosyaya yazılır.")
         self.status_label.setText(f"•  {state}")
         self.status_label.setToolTip(tip)
+        self.lock_indicator.setVisible(self.password is not None)
         if self.last_saved:
             self.save_label.setText(f"Son kaydetme: {self.last_saved:%H:%M:%S}" if provider
                                     else f"Son kaydetme: {self.last_saved:%H:%M}")

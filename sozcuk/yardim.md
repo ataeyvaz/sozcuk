@@ -33,6 +33,10 @@ Sözcük, Word belgeleriyle (.docx) çalışan, sade ve tamamen **bilgisayarın�
 
 Sözcük'e eklenen özellikler, en yenisi en üstte.
 
+## 26 Eylül 2026
+
+- **Şifreli belgeler:** Word'de parolayla şifrelenmiş (.docx) belgeler artık açılıyor; Sözcük parolayı sorar, belge kaydedilirken aynı parolayla yeniden şifrelenir. **Dosya → Şifre ile Koru…** ile her belgeye parola eklenip değiştirilebilir, **Dosya → Şifreyi Kaldır** ile kaldırılabilir. Şifreli belgede durum çubuğunda kilit ve **Şifreli** yazısı görünür. Word'ün **Düzenlemeyi Kısıtla** ayarı olan belgeler de sorunsuz açılır ve bu ayar kayıtta korunur. Bkz. [Şifreli Belgeler](konu:sifreli).
+
 ## 24 Eylül 2026 — Sürüm 1.2
 
 - **Sesli okuma:** Sözcük artık yazdığınız Türkçe metni sesli okuyor. Seçin ya da imleci bir cümleye koyun, **Sesli Oku** düğmesine tıklayın veya `Ctrl+Alt+Space`'e basın; okunan cümle sayfada maviyle işaretlenir. Sayılar, tarihler, saatler ve kısaltmalar Türkçe okunur. Okuma tamamen bilgisayarınızda yapılır, internet gerekmez. Uygulamayla **Ata**'nın (erkek) sesi gelir. Bkz. [Sesli Okuma](konu:sesli).
@@ -80,7 +84,7 @@ Başlığın altındaki menü şeridinde komutlar konularına göre toplanmışt
 
 | Menü | İçindekiler |
 |---|---|
-| **Dosya** | Yeni, Aç, Google Drive'dan Aç, Kaydet, Farklı Kaydet, PDF Olarak Dışa Aktar, Yazdır, Yardım, Tanılama Günlüğü, Kapat |
+| **Dosya** | Yeni, Aç, Google Drive'dan Aç, Kaydet, Farklı Kaydet, PDF Olarak Dışa Aktar, Şifre ile Koru, Şifreyi Kaldır, Yazdır, Yardım, Tanılama Günlüğü, Kapat |
 | **Düzen** | Geri Al, Yinele, Kes, Kopyala, Yapıştır, Yalnızca Metni Koru, Tümünü Seç, Bul, Değiştir, Sonraki/Önceki Bul, Sonraki Yazım Hatası |
 | **Biçim** | Stiller, Kalın/İtalik/Altı Çizili/Üstü Çizili, Yazı Tipi Boyutu, Yazı Tipi Rengi, Metin Vurgu Rengi, Hizalama, Satır Aralığı, Listeler ve Girinti, Biçimlendirmeyi Temizle, Yazı Tipi Ekle |
 | **Ekle** | Tablo, Resim, Simge, Bağlantı, Sesle Yaz |
@@ -105,6 +109,8 @@ Dosya işlemleri başlık şeridinin solundaki **Dosya** menüsündedir.
 | Farklı Kaydet… | `F12` | Yeni bir ad, konum ya da biçimle (.docx, .doc, .rtf, .odt, .txt, .html) kaydeder. |
 | Google Drive'a Kaydet… / OneDrive'a Kaydet… | | Belgeyi Drive klasörünüze kaydeder; bundan sonra canlı kaydedilir. |
 | PDF Olarak Dışa Aktar… | | Belgeyi kâğıt boyutu ve kenar boşluklarıyla PDF'e çevirir. |
+| Şifre ile Koru… | | Belgeye parola ekler ya da parolayı değiştirir (bkz. [Şifreli Belgeler](konu:sifreli)). |
+| Şifreyi Kaldır | | Belgenin parolasını kaldırır; belge şifresiz kaydedilir. |
 | Yazdır… | `Ctrl+P` | Yazıcı seçme penceresini açar. |
 
 ## Word belgeleri
@@ -150,7 +156,7 @@ Word 97-2003 (.doc), Works, WordPerfect ve Word 2003 XML gibi eski biçimleri bi
 - Belge bilgisayarınızdan çıkmaz, internet kullanılmaz.
 - Word penceresi açılmaz; belgedeki makrolar çalıştırılmaz; açık Word belgelerinize dokunulmaz.
 - İlk açılış birkaç saniye sürer (Word'ün başlaması); bu sırada durum çubuğunda bilgi görünür.
-- Parola korumalı belgeler açılamaz.
+- Parolayla şifrelenmiş eski biçim belgeler (.doc) açılamaz. Parolalı **.docx** belgeler ise doğrudan açılır (bkz. [Şifreli Belgeler](konu:sifreli)).
 
 Bilgisayarda ne Word ne LibreOffice varsa: .doc dosyalarının **yalnızca metni** açılır (biçimlendirme, tablo ve resimler alınamaz, sayfanın üstünde bildirilir); diğer eski biçimler için LibreOffice'i indirme bağlantısı gösterilir.
 
@@ -174,6 +180,40 @@ Bilgisayarda ne Word ne LibreOffice varsa: .doc dosyalarının **yalnızca metni
 | Web Sayfası (.html) | Resimler yanındaki "_dosyalar" klasörüne kaydedilir; sayfa yapısı yazılmaz |
 
 Word ya da LibreOffice yoksa .doc ve .rtf seçenekleri listede görünmez.
+
+<!-- konu: sifreli | Şifreli Belgeler | lock -->
+# Şifreli Belgeler
+
+Word'de **Dosya → Bilgi → Belgeyi Koru → Parolayla Şifrele** ile korunan belgeler Sözcük'te de açılır ve korunmaya devam eder.
+
+## Şifreli belgeyi açma
+
+1. Belgeyi her zamanki gibi açın (**Dosya → Aç…**, `Ctrl+O` ya da dosyaya çift tıklayarak).
+2. **Şifreli Belge** penceresine parolayı yazıp **Aç**'a basın. Yazdığınızı görmek için kutunun sağındaki göz simgesine tıklayın.
+3. Parola yanlışsa "Şifre yanlış, tekrar deneyin." yazar; yeniden deneyebilir ya da **İptal** ile vazgeçebilirsiniz. Parolada büyük/küçük harf fark eder.
+
+Belge açıkken durum çubuğunda kilit simgesi ve **Şifreli** yazısı görünür.
+
+## Kaydetme
+
+- Şifreli açılan belge **aynı parolayla şifreli** kaydedilir; Word'de açarken yine parola sorulur. Otomatik kayıt da şifreli yazar.
+- **Dosya → Şifre ile Koru…** ile herhangi bir belgeye parola ekleyebilir ya da mevcut parolayı değiştirebilirsiniz; parolayı iki kez yazarsınız. **Dosya → Şifreyi Kaldır** parolayı kaldırır. Otomatik Kaydet açıksa değişiklik dosyaya hemen yazılır; kapalıysa **Kaydet** dediğinizde yazılır.
+- Parolayla yalnızca **Word Belgesi (.docx)** korunabilir. Şifreli bir belgeyi **Farklı Kaydet** ile .odt, .txt, .html, .rtf ya da .doc olarak kaydederseniz Sözcük sizi uyarır; o kopya şifresiz olur.
+
+## Güvenlik
+
+- Şifresi çözülen belge yalnızca bellekte tutulur; diske şifresiz kopyası yazılmaz. Güvenli kayıt sırasındaki geçici dosya da şifrelidir.
+- Şifreli belgenin **kurtarma kopyası** da aynı parolayla şifrelenir. Sözcük beklenmedik şekilde kapanırsa **Geri Yükle** dediğinizde parola sorulur.
+- Parola yalnızca belge açıkken bellekte durur; ayarlara, kurtarma bilgisine ya da tanılama günlüğüne yazılmaz. **Parolayı unutursanız belge açılamaz**, Sözcük de kurtaramaz.
+
+## Düzenlemeyi Kısıtla
+
+Word'ün **Gözden Geçir → Düzenlemeyi Kısıtla** ayarı belgeyi şifrelemez; bu belgeler parola sorulmadan açılır. Sözcük kısıtlamayı uygulamaz (belgeyi düzenleyebilirsiniz) ama kaydederken ayarı korur: belge Word'de yine kısıtlı açılır. Böyle bir belge açıldığında sayfanın üstünde bilgi görünür.
+
+## Sınırlar
+
+- Parolayla şifrelenmiş Word 97-2003 belgeleri (.doc) açılamaz. Belgeyi Word'de açıp **Farklı Kaydet** ile .docx olarak (isterseniz yine parolayla) kaydedin.
+- Belge başka bir yerde (ör. Google Drive'da başka bir bilgisayarda) farklı bir parolayla kaydedilirse Sözcük o sürümü açamaz ve sizin sürümünüzün üzerine kendiliğinden yazmaz; sayfanın üstünden ne yapılacağını seçersiniz.
 
 <!-- konu: bulut | Google Drive ve OneDrive | cloud -->
 # Google Drive ve OneDrive
@@ -767,6 +807,7 @@ Sözcük, sorunları bulmaya yardımcı olmak için işlem kayıtları tutar (ö
 - **Mikrofon bulunamadı:** Windows Ayarları → Gizlilik → Mikrofon'dan masaüstü uygulamalarının mikrofona erişimine izin verin.
 - **Sesle yazma ilk seferde uzun sürüyor:** model indiriliyor ya da yükleniyor; sonraki kullanımlar hızlıdır.
 - **PDF açılamıyor:** taranmış PDF'lerde seçilebilir metin yoktur.
+- **Belge açılırken parola soruluyor:** belge Word'de parolayla şifrelenmiş; bkz. [Şifreli Belgeler](konu:sifreli).
 - **Eski Word belgesi (.doc) yalnızca metin olarak açıldı:** bilgisayarda Microsoft Word ya da LibreOffice yok; birini kurunca biçimlendirmesiyle açılır. Bkz. [Dosya Biçimleri](konu:bicimler).
 - **Açılan Word belgesinde uyarı çıktı:** belgede Sözcük'ün desteklemediği öğeler var; özgün dosyayı korumak için **Farklı Kaydet** kullanın.
 - **Başlıkta "Google Drive'a kaydedilemedi" yazıyor:** görev çubuğundaki Google Drive uygulamasının çalıştığını ve oturumun açık olduğunu denetleyin; Sözcük kendiliğinden yeniden dener.

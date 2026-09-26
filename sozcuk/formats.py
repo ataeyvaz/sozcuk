@@ -185,13 +185,14 @@ def save_filters(converter_available):
 # Office Open XML çeşitleri (.docm, .dotx, .dotm)
 # =============================================================================
 
-def open_ooxml_package(path):
+def open_ooxml_package(path, source=None):
     """python-docx yalnızca .docx içerik türünü kabul eder; .docm/.dotx/.dotm paketlerinin ana belge türü
-    bellekte .docx'inkine çevrilir (makro kodu okunmaz, çalıştırılmaz). Dönüş: docx.Document'e verilebilir akış
-    ya da .docx için yolun kendisi."""
+    bellekte .docx'inkine çevrilir (makro kodu okunmaz, çalıştırılmaz). source: paket dosyadan değil bellekten
+    okunacaksa (ör. şifresi çözülmüş belge) akışı. Dönüş: docx.Document'e verilebilir akış ya da .docx için yolun
+    kendisi."""
     if Path(path).suffix.lower() == ".docx":
-        return path
-    source = zipfile.ZipFile(path)
+        return path if source is None else source
+    source = zipfile.ZipFile(path if source is None else source)
     buffer = io.BytesIO()
     with source, zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as target:
         for item in source.infolist():

@@ -29,6 +29,7 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QMenu,
     QPushButton,
     QSizePolicy,
@@ -451,6 +452,154 @@ class InsertTableDialog(QDialog):
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         form.addRow(buttons)
+
+
+class PasswordDialog(QDialog):
+    """Parola sorma / belirleme penceresi (Word'ün "Belgeyi Şifrele" ve "Parola" pencereleri gibi).
+
+    verify: yalnızca parola sorarken; parolayı dener, yanlışsa wrong_errors'tan birini verir. Pencere açık kalır,
+    hata altta gösterilir ve kullanıcı yeniden deneyebilir. Başarıda sonucu self.result_value'da tutulur; başka bir
+    hata verirse pencere kapanır ve hata self.failure'da kalır.
+    confirm=True: yeni parola belirlenir; ikinci alanla doğrulanır.
+    Parola hiçbir yere yazılmaz; pencere kapanınca alanlar temizlenir."""
+
+    WRONG_PASSWORD = "Şifre yanlış, tekrar deneyin."
+
+    def __init__(self, parent=None, title="Şifreli Belge", message="", accept_text="Tamam", confirm=False,
+                 note="", verify=None, wrong_errors=()):
+        super().__init__(parent, Qt.Dialog | Qt.MSWindowsFixedSizeDialogHint)
+        self.setObjectName("passwordDialog")
+        self.setWindowTitle(title)
+        self.setFixedWidth(420)
+        self.verify = verify
+        self.wrong_errors = tuple(wrong_errors)
+        self.password = ""
+        self.result_value = None
+        self.failure = None
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 18, 20, 14)
+        layout.setSpacing(10)
+
+        top = QHBoxLayout()
+        top.setSpacing(12)
+        icon = QLabel()
+        icon.setPixmap(icons.icon("lock", theme.ACCENT).pixmap(32, 32))
+        icon.setAlignment(Qt.AlignTop)
+        top.addWidget(icon)
+        text = QLabel(message)
+        text.setWordWrap(True)
+        text.setTextFormat(Qt.RichText)
+        top.addWidget(text, 1)
+        layout.addLayout(top)
+
+        form = QFormLayout()
+        form.setContentsMargins(44, 4, 0, 0)
+        form.setSpacing(8)
+        self.field = self._password_field()
+        self.fields = [self.field]
+        form.addRow("Parola:", self.field)
+        self.confirm_field = None
+        if confirm:
+            self.confirm_field = self._password_field()
+            self.fields.append(self.confirm_field)
+            form.addRow("Yeniden yazın:", self.confirm_field)
+        layout.addLayout(form)
+
+        self.error = QLabel(objectName="passwordError")
+        self.error.setWordWrap(True)
+        self.error.setContentsMargins(44, 0, 0, 0)
+        self.error.hide()
+        layout.addWidget(self.error)
+        if note:
+            note_label = QLabel(note, objectName="passwordNote")
+            note_label.setWordWrap(True)
+            note_label.setContentsMargins(44, 0, 0, 0)
+            layout.addWidget(note_label)
+
+        buttons = QDialogButtonBox()
+        self.ok = buttons.addButton(accept_text, QDialogButtonBox.AcceptRole)
+        self.ok.setDefault(True)
+        buttons.addButton("İptal", QDialogButtonBox.RejectRole)
+        buttons.accepted.connect(self._try_accept)
+        buttons.rejected.connect(self.reject)
+        layout.addSpacing(4)
+        layout.addWidget(buttons)
+        self._update_ok()
+        self.field.setFocus()
+
+    def _password_field(self):
+        field = QLineEdit()
+        field.setEchoMode(QLineEdit.Password)
+        field.setMaxLength(255)                       # Word'ün parola sınırı
+        field.setContextMenuPolicy(Qt.NoContextMenu)   # parola panoya kopyalanmasın
+        toggle = field.addAction(icons.icon("eye", theme.TEXT_MUTED), QLineEdit.TrailingPosition)
+        toggle.setToolTip("Parolayı göster")
+        toggle.triggered.connect(lambda: self._toggle_visible())
+        field.textChanged.connect(self._text_changed)
+        field.toggle_action = toggle
+        return field
+
+    def _toggle_visible(self):
+        visible = self.field.echoMode() == QLineEdit.Password
+        for field in self.fields:
+            field.setEchoMode(QLineEdit.Normal if visible else QLineEdit.Password)
+            field.toggle_action.setIcon(icons.icon("eye_off" if visible else "eye", theme.TEXT_MUTED))
+            field.toggle_action.setToolTip("Parolayı gizle" if visible else "Parolayı göster")
+
+    def _text_changed(self):
+        self._show_error("")
+        self._update_ok()
+
+    def _update_ok(self):
+        self.ok.setEnabled(all(field.text() for field in self.fields))
+
+    def _show_error(self, text):
+        self.error.setText(text)
+        self.error.setVisible(bool(text))
+        for field in self.fields:
+            field.setProperty("invalid", bool(text))
+            field.style().unpolish(field)
+            field.style().polish(field)
+
+    def _try_accept(self):
+        password = self.field.text()
+        if not password:
+            return
+        if self.confirm_field is not None and self.confirm_field.text() != password:
+            self._show_error("Parolalar eşleşmiyor. İki alana aynı parolayı yazın.")
+            self.confirm_field.selectAll()
+            self.confirm_field.setFocus()
+            return
+        if self.verify is not None:
+            QApplication.setOverrideCursor(Qt.WaitCursor)
+            try:
+                self.result_value = self.verify(password)
+            except self.wrong_errors:
+                QApplication.restoreOverrideCursor()
+                self._show_error(self.WRONG_PASSWORD)
+                self.field.selectAll()
+                self.field.setFocus()
+                return
+            except Exception as exc:   # parola dışı bir sorun (bozuk dosya vb.): pencereyi açan gösterir
+                QApplication.restoreOverrideCursor()
+                self.failure = exc
+                self.reject()
+                return
+            QApplication.restoreOverrideCursor()
+        self.password = password
+        self._clear()
+        self.accept()
+
+    def _clear(self):
+        for field in self.fields:
+            field.blockSignals(True)
+            field.clear()
+            field.blockSignals(False)
+
+    def reject(self):
+        self._clear()
+        super().reject()
 
 
 class _BarSeparator(QWidget):
@@ -877,6 +1026,7 @@ class AboutDialog(QDialog):
         ("python-docx", "Word belgeleri (.docx)", "MIT"),
         ("pdfminer.six", "PDF okuma", "MIT"),
         ("olefile", "eski Word belgeleri (.doc) metni", "BSD"),
+        ("msoffcrypto-tool + cryptography", "parolayla şifreli belgeler", "MIT / Apache 2.0"),
         ("comtypes", "Windows yazım denetimi ve dönüştürme", "MIT"),
         ("faster-whisper + Whisper modeli", "sesle yazma", "MIT"),
         ("CTranslate2 + SentencePiece", "çeviri motoru", "MIT / Apache 2.0"),

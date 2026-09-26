@@ -150,6 +150,16 @@ QSlider::handle:horizontal {{
 QSlider::handle:horizontal:hover {{ background: {TEXT}; }}
 
 QDialog, QMessageBox {{ background: {SURFACE}; }}
+
+/* --- parola penceresi --- */
+#passwordDialog QLineEdit {{
+    padding: 5px 6px; border: 1px solid #d1d1d1; border-bottom: 1px solid #8a8a8a; border-radius: 4px;
+    background: #ffffff; min-height: 20px;
+}}
+#passwordDialog QLineEdit:focus {{ border-bottom: 2px solid {ACCENT}; }}
+#passwordDialog QLineEdit[invalid="true"] {{ border-bottom: 2px solid #a4262c; }}
+#passwordDialog #passwordError {{ color: #a4262c; }}
+#passwordDialog #passwordNote {{ color: {TEXT_MUTED}; }}
 QPushButton {{
     background: {SURFACE}; border: 1px solid #d1d1d1; border-radius: 4px; padding: 5px 16px; min-width: 64px;
 }}

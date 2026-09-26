@@ -34,7 +34,8 @@ for package in ("ctranslate2", "sacremoses", "faster_whisper"):
     datas += collect_data_files(package)
 
 hiddenimports = ["comtypes", "comtypes.client", "olefile", "docx", "pdfminer", "ctranslate2", "sentencepiece",
-                 "sacremoses", "faster_whisper", "sounddevice", "tokenizers", "onnxruntime"]
+                 "sacremoses", "faster_whisper", "sounddevice", "tokenizers", "onnxruntime",
+                 "msoffcrypto", "msoffcrypto.format.ooxml", "msoffcrypto.format.doc97"]
 
 # Kullanılmayan büyük bileşenler. torch/stanza/spacy eskiden Argos Translate ile geliyordu (çeviri artık onlarsız);
 # av (PyAV) dikte için gerekmez (dictation._stub_av). Qt'nin QML/Quick, PDF ve ağ modülleri kullanılmıyor.
