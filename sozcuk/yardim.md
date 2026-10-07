@@ -84,7 +84,7 @@ Başlığın altındaki menü şeridinde komutlar konularına göre toplanmışt
 
 | Menü | İçindekiler |
 |---|---|
-| **Dosya** | Yeni, Aç, Google Drive'dan Aç, Kaydet, Farklı Kaydet, PDF Olarak Dışa Aktar, Şifre ile Koru, Şifreyi Kaldır, Yazdır, Yardım, Tanılama Günlüğü, Kapat |
+| **Dosya** | Yeni, Aç, Google Drive'dan Aç, Kaydet, Farklı Kaydet, PDF Olarak Dışa Aktar, Ses / Video Dosyasından Yazıya Dök, Şifre ile Koru, Şifreyi Kaldır, Yazdır, Yardım, Tanılama Günlüğü, Kapat |
 | **Düzen** | Geri Al, Yinele, Kes, Kopyala, Yapıştır, Yalnızca Metni Koru, Tümünü Seç, Bul, Değiştir, Sonraki/Önceki Bul, Sonraki Yazım Hatası |
 | **Biçim** | Stiller, Kalın/İtalik/Altı Çizili/Üstü Çizili, Yazı Tipi Boyutu, Yazı Tipi Rengi, Metin Vurgu Rengi, Hizalama, Satır Aralığı, Listeler ve Girinti, Biçimlendirmeyi Temizle, Yazı Tipi Ekle |
 | **Ekle** | Tablo, Resim, Simge, Bağlantı, Sesle Yaz |
@@ -646,6 +646,43 @@ Dikte edilen metni `Ctrl+Z` ile tek adımda geri alabilirsiniz.
 
 - Net ve normal hızda konuşun; noktalama işaretleri çoğunlukla kendiliğinden konur.
 - "Mikrofon bulunamadı" uyarısında Windows ses ayarlarından mikrofonun bağlı ve izinli olduğunu denetleyin.
+
+<!-- konu: dosyadan | Ses / Video Dosyasından Yazıya Dök | mic -->
+# Ses / Video Dosyasından Yazıya Dök
+
+Hazır bir ses ya da video kaydındaki konuşmayı (toplantı, ders, telefon kaydı, WhatsApp ses mesajı…) metne çevirir. Dikte gibi **tamamen bilgisayarınızda** çalışır: ses ve metin hiçbir sunucuya gönderilmez.
+
+## Kullanım
+
+1. **Dosya → Ses / Video Dosyasından Yazıya Dök…** komutunu seçin.
+2. **Dosya Seç…** ile kaydı seçin ya da dosyayı pencerenin üzerine sürükleyip bırakın.
+3. **Dil** (Türkçe, English, Otomatik algıla) ve **Kalite** seçin, **Yazıya Dök**'e tıklayın.
+4. İlerleme çubuğunda yüzde ve tahmini kalan süre görünür; metin geldikçe aşağıdaki alanda belirir. Bu sırada belgenizde çalışmaya devam edebilirsiniz.
+5. Bitince:
+   - **Belgeye Ekle:** metin imlecin olduğu yere eklenir (her paragraf ayrı paragraf olur, dikte sözlüğünüzün düzeltmeleri uygulanır). `Ctrl+Z` ile tek adımda geri alınır.
+   - **Panoya Kopyala**, **.txt Kaydet…**, **.srt Kaydet…** (zaman damgalı altyazı).
+
+Eklemeden önce metni pencerede düzenleyebilirsiniz.
+
+## Desteklenen dosyalar
+
+Ses: mp3, wav, m4a, aac, ogg, opus, flac, wma, amr. Video: mp4, m4v, mov, mkv, webm, avi, mpeg, 3gp (videonun ses kanalı alınır; birden çok ses kanalı varsa ilki).
+
+## Seçenekler
+
+- **Zaman damgası ekle:** her paragrafın başına `[SS:DD:SS]` yazar. Metni elle düzenlediyseniz bu seçenek yalnızca yeni yazıya dökmede geçerli olur.
+- **Paragraflar:** konuşmada 1,5 saniyeden uzun duraklama yeni paragraf başlatır.
+- **İptal:** işlemi durdurur; o ana kadar yazıya dökülen metin korunur.
+
+## Kalite
+
+| Kalite | Model | İndirme | Not |
+|---|---|---|---|
+| Hızlı | base | ~145 MB | en hızlı, daha çok hata |
+| **Dengeli** | small | ~480 MB | önerilen; **dikteyle aynı model**, ek indirme yok |
+| Hassas | medium | ~1,5 GB | en doğru ama yavaş |
+
+Modeller ilk kullanımda **bir kez** indirilir (internet gerekir); sonra internet gerekmez. Kayıt uzunluğu kadar süre bekleyin: işlemcinize bağlı olarak "Dengeli" yaklaşık gerçek zamanlı hızda çalışır. Çok uzun kayıtlar (birkaç saat) bellek kullanır.
 
 <!-- konu: sesli | Sesli Okuma | read_aloud -->
 # Sesli Okuma

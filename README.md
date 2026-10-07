@@ -17,6 +17,7 @@ Yazım denetimi, sesle yazma, sesli okuma ve çeviri dahil her şey **bilgisayar
 - **Dosya biçimleri:** .docx, .docm, .dotx/.dotm, .doc/.dot, .rtf, .odt, .txt, .htm/.html/.mht, Word 2003 XML, .wps, .wpd, PDF açma; .docx/.doc/.rtf/.odt/.txt/.html olarak kaydetme; PDF dışa aktarma
 - **Yazım denetimi:** Windows'un Türkçe yazım denetimi (Word ile aynı sonuçlar, çevrimdışı)
 - **Sesle yazma:** faster-whisper ile yerel dikte, susunca otomatik durma, öğrenen kişisel sözlük
+- **Ses / video dosyasından yazıya dök:** mp3, wav, mp4, m4a, ogg/opus, flac, mkv… dosyadaki konuşmayı yerelde metne çevirir (paragraf bölme, zaman damgası, ilerleme + kalan süre, iptal); belgeye ekle, kopyala, .txt/.srt kaydet
 - **Sesli okuma:** Türkçe metni doğal sesle okur (Piper/VITS sesi, ONNX Runtime; sayı, tarih, saat, kısaltma okuma); uygulamayla Ata'nın sesi gelir
 - **Çeviri:** yerel çeviri modelleri (CTranslate2); Türkçe ⇄ İngilizce uygulamayla gelir, diğer 11 dil kurulumda seçilir ya da sonradan indirilir
 - **Google Drive / OneDrive:** eşitleme klasöründeki belgelerde canlı kayıt, dışarıdan değişikliği fark etme

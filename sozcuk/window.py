@@ -78,6 +78,7 @@ from .dictation import DictationController, vocabulary_path
 from .read_aloud import ReadAloudController
 from .help import show_help as open_help
 from .spellcheck import SpellCheckController
+from .transcribe_file import FileTranscribeDialog
 from .vocabulary import Vocabulary
 from .editor import Editor
 from .find import FindBar
@@ -929,6 +930,8 @@ class MainWindow(QMainWindow):
             "cloud_save",
             ("pdf", "PDF Olarak Dışa Aktar…", None, self.export_pdf),
             None,
+            ("mic", "Ses / Video Dosyasından Yazıya Dök…", None, self.transcribe_from_file),
+            None,
             ("lock", "Şifre ile Koru…", None, self.protect_with_password),
             ("unlock", "Şifreyi Kaldır", None, self.remove_password),
             None,
@@ -1670,9 +1673,30 @@ class MainWindow(QMainWindow):
         if dialog.exec() == QPrintDialog.Accepted:
             self.editor.print_document(printer)
 
+    def transcribe_from_file(self):
+        """Ses/video dosyasını yerelde yazıya döker (modsuz pencere; belgede çalışmaya devam edilebilir)."""
+        dialog = getattr(self, "_file_transcribe_dialog", None)
+        if dialog is not None:
+            try:
+                dialog.show()
+                dialog.raise_()
+                dialog.activateWindow()
+                return
+            except RuntimeError:                 # pencere kapanıp silinmiş
+                self._file_transcribe_dialog = None
+        self._file_transcribe_dialog = FileTranscribeDialog(self)
+        self._file_transcribe_dialog.destroyed.connect(lambda *_: setattr(self, "_file_transcribe_dialog", None))
+        self._file_transcribe_dialog.show()
+
     def closeEvent(self, event):
         if self._maybe_save():
             self._discard_recovery()
+            dialog = getattr(self, "_file_transcribe_dialog", None)
+            if dialog is not None:
+                try:
+                    dialog.shutdown()
+                except RuntimeError:
+                    pass
             self.dictation.shutdown()
             self.read_aloud.shutdown()
             event.accept()

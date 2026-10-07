@@ -35,12 +35,14 @@ for package in ("ctranslate2", "sacremoses", "faster_whisper"):
 
 hiddenimports = ["comtypes", "comtypes.client", "olefile", "docx", "pdfminer", "ctranslate2", "sentencepiece",
                  "sacremoses", "faster_whisper", "sounddevice", "tokenizers", "onnxruntime",
-                 "msoffcrypto", "msoffcrypto.format.ooxml", "msoffcrypto.format.doc97"]
+                 "msoffcrypto", "msoffcrypto.format.ooxml", "msoffcrypto.format.doc97",
+                 "av"]  # PyAV: "Ses / Video Dosyasından Yazıya Dök" mp3/mp4/m4a… çözmek için (~66 MB)
 
-# Kullanılmayan büyük bileşenler. torch/stanza/spacy eskiden Argos Translate ile geliyordu (çeviri artık onlarsız);
-# av (PyAV) dikte için gerekmez (dictation._stub_av). Qt'nin QML/Quick, PDF ve ağ modülleri kullanılmıyor.
+# Kullanılmayan büyük bileşenler. torch/stanza/spacy eskiden Argos Translate ile geliyordu (çeviri artık onlarsız).
+# av (PyAV) 1.1'de dışlanmıştı (dikte ham ses kullanır); dosyadan yazıya dökme eklenince geri alındı.
+# Qt'nin QML/Quick, PDF ve ağ modülleri kullanılmıyor.
 excludes = ["tkinter", "matplotlib", "torch", "torchaudio", "torchvision", "stanza", "spacy", "thinc", "blis",
-            "argostranslate", "minisbd", "av", "sympy", "networkx", "emoji",
+            "argostranslate", "minisbd", "sympy", "networkx", "emoji",
             "PySide6.QtQuick", "PySide6.QtQml", "PySide6.Qt3DCore", "PySide6.QtWebEngineCore", "PySide6.QtCharts",
             "PySide6.QtDataVisualization", "PySide6.QtMultimedia", "PySide6.QtNetwork", "PySide6.QtPdf",
             "PySide6.QtOpenGL"]

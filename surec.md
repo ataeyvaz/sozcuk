@@ -489,6 +489,15 @@ Format:
 - Deneme: paketlenmiş `Sozcuk.exe` açıldı, günlükte yeni hata yok (`QStatusBar::insertPermanentWidget` uyarısı eskiden beri var)
 - Kurulumu kullanıcı kendisi yapacak (yönetici onayı gerekir). Sonra: Word'de elle deneme listesi
 
+## [2026-10-07] — Ses / video dosyasından yazıya dök (Ata Studio'dan taşındı)
+- Neden: kullanıcı, Whisper'lı yazıya dökmeyi Ata Studio'da çalışır görünce oraya koymaktan vazgeçti (uygulamayı şişirirdi) ve Sözcük'e taşınmasını istedi. Sözcük'te faster-whisper zaten vardı (dikte); ortak model kullanılıyor. Ata Studio'daki çalışma: `whisper-arsiv` etiketi (`C:\Users\Ata\Desktop\convert`)
+- **Dosya → Ses / Video Dosyasından Yazıya Dök…** (`sozcuk/transcribe_file.py`): modsuz pencere (işlem sürerken belgede çalışılabilir). Dosya seç ya da sürükle-bırak; dil (Türkçe varsayılan, English, Otomatik); kalite Hızlı/Dengeli/Hassas = base/small/medium (**Dengeli, dikteyle ortak modeldir**, ek indirme yok); zaman damgası; ilerleme + kalan süre; **İptal** (o ana kadarki metin korunur). Çıktı: **Belgeye Ekle** (imleç yerine, tek `Ctrl+Z` adımı, her paragraf ayrı paragraf, dikte sözlüğü düzeltmeleri uygulanır), Panoya Kopyala, .txt ve .srt kaydet
+- Teknik: VAD açık, int8/CPU, `condition_on_previous_text=False`, segmentler tembel tüketilir; paragraf: 1,5 sn'den uzun duraklama (ya da 700 karakterden sonra cümle sonu); iş parçacığı düşük öncelikli; model yoksa "Model indiriliyor, bu işlem bir kez yapılır" ve internetsizlikte Türkçe hata
+- **Karar: PyAV geri alındı.** 1.1'de paket küçülsün diye `sozcuk.spec` `excludes`'ından av (~66 MB) dışlanmıştı; dikte ham ses verdiği için gerekmiyordu. Dosyadan okumak (mp3/mp4/m4a/opus…) için gerekli → `excludes`'tan çıkarıldı, `hiddenimports` ve `requirements.txt`'e (`av>=12`) eklendi. Kullanıcı seçeneklerden (PyAV / yalnız mp3-wav küçük çözücü / ffmpeg varsa) PyAV'ı seçti. Beklenen boyut artışı ≈ +66 MB (paket ~558 → ~625 MB; kurulum ~367 → ~390 MB) — **ölçülmedi, paketleyince ölç**
+- `window.py`: Dosya menüsüne madde, `transcribe_from_file`, kapanışta işlem iptali. `dictation._stub_av` yalnızca açıklaması güncellendi (davranış aynı). Yardım: yeni konu "Ses / Video Dosyasından Yazıya Dök" (+ Menüler tablosu), README maddesi
+- Test: `testler/test_dosyadan_yazi.py` (12 test: paragraf/zaman damgası/SRT/süre biçimleri, uzantılar, PyAV gerçekten var, mp3/aac çözücüleri, olmayan dosya hatası, konuşmasız ses, iptal) + eski şifreli belge testleri → **27/27 geçti**. Elle (gerçek 40 sn Türkçe konuşma, Dengeli model): wav, mp3, m4a, opus, görüntülü mp4 beşi de aynı metni üretti (~33 sn). Gerçek `MainWindow`'da: menü maddesi, tek pencere, yazıya dök, Belgeye Ekle (3 paragraf), tek adımda geri alma, pencere kapanışı doğrulandı
+- **Yapılmadı / sınırlar:** sürüm numarası değişmedi (1.3; paketleyince 1.4'e çıkarılacak, "Yenilikler" girişi o zaman yazılır); paketlenmiş .exe'de denenmedi (PyAV'ın pakete girdiği doğrulanmalı); uzun (saatlerce) kayıtlar tüm sesi belleğe çözer (1 saat ≈ 230 MB); Word dosyası (.docx) olarak kaydetme yok (zaten Belgeye Ekle + Kaydet var); iptal en yakın segment sınırında geçerli olur (birkaç sn)
+
 ---
 
 *(Yeni girişler en alta eklenir.)*
