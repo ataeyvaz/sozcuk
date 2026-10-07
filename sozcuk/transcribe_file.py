@@ -1,10 +1,13 @@
-"""Ses / video dosyasından yazıya dökme (mp3, wav, mp4, m4a, ogg/opus, flac, mkv…).
+"""Ses dosyasından yazıya dökme (mp3, wav, opus, ogg, flac).
 
 GİZLİLİK: Tüm işlem bu bilgisayarda yapılır; ses de çıkan metin de hiçbir sunucuya gönderilmez. İnternet
 yalnızca ilk kullanımda Whisper modelini bir kez indirmek için gerekir (dikteyle aynı Hugging Face önbelleği).
 
 Model: "Dengeli" (small) dikteyle ORTAKTIR (aynı yüklü model, ek indirme yok). "Hızlı" (base) ve "Hassas"
-(medium) isteğe bağlıdır. Ses çözme için PyAV (av) gerekir — mikrofon diktesi buna ihtiyaç duymaz.
+(medium) isteğe bağlıdır.
+
+Ses çözme: soundfile (libsndfile, LGPL; mp3/wav/opus/ogg/flac). mp4, m4a, aac gibi biçimler desteklenmez:
+bunları çözen her kütüphane GPL'li FFmpeg'e dayanır ve Sözcük bilerek GPL bileşeni dağıtmaz.
 """
 
 import os
@@ -12,6 +15,7 @@ import threading
 import time
 from pathlib import Path
 
+import numpy as np
 from PySide6.QtCore import Qt, QThread, Signal
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import (
@@ -23,8 +27,11 @@ from . import dictation, logbook, theme
 
 log = logbook.get("dosyadan-yazi")
 
-EXTENSIONS = ("mp3", "wav", "m4a", "aac", "ogg", "opus", "flac", "wma", "amr",
-              "mp4", "m4v", "mov", "mkv", "webm", "avi", "mpeg", "mpg", "3gp")
+EXTENSIONS = ("mp3", "wav", "opus", "ogg", "flac")
+UNSUPPORTED_MESSAGE = ("Bu dosya biçimi desteklenmiyor. Desteklenenler: mp3, wav, opus, ogg, flac. "
+                       "Dosyayı bunlardan birine dönüştürüp yeniden deneyin.")
+SAMPLE_RATE = 16_000        # Whisper'ın beklediği örnekleme hızı
+READ_SECONDS = 30           # dosya parça parça okunur: uzun kayıtlarda bellek şişmesin
 
 # kalite → (model, açıklama)
 QUALITY = {
@@ -100,13 +107,46 @@ _models = {}
 _models_lock = threading.Lock()
 
 
-def decoder_available():
-    """PyAV gerçekten var mı? (dikte, eksikse boş bir 'av' modülü koyar; onunla dosya çözülemez.)"""
+class Cancelled(Exception):
+    """Kullanıcı, ses okunurken iptal etti."""
+
+
+def decode_audio(path, cancel=None):
+    """Dosyayı 16 kHz mono float32'ye çevirir (soundfile). Parça parça okur ve çevirir; ham (stereo, 44,1 kHz)
+    sesin tamamı belleğe alınmaz. Desteklenmeyen/bozuk dosyada DictationError verir."""
+    import soundfile as sf
     try:
-        import av
-        return hasattr(av, "open")
-    except ImportError:
-        return False
+        f = sf.SoundFile(str(path))
+    except Exception as exc:
+        raise dictation.DictationError(UNSUPPORTED_MESSAGE) from exc
+    out = []
+    with f:
+        rate = f.samplerate
+        step = rate / SAMPLE_RATE                    # kaynakta iki çıkış örneği arası
+        buf = np.zeros(0, dtype=np.float32)
+        base = 0                                     # buf[0]'ın dosyadaki sıra numarası
+        next_pos = 0.0                               # sıradaki çıkış örneğinin kaynaktaki (kesirli) konumu
+        try:
+            blocks = f.blocks(blocksize=rate * READ_SECONDS, dtype="float32", always_2d=True)
+            for block in blocks:
+                if cancel is not None and cancel.is_set():
+                    raise Cancelled()
+                buf = np.concatenate([buf, block.mean(axis=1, dtype=np.float32)])
+                last = base + len(buf) - 1
+                if next_pos <= last:
+                    n = int((last - next_pos) // step) + 1
+                    positions = next_pos + step * np.arange(n)
+                    out.append(np.interp(positions - base, np.arange(len(buf)), buf).astype(np.float32))
+                    next_pos += step * n
+                drop = int(next_pos) - base          # artık gerekmeyen eski örnekleri at
+                if drop > 0:
+                    buf = buf[drop:]
+                    base += drop
+        except Cancelled:
+            raise
+        except Exception as exc:
+            raise dictation.DictationError(f"Ses dosyası okunamadı: {exc}") from exc
+    return np.concatenate(out) if out else np.zeros(0, dtype=np.float32)
 
 
 def _get_model(size, on_status):
@@ -116,6 +156,7 @@ def _get_model(size, on_status):
         if size in _models:
             return _models[size]
         _models.clear()                                # aynı anda tek ek model: bellek şişmesin
+        dictation._stub_av()                           # paketlenmiş sürümde av yok; faster_whisper içe aktarırken ister
         from faster_whisper import WhisperModel
         kwargs = {"device": "cpu", "compute_type": "int8"}
         try:
@@ -152,9 +193,10 @@ class FileTranscribeWorker(QThread):
 
     def run(self):
         try:
-            if not decoder_available():
-                raise dictation.DictationError(
-                    "Bu sürümde ses çözücü (PyAV) bulunamıyor; dosyadan yazıya dökme kullanılamaz.")
+            self.status.emit("Ses dosyası okunuyor…")
+            audio = decode_audio(self.path, self._cancel)
+            if len(audio) < SAMPLE_RATE * dictation.MIN_SECONDS:
+                raise dictation.DictationError("Dosyada işlenecek ses bulunamadı.")
             size = QUALITY[self.quality][0]
             model = _get_model(size, self.status.emit)
             if self._cancel.is_set():
@@ -163,7 +205,7 @@ class FileTranscribeWorker(QThread):
             self.status.emit("Yazıya dökülüyor…")
             started = time.monotonic()
             segments, info = model.transcribe(
-                self.path,
+                audio,
                 language=None if self.language == "auto" else self.language,
                 beam_size=BEAM[size],
                 vad_filter=True,                       # sessizlikleri atla
@@ -181,13 +223,14 @@ class FileTranscribeWorker(QThread):
             log.info("dosya yazıya döküldü: ses=%.1f sn süre=%.1f sn segment=%d model=%s",
                      info.duration, time.monotonic() - started, count, size)
             self.finished_state.emit("done", "")
+        except Cancelled:
+            self.finished_state.emit("cancelled", "")
         except dictation.DictationError as exc:
             log.warning("dosyadan yazı sonuçsuz: %s", exc)
             self.finished_state.emit("net" if "indirilemedi" in str(exc) else "error", str(exc))
         except Exception as exc:
             log.exception("dosyadan yazıya dökme hatası")
-            self.finished_state.emit(
-                "error", f"Dosya yazıya dökülemedi: {exc}\n\nDosya bozuk ya da desteklenmeyen biçimde olabilir.")
+            self.finished_state.emit("error", f"Dosya yazıya dökülemedi: {exc}")
 
 
 # --- pencere -------------------------------------------------------------------------------------------
@@ -199,7 +242,7 @@ class FileTranscribeDialog(QDialog):
     def __init__(self, main_window):
         super().__init__(main_window)
         self.main = main_window
-        self.setWindowTitle("Ses / Video Dosyasından Yazıya Dök")
+        self.setWindowTitle("Ses Dosyasından Yazıya Dök")
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.resize(720, 580)
         self.setAcceptDrops(True)
@@ -306,7 +349,7 @@ class FileTranscribeDialog(QDialog):
     def pick_file(self):
         patterns = " ".join(f"*.{e}" for e in EXTENSIONS)
         path, _ = QFileDialog.getOpenFileName(
-            self, "Ses ya da video dosyası seç", "", f"Ses ve video ({patterns});;Tüm dosyalar (*.*)")
+            self, "Ses dosyası seç", "", f"Ses ({patterns});;Tüm dosyalar (*.*)")
         if path:
             self.set_file(path)
 

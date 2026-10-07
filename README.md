@@ -17,7 +17,7 @@ Yazım denetimi, sesle yazma, sesli okuma ve çeviri dahil her şey **bilgisayar
 - **Dosya biçimleri:** .docx, .docm, .dotx/.dotm, .doc/.dot, .rtf, .odt, .txt, .htm/.html/.mht, Word 2003 XML, .wps, .wpd, PDF açma; .docx/.doc/.rtf/.odt/.txt/.html olarak kaydetme; PDF dışa aktarma
 - **Yazım denetimi:** Windows'un Türkçe yazım denetimi (Word ile aynı sonuçlar, çevrimdışı)
 - **Sesle yazma:** faster-whisper ile yerel dikte, susunca otomatik durma, öğrenen kişisel sözlük
-- **Ses / video dosyasından yazıya dök:** mp3, wav, mp4, m4a, ogg/opus, flac, mkv… dosyadaki konuşmayı yerelde metne çevirir (paragraf bölme, zaman damgası, ilerleme + kalan süre, iptal); belgeye ekle, kopyala, .txt/.srt kaydet
+- **Ses dosyasından yazıya dök:** mp3, wav, opus (WhatsApp ses mesajı), ogg, flac dosyasındaki konuşmayı yerelde metne çevirir (paragraf bölme, zaman damgası, ilerleme + kalan süre, iptal); belgeye ekle, kopyala, .txt/.srt kaydet. mp4/m4a gibi biçimler desteklenmez (çözen her kütüphane GPL'li FFmpeg'e dayanır); önce mp3/wav'a dönüştürün
 - **Sesli okuma:** Türkçe metni doğal sesle okur (Piper/VITS sesi, ONNX Runtime; sayı, tarih, saat, kısaltma okuma); uygulamayla Ata'nın sesi gelir
 - **Çeviri:** yerel çeviri modelleri (CTranslate2); Türkçe ⇄ İngilizce uygulamayla gelir, diğer 11 dil kurulumda seçilir ya da sonradan indirilir
 - **Google Drive / OneDrive:** eşitleme klasöründeki belgelerde canlı kayıt, dışarıdan değişikliği fark etme
@@ -64,7 +64,7 @@ Sonuç: `dist\Sozcuk\` (taşınabilir klasör, ≈560 MB) ve `dist\Sozcuk-1.3-ku
 ## Kullanılan açık kaynak bileşenler
 
 PySide6 (Qt, LGPL) · python-docx (MIT) · pdfminer.six (MIT) · olefile (BSD) · comtypes (MIT) ·
-faster-whisper + Whisper modeli (MIT) · CTranslate2 (MIT) + SentencePiece (Apache 2.0) · Argos Translate dil paketleri (MIT) + OPUS-MT modelleri (CC-BY 4.0) ·
+faster-whisper + Whisper modeli (MIT) · soundfile (BSD) + libsndfile (LGPL 2.1) · CTranslate2 (MIT) + SentencePiece (Apache 2.0) · Argos Translate dil paketleri (MIT) + OPUS-MT modelleri (CC-BY 4.0) ·
 ONNX Runtime (MIT) · Piper tr_TR dfki temel modeli (CC BY-NC-SA 4.0)
 
 Sesli okuma sesi (`sozcuk/sesler/ata.onnx`) Ata'nın kendi kayıtlarıyla, dfki temel modelinden eğitildi; bu yüzden **ticari kullanıma kapalıdır** (CC BY-NC-SA 4.0).

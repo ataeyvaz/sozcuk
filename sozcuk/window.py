@@ -930,7 +930,7 @@ class MainWindow(QMainWindow):
             "cloud_save",
             ("pdf", "PDF Olarak Dışa Aktar…", None, self.export_pdf),
             None,
-            ("mic", "Ses / Video Dosyasından Yazıya Dök…", None, self.transcribe_from_file),
+            ("mic", "Ses Dosyasından Yazıya Dök…", None, self.transcribe_from_file),
             None,
             ("lock", "Şifre ile Koru…", None, self.protect_with_password),
             ("unlock", "Şifreyi Kaldır", None, self.remove_password),
@@ -1674,7 +1674,7 @@ class MainWindow(QMainWindow):
             self.editor.print_document(printer)
 
     def transcribe_from_file(self):
-        """Ses/video dosyasını yerelde yazıya döker (modsuz pencere; belgede çalışmaya devam edilebilir)."""
+        """Ses dosyasını yerelde yazıya döker (modsuz pencere; belgede çalışmaya devam edilebilir)."""
         dialog = getattr(self, "_file_transcribe_dialog", None)
         if dialog is not None:
             try:

@@ -55,8 +55,67 @@ class SaflYardimcilar(unittest.TestCase):
         self.assertEqual(tf.fmt_duration(3725), "1:02:05")
 
     def test_desteklenen_uzantilar(self):
-        for ext in ("mp3", "wav", "mp4", "m4a", "ogg", "opus", "flac", "mkv", "webm"):
-            self.assertIn(ext, tf.EXTENSIONS)
+        self.assertEqual(set(tf.EXTENSIONS), {"mp3", "wav", "opus", "ogg", "flac"})
+
+
+class SesCozmeTesti(unittest.TestCase):
+    """soundfile ile çözme: her biçimde 16 kHz mono ve doğru süre (parça sınırlarında kayma olmamalı)."""
+
+    @staticmethod
+    def _write(path, subtype_format, rate, channels, seconds):
+        import numpy as np
+        import soundfile as sf
+        t = np.arange(int(rate * seconds)) / rate
+        wave_ = 0.3 * np.sin(2 * np.pi * 440 * t)
+        data = np.stack([wave_] * channels, axis=1) if channels > 1 else wave_
+        sf.write(path, data, rate, format=subtype_format)
+
+    def test_biçimler_16k_mono_ve_sure(self):
+        folder = tempfile.mkdtemp()
+        cases = [("a.wav", "WAV", 44100, 2), ("b.flac", "FLAC", 48000, 1), ("c.ogg", "OGG", 22050, 2),
+                 ("d.opus", "OGG", 48000, 1), ("e.mp3", "MP3", 44100, 2), ("f.wav", "WAV", 16000, 1)]
+        for name, fmt, rate, channels in cases:
+            path = os.path.join(folder, name)
+            if name.endswith(".opus"):
+                import numpy as np
+                import soundfile as sf
+                t = np.arange(48000 * 3) / 48000
+                sf.write(path, 0.3 * np.sin(2 * np.pi * 440 * t), 48000, format="OGG", subtype="OPUS")
+            else:
+                self._write(path, fmt, rate, channels, 3.0)
+            audio = tf.decode_audio(path)
+            self.assertEqual(audio.dtype.name, "float32", name)
+            self.assertEqual(audio.ndim, 1, name)
+            self.assertAlmostEqual(len(audio) / 16000, 3.0, delta=0.12, msg=name)
+            self.assertGreater(float(abs(audio).max()), 0.1, name)         # sessizlik değil
+
+    def test_uzun_dosya_parca_sinirlarinda_kaymaz(self):
+        import numpy as np
+        path = os.path.join(tempfile.mkdtemp(), "uzun.wav")
+        self._write(path, "WAV", 44100, 2, 65.0)                           # 30 sn'lik parçalar: 3 parça
+        audio = tf.decode_audio(path)
+        self.assertAlmostEqual(len(audio) / 16000, 65.0, delta=0.05)
+        # parça sınırlarında (30 ve 60 sn) süreklilik: ardışık örnekler arasında sıçrama olmamalı
+        for second in (30, 60):
+            i = second * 16000
+            self.assertLess(float(np.abs(np.diff(audio[i - 5:i + 5])).max()), 0.2)
+
+    def test_desteklenmeyen_bicim_anlasilir_hata(self):
+        path = os.path.join(tempfile.mkdtemp(), "video.mp4")
+        Path(path).write_bytes(b"\x00\x00\x00\x18ftypmp42" + b"\x00" * 200)
+        from sozcuk import dictation
+        with self.assertRaises(dictation.DictationError) as ctx:
+            tf.decode_audio(path)
+        self.assertIn("desteklenmiyor", str(ctx.exception))
+
+    def test_cozme_iptal_edilebilir(self):
+        import threading
+        path = os.path.join(tempfile.mkdtemp(), "x.wav")
+        self._write(path, "WAV", 16000, 1, 3.0)
+        flag = threading.Event()
+        flag.set()
+        with self.assertRaises(tf.Cancelled):
+            tf.decode_audio(path, flag)
 
 
 class IsciTesti(unittest.TestCase):
@@ -88,15 +147,6 @@ class IsciTesti(unittest.TestCase):
         worker.wait(5000)
         self.app.processEvents()
         return results
-
-    def test_pyav_gercekten_var(self):
-        self.assertTrue(tf.decoder_available(), "PyAV yok: dosyadan yazıya dökme çalışmaz")
-
-    def test_ses_cozucu_mp3_ve_mp4_destegi(self):
-        import av
-        names = set(av.codecs_available)
-        for codec in ("mp3", "aac", "pcm_s16le"):
-            self.assertIn(codec, names)
 
     def test_olmayan_dosya_hata_verir(self):
         worker = tf.FileTranscribeWorker(r"C:\yok\yok.mp3", "tr", "Dengeli")

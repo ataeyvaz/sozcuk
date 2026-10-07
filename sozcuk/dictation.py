@@ -217,8 +217,7 @@ _model_lock = threading.Lock()
 
 def _stub_av():
     """faster-whisper açılışta PyAV'ı (av, ~66 MB) içe aktarır ama onu yalnızca ses dosyası çözmek için kullanır;
-    mikrofon diktesi ham ses verdiği için buna ihtiyaç duymaz. av yoksa boş bir modül konur. (Dosyadan yazıya
-    dökme, gerçek av'a ihtiyaç duyar: transcribe_file.decoder_available.)"""
+    biz mikrofondan ham ses verdiğimiz için pakete konmaz. Yoksa yerine boş bir modül konur."""
     try:
         import av  # noqa: F401
     except ImportError:

@@ -1029,6 +1029,7 @@ class AboutDialog(QDialog):
         ("msoffcrypto-tool + cryptography", "parolayla şifreli belgeler", "MIT / Apache 2.0"),
         ("comtypes", "Windows yazım denetimi ve dönüştürme", "MIT"),
         ("faster-whisper + Whisper modeli", "sesle yazma", "MIT"),
+        ("soundfile + libsndfile", "ses dosyasından yazıya dökme (mp3, wav, opus, ogg, flac)", "BSD / LGPL 2.1"),
         ("CTranslate2 + SentencePiece", "çeviri motoru", "MIT / Apache 2.0"),
         ("Argos Translate dil paketleri + OPUS-MT modelleri", "çeviri", "MIT / CC-BY 4.0"),
         ("ONNX Runtime", "sesli okuma motoru", "MIT"),
