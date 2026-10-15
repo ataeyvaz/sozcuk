@@ -378,5 +378,9 @@ def build_menu(editor, parent, refocus):
         number_menu.sync()
 
     menu.aboutToShow.connect(sync)
+    for submenu in (margins_menu, orientation_menu, size_menu):
+        submenu.aboutToShow.connect(sync)  # şeritte alt menüler tek başına açılır
+    menu.margins_menu, menu.orientation_menu, menu.size_menu = margins_menu, orientation_menu, size_menu
+    menu.number_menu = number_menu
     menu.open_dialog = open_dialog
     return menu

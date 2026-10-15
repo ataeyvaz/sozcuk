@@ -155,7 +155,7 @@ seslerinin hepsi erkek ve "robotik, aksanlı" bulundu (İngilizce sesten türeti
    fettah/fahrettin (CC0 veri) temelinden ya da sıfırdan eğitmek gerekir
 
 ## Notlar / Kararlar
-- Ribbon değil, tek satır sade araç çubuğu tercih edildi.
+- ~~Ribbon değil, tek satır sade araç çubuğu tercih edildi.~~ **Değişti (2026-10-16, kullanıcı kararı):** arayüz Excel/Word gibi **sekmeli şerit** (Tabcel'deki 5j ile aynı yapı: `serit.py`, `serit_sekmeleri.py`, `hizli_erisim.py`). Menü şeridi ve iki satırlı komut çubuğu kaldırıldı; komutlar sekmelerde gruplanır, Dosya açılır menüdür, Hızlı Erişim sağ tıkla özelleştirilir.
 - Arayüz kalitesi Office Word seviyesinde olmalı: Word mavisi başlık şeridi, basitleştirilmiş şerit görünümünde tek satır komut çubuğu, gerçek A4 sayfa görünümü, Word ile aynı kısayollar ve davranışlar.
 - PDF okuma için pdfminer.six (MIT) seçildi; PyMuPDF AGPL lisanslı olduğu için .exe dağıtımına uygun değil.
 - Word'ün yazım teknolojisi: sözlük dosyalarını kopyalamak lisans ihlali; kurulu Word'ü otomasyonla çağırmak yavaş (açılış 52 sn) ve Word'e bağımlı. Windows'un yerleşik yazım denetimi API'si aynı Türkçe sonuçları verdiği için o seçildi.

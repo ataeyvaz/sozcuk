@@ -121,6 +121,36 @@ ICONS = {
     "lock": {"svg": "M4.5 9.5H15.5V17.5H4.5Z M6.5 9.5V6.5A3.5 3.5 0 0 1 13.5 6.5V9.5 M10 12.5V14.5"},
     "unlock": {"svg": "M4.5 9.5H15.5V17.5H4.5Z M6.5 9.5V6.5A3.5 3.5 0 0 1 13.2 5 M10 12.5V14.5"},
     "eye": {"svg": "M1.5 10C4.5 4.5 15.5 4.5 18.5 10C15.5 15.5 4.5 15.5 1.5 10Z", "circle": (10, 10, 2.5)},
+    "paste32": {"grid": 32, "svg": "M5.5 6.5H11.5V4.5H17.5V6.5H23.5V12.5 M5.5 6.5V27.5H15.5"
+                                   " M13.5 12.5H26.5V27.5H13.5Z M16.5 17.5H23.5 M16.5 21.5H23.5"},
+    "find32": {"grid": 32, "svg": "M5.5 13.5A8 8 0 1 0 21.5 13.5A8 8 0 1 0 5.5 13.5 M19.5 19.5L27.5 27.5"},
+    "margins32": {"grid": 32, "svg": "M7.5 3.5H25.5V28.5H7.5Z M11.5 7.5H21.5V24.5H11.5Z M3.5 12.5H7.5 M25.5 12.5H29.5"},
+    "orientation32": {"grid": 32, "svg": "M5.5 4.5H17.5V22.5H5.5Z M19.5 17.5H29.5V27.5H19.5Z"},
+    "paper32": {"grid": 32, "svg": "M7.5 3.5H19.5L25.5 9.5V28.5H7.5Z M19.5 3.5V9.5H25.5 M11.5 15.5H21.5 M11.5 20.5H21.5"},
+    "picture32": {"grid": 32, "svg": "M4.5 5.5H27.5V26.5H4.5Z M4.5 22.5L11.5 15.5L17.5 21.5L21.5 17.5L27.5 23.5 M20.5 9.5A2 2 0 1 0 24.5 9.5A2 2 0 1 0 20.5 9.5"},
+    "help32": {"grid": 32, "svg": "M4.5 16.5A12 12 0 1 0 28.5 16.5A12 12 0 1 0 4.5 16.5", "text": [("?", 16, True, False, (4.5, 4.5, 24, 24))]},
+    "keyboard32": {"grid": 32, "svg": "M3.5 8.5H28.5V23.5H3.5Z M7.5 12.5H9.5 M12.5 12.5H14.5 M17.5 12.5H19.5 M22.5 12.5H24.5 M7.5 16.5H9.5 M12.5 16.5H14.5 M17.5 16.5H19.5 M22.5 16.5H24.5 M10.5 20.5H21.5"},
+    "spell32": {"grid": 32, "svg": "M4.5 22.5L10.5 6.5L16.5 22.5 M6.7 17.5H14.3 M16.5 23.5L21 28L29 17.5"},
+    "zoom100_32": {"grid": 32, "svg": "M5.5 13.5A8 8 0 1 0 21.5 13.5A8 8 0 1 0 5.5 13.5 M19.5 19.5L27.5 27.5",
+                   "text": [("100", 8, True, False, (5.5, 9, 16, 9))]},
+    "info32": {"grid": 32, "svg": "M4.5 16.5A12 12 0 1 0 28.5 16.5A12 12 0 1 0 4.5 16.5 M16.5 14.5V23.5 M16.5 9.5V11.5"},
+    "table32": {"grid": 32, "svg": "M4.5 5.5H27.5V26.5H4.5Z M4.5 12.5H27.5 M4.5 19.5H27.5 M12.5 5.5V26.5 M20.5 5.5V26.5"},
+    "link32": {"grid": 32, "svg": "M13.5 18.5L18.5 13.5 M12.5 10.5L15 8A5 5 0 0 1 22 15L19.5 17.5 M19.5 21.5L17 24A5 5 0 0 1 10 17L12.5 14.5"},
+    "symbol32": {"grid": 32, "text": [("Ω", 26, False, False, (0, 0, 32, 32))]},
+    "translate32": {"grid": 32, "svg": "M4.5 16.5A12 12 0 1 0 28.5 16.5A12 12 0 1 0 4.5 16.5 M4.5 16.5H28.5 M16.5 4.5A18 18 0 0 1 16.5 28.5 M16.5 4.5A18 18 0 0 0 16.5 28.5"},
+    "read32": {"grid": 32, "svg": "M5.5 12.5H10.5L17.5 7.5V25.5L10.5 20.5H5.5Z M21.5 12.5A5 5 0 0 1 21.5 20.5 M24.5 9.5A9 9 0 0 1 24.5 23.5"},
+    "replace32": {"grid": 32, "svg": "M5.5 9.5H21.5 M5.5 9.5L10 5 M5.5 9.5L10 14 M27.5 22.5H11.5 M27.5 22.5L23 18 M27.5 22.5L23 27"},
+    "pagenum32": {"grid": 32, "svg": "M7.5 3.5H24.5V28.5H7.5Z M11.5 8.5H20.5", "text": [("#", 14, True, False, (8, 14, 16, 14))]},
+    "ruler32": {"grid": 32, "svg": "M3.5 10.5H28.5V21.5H3.5Z M8.5 10.5V15.5 M13.5 10.5V17.5 M18.5 10.5V15.5 M23.5 10.5V17.5"},
+    "zoom_in32": {"grid": 32, "svg": "M5.5 13.5A8 8 0 1 0 21.5 13.5A8 8 0 1 0 5.5 13.5 M19.5 19.5L27.5 27.5 M9.5 13.5H17.5 M13.5 9.5V17.5"},
+    "zoom_out32": {"grid": 32, "svg": "M5.5 13.5A8 8 0 1 0 21.5 13.5A8 8 0 1 0 5.5 13.5 M19.5 19.5L27.5 27.5 M9.5 13.5H17.5"},
+    "page_width32": {"grid": 32, "svg": "M3.5 8.5H28.5V23.5H3.5Z M8.5 16.5H23.5 M8.5 16.5L11.5 13.5 M8.5 16.5L11.5 19.5 M23.5 16.5L20.5 13.5 M23.5 16.5L20.5 19.5"},
+    "full_page32": {"grid": 32, "svg": "M9.5 3.5H22.5V28.5H9.5Z M16.5 8.5V23.5 M16.5 8.5L13.5 11.5 M16.5 8.5L19.5 11.5 M16.5 23.5L13.5 20.5 M16.5 23.5L19.5 20.5"},
+    "mic32": {"grid": 32, "svg": "M12.5 9.5A4 4 0 0 1 20.5 9.5V15.5A4 4 0 0 1 12.5 15.5Z M8.5 15.5A8 8 0 0 0 24.5 15.5 M16.5 23.5V27.5 M11.5 27.5H21.5"},
+    "dialog_launcher": {"svg": "M4.5 4.5H15.5V15.5H4.5Z M10.5 14.5L14.5 10.5 M14.5 13.5V10.5H11.5"},
+    "styles32": {"grid": 32, "text": [("Aa", 18, True, False, (0, 0, 32, 32))]},
+    "font32": {"grid": 32, "text": [("A", 26, True, False, (0, 0, 32, 32))]},
+    "paragraph32": {"grid": 32, "svg": "M5.5 8.5H26.5 M5.5 14.5H20.5 M5.5 20.5H26.5 M5.5 26.5H20.5"},
     "eye_off": {"svg": "M1.5 10C4.5 4.5 15.5 4.5 18.5 10C15.5 15.5 4.5 15.5 1.5 10Z M3.5 3.5L16.5 16.5",
                 "circle": (10, 10, 2.5)},
 }
@@ -133,9 +163,9 @@ def _renderer(svg_text):
     return QSvgRenderer(QByteArray(svg_text.encode()))
 
 
-def _svg(path, color):
+def _svg(path, color, grid=GRID):
     return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {GRID} {GRID}" width="{GRID}" height="{GRID}">'
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {grid} {grid}" width="{grid}" height="{grid}">'
         f'<path d="{path}" fill="none" stroke="{color}" stroke-width="1" '
         'stroke-linecap="square" stroke-linejoin="round"/></svg>'
     )
@@ -144,18 +174,19 @@ def _svg(path, color):
 def draw(painter, rect, name, color=INK, bar=None):
     """name ikonunu rect içine çizer. Ölçek 1 iken çizgiler tam piksele oturur."""
     spec = ICONS[name]
-    scale = min(rect.width(), rect.height()) / GRID
+    grid = spec.get("grid", GRID)  # büyük (32 px) şerit ikonları kendi ızgarasında 1 px çizgiyle çizilir
+    scale = min(rect.width(), rect.height()) / grid
     painter.save()
     painter.setRenderHint(QPainter.Antialiasing)
     painter.setRenderHint(QPainter.TextAntialiasing)
     # kare olmayan alanlarda ortala, tam piksele yuvarla
-    ox = round(rect.x() + (rect.width() - GRID * scale) / 2)
-    oy = round(rect.y() + (rect.height() - GRID * scale) / 2)
+    ox = round(rect.x() + (rect.width() - grid * scale) / 2)
+    oy = round(rect.y() + (rect.height() - grid * scale) / 2)
     painter.translate(ox, oy)
     ink = QColor(color)
 
     if "svg" in spec:
-        _renderer(_svg(spec["svg"], ink.name())).render(painter, QRectF(0, 0, GRID * scale, GRID * scale))
+        _renderer(_svg(spec["svg"], ink.name(), grid)).render(painter, QRectF(0, 0, grid * scale, grid * scale))
 
     for path in spec.get("fills", []):
         filled = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {GRID} {GRID}"><path d="{path}" fill="{ink.name()}" stroke="{ink.name()}" stroke-width="1"/></svg>'

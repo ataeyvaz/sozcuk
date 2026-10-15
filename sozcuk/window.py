@@ -83,19 +83,20 @@ from .vocabulary import Vocabulary
 from .editor import Editor
 from .find import FindBar
 from .rulers import DocumentArea
-from . import __version__
 from .hakkinda import AboutDialog
+from .hizli_erisim import HizliErisim
+from .serit import Serit
+from .serit_sekmeleri import (
+    EkleSayfasi, GirisSayfasi, GorunumSayfasi, GozdenGecirSayfasi, SayfaDuzeniSayfasi, YardimSayfasi,
+)
 from .widgets import (
     ColorButton,
-    CommandBar,
-    CommandBarDialog,
     InsertTableDialog,
     MessageBar,
     PasswordDialog,
     TableGridPicker,
     ToggleSwitch,
     ZoomControl,
-    bar_item_icon,
 )
 
 log = logbook.get("pencere")
@@ -143,12 +144,13 @@ class PdfWorker(QThread):
             self.failed.emit(f"PDF dönüştürülemedi: {exc}")
 
 
-class MainWindow(QMainWindow):
+class MainWindow(HizliErisim, QMainWindow):
     untitled_counter = 0
 
     def __init__(self):
         super().__init__()
         self.settings = QSettings("Sözcük", "Sözcük")
+        self.eylemler = {}  # tek eylem kataloğu: şerit düğmeleri ve Hızlı Erişim bunu kullanır
         self.path = None
         # Şifreli belgenin parolası: YALNIZCA bellekte, belge açıkken. Ayarlara, son kullanılanlara, kurtarma
         # bilgisine ya da günlüğe yazılmaz (encryption.py).
@@ -167,9 +169,9 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         layout.addWidget(self._build_header())
-        self.menu_row = QFrame(objectName="menuRow")
-        layout.addWidget(self.menu_row)
-        layout.addWidget(self._build_command_bar())
+        self._build_actions()
+        self.ribbon = Serit()
+        layout.addWidget(self.ribbon)
         self.message_bar = MessageBar()
         layout.addWidget(self.message_bar)
         self.find_bar = FindBar(self.editor, notify=lambda text: self.statusBar().showMessage(text, 5000))
@@ -200,7 +202,7 @@ class MainWindow(QMainWindow):
         self.spellcheck = SpellCheckController(self.editor, self.vocabulary, self.statusBar(), self.settings, self)
         self.editor.context_menu_hooks.append(self._link_menu)
         self.spellcheck.attach_shortcuts(self)
-        self._build_menus()   # komut çubuğu, yazım denetimi ve dikte eylemlerini kullanır: en son kurulur
+        self._build_ribbon()   # yazım denetimi ve dikte eylemlerini kullanır: en son kurulur
 
         # kurtarma kopyası periyodik; kayıtlı dosyalar yazmaya ara verilince kaydedilir (Word gibi)
         self.autosave_timer = QTimer(self)
@@ -235,6 +237,7 @@ class MainWindow(QMainWindow):
         action = QAction(text, self)
         if icon_name:
             action.setIcon(icons.icon(icon_name, icon_color))
+            action.setProperty("ikonAdi", icon_name)
         action.setCheckable(checkable)
         tooltip = tip or text
         if shortcut:
@@ -259,12 +262,18 @@ class MainWindow(QMainWindow):
         self.act_save = self._action("save", "Kaydet", QKeySequence.Save, self.save, icon_color=white)
         self.act_undo = self._action("undo", "Geri Al", QKeySequence.Undo, self.editor.undo, icon_color=white)
         self.act_redo = self._action("redo", "Yinele", "Ctrl+Y", self.editor.redo, icon_color=white)
+        self.eylemler.update(save=self.act_save, undo=self.act_undo, redo=self.act_redo)
         for action in (self.act_save, self.act_undo, self.act_redo):
             button = QToolButton()
             button.setDefaultAction(action)
             button.setIconSize(QSize(20, 20))
             left.addWidget(button)
             self.addAction(action)
+        self._hizli_kutu = QWidget()  # Hızlı Erişim: şerit düğmesine sağ tık → ekle (hizli_erisim.py)
+        quick_row = QHBoxLayout(self._hizli_kutu)
+        quick_row.setContentsMargins(0, 0, 0, 0)
+        quick_row.setSpacing(2)
+        left.addWidget(self._hizli_kutu)
         self.act_undo.setEnabled(False)
         self.act_redo.setEnabled(False)
 
@@ -291,6 +300,7 @@ class MainWindow(QMainWindow):
         right.addSpacing(6)
         self.act_help = self._action("help", "Yardım ve Nasıl Kullanılır", "F1", self.show_help, icon_color=white)
         self.addAction(self.act_help)
+        self.eylemler["help"] = self.act_help
         help_button = QToolButton(objectName="helpButton")
         help_button.setDefaultAction(self.act_help)
         help_button.setIconSize(QSize(20, 20))
@@ -305,180 +315,46 @@ class MainWindow(QMainWindow):
             row.addWidget(box, stretch)
         return header
 
-    def _build_menus(self):
-        """Word'deki gibi konu başlıklarına göre menüler: Dosya, Düzen, Biçim, Ekle, Sayfa Düzeni, Görünüm, Yardım."""
-        row = QHBoxLayout(self.menu_row)
-        row.setContentsMargins(6, 0, 6, 0)
-        row.setSpacing(0)
-        ed = self.editor
+    def _build_ribbon(self):
+        """Excel/Word gibi sekmeli şerit: Dosya (açılır menü), Giriş, Ekle, Sayfa Düzeni, Gözden Geçir, Görünüm,
+        Yardım. Eylemler _build_actions'ta ve denetleyicilerde kurulur; şerit yalnız yerleşimdir (serit_sekmeleri.py)."""
+        e = self.eylemler
+        e["dictate"] = self.act_dictate
+        e["read_aloud"] = self.act_read_aloud
+        e["spell_next"] = self.spellcheck.next_action
+        e["spell_live"] = self.spellcheck.live_action
+        for key in ("spell_next", "spell_live"):
+            e[key].setIcon(icons.icon("spell_check"))
+            e[key].setProperty("ikonAdi", "spell_check")
+        e["dictation_vocabulary"] = self._action("spell_check", "Dikte Sözlüğü…", None,
+                                                 lambda: self.dictation.open_vocabulary())
+        e["language_packs"] = self._action("translate", "Dil Paketleri…", None, self.show_language_packs)
+        e["shortcuts"] = self._action("keyboard", "Klavye Kısayolları", None, lambda: self.show_help("kisayollar"))
+        e["about"] = self._action("info", "Sözcük Hakkında", None, self.show_about)
+        e["open_log"] = self._action("info", "Günlük Klasörü", None, self._open_log_folder,
+                                     tip="Tanılama Günlüğü Klasörünü Aç")
+        # cetvel eylemi durum çubuğundaki düğmeyle iki yönlü eşlenir
+        self.ruler_action.setChecked(self.ruler_button.isChecked())
+        self.ruler_action.toggled.connect(self.ruler_button.setChecked)
+        self.ruler_button.toggled.connect(self.ruler_action.setChecked)
+        for key in ("dictation_vocabulary", "language_packs", "shortcuts", "about", "open_log"):
+            self.addAction(e[key])
 
-        def add_menu(title, menu):
-            button = QToolButton(objectName="menuButton")
-            button.setText(title)
-            button.setPopupMode(QToolButton.InstantPopup)
-            button.setFocusPolicy(Qt.NoFocus)
-            button.setMenu(menu)
-            row.addWidget(button)
-            return button
+        ribbon = self.ribbon
+        ribbon.dosya_sekmesi_ekle(self.file_menu)
+        for name, page in (("Giriş", GirisSayfasi(self)), ("Ekle", EkleSayfasi(self)),
+                           ("Sayfa Düzeni", SayfaDuzeniSayfasi(self)), ("Gözden Geçir", GozdenGecirSayfasi(self)),
+                           ("Görünüm", GorunumSayfasi(self)), ("Yardım", YardimSayfasi(self))):
+            ribbon.sekme_ekle(name, page)
+        ribbon.sec("Giriş")
+        self._hizli_kur()
 
-        def action(menu, icon_name, text, slot, shortcut=None, checkable=False):
-            item = menu.addAction(text)
-            if icon_name:
-                item.setIcon(icons.icon(icon_name))
-            if shortcut is not None:
-                item.setShortcut(QKeySequence(shortcut))
-                item.setShortcutVisibleInContextMenu(True)
-            item.setCheckable(checkable)
-            item.triggered.connect(slot)
-            return item
-
-        self.file_button = add_menu("Dosya", self.file_menu)
-        self.file_button.setObjectName("menuButton")
-
-        # --- Düzen
-        edit_menu = QMenu(self)
-        edit_menu.addAction(self.act_undo)
-        edit_menu.addAction(self.act_redo)
-        edit_menu.addSeparator()
-        cut = action(edit_menu, "cut", "Kes", ed.cut, QKeySequence.Cut)
-        copy = action(edit_menu, "copy", "Kopyala", ed.copy, QKeySequence.Copy)
-        paste = action(edit_menu, "paste", "Yapıştır", ed.paste, QKeySequence.Paste)
-        paste_text = action(edit_menu, "paste_text", "Yalnızca Metni Koru", lambda: ed.paste(plain=True), "Ctrl+Shift+V")
-        edit_menu.addSeparator()
-        action(edit_menu, None, "Tümünü Seç", ed.select_all, QKeySequence.SelectAll)
-        edit_menu.addSeparator()
-        edit_menu.addAction(self.act_find)
-        edit_menu.addAction(self.act_replace)
-        action(edit_menu, None, "Sonraki Bul", lambda: self._find_next(1), "F3")
-        action(edit_menu, None, "Önceki Bul", lambda: self._find_next(-1), "Shift+F3")
-        edit_menu.addSeparator()
-        edit_menu.addAction(self.spellcheck.next_action)
-
-        def update_edit():
-            has_selection = ed.textCursor().hasSelection()
-            cut.setEnabled(has_selection)
-            copy.setEnabled(has_selection)
-            can_paste = ed.can_paste()
-            paste.setEnabled(can_paste)
-            paste_text.setEnabled(can_paste)
-
-        edit_menu.aboutToShow.connect(update_edit)
-        add_menu("Düzen", edit_menu)
-
-        # --- Biçim
-        format_menu = QMenu(self)
-        style_menu = format_menu.addMenu(icons.icon("bold"), "Stiller")
-        for level, name in enumerate(styles.HEADING_NAMES):
-            action(style_menu, None, name, lambda _=False, i=level: self._refocus(ed.set_heading, i))
-        for act in (self.act_bold, self.act_italic, self.act_underline, self.act_strike):
-            format_menu.addAction(act)
-        size_menu = format_menu.addMenu(icons.icon("grow_font"), "Yazı Tipi Boyutu")
-        action(size_menu, "grow_font", "Büyüt", lambda: self._refocus(ed.step_size, 1), "Ctrl+]")
-        action(size_menu, "shrink_font", "Küçült", lambda: self._refocus(ed.step_size, -1), "Ctrl+[")
-        size_menu.addSeparator()
-        for size in styles.FONT_SIZES:
-            action(size_menu, None, str(size), lambda _=False, v=size: self._refocus(ed.set_size, float(v)))
-        color = format_menu.addMenu(icons.icon("font_color"), "Yazı Tipi Rengi")
-        color.addMenu(self.color_button.menu()).setText("Renk Seç…")
-        highlight = format_menu.addMenu(icons.icon("highlight"), "Metin Vurgu Rengi")
-        highlight.addMenu(self.highlight_button.menu()).setText("Renk Seç…")
-        format_menu.addSeparator()
-        align_menu = format_menu.addMenu(icons.icon("align_left"), "Hizalama")
-        for act in self.align_actions.values():
-            align_menu.addAction(act)
-        spacing_menu = format_menu.addMenu(icons.icon("line_spacing"), "Satır Aralığı")
-        for act in self.spacing_actions.values():
-            spacing_menu.addAction(act)
-        list_menu = format_menu.addMenu(icons.icon("bullets"), "Listeler ve Girinti")
-        list_menu.addAction(self.act_bullets)
-        list_menu.addAction(self.act_numbers)
-        list_menu.addSeparator()
-        action(list_menu, "outdent", "Girintiyi Azalt", lambda: self._refocus(ed.change_indent, -1))
-        action(list_menu, "indent", "Girintiyi Artır", lambda: self._refocus(ed.change_indent, 1))
-        format_menu.addSeparator()
-        action(format_menu, "clear_format", "Tüm Biçimlendirmeyi Temizle", lambda: self._refocus(ed.clear_formatting),
-               "Ctrl+Space")
-        action(format_menu, "add_font", "Yazı Tipi Ekle…", self._add_font)
-        add_menu("Biçim", format_menu)
-
-        # --- Ekle
-        insert_menu = QMenu(self)
-        insert_menu.addMenu(self.table_menu).setText("Tablo")
-        insert_menu.addMenu(self.image_menu).setText("Resim")
-        insert_menu.addMenu(self.symbol_menu).setText("Simge")
-        for item, icon_name in ((insert_menu.actions()[0], "table"), (insert_menu.actions()[1], "image"),
-                                (insert_menu.actions()[2], "symbol")):
-            item.setIcon(icons.icon(icon_name))
-        insert_menu.addAction(self.act_link)
-        insert_menu.addSeparator()
-        insert_menu.addAction(self.act_dictate)
-        add_menu("Ekle", insert_menu)
-
-        # --- Sayfa Düzeni (kenar boşlukları, yönlendirme, kâğıt boyutu)
-        add_menu("Sayfa Düzeni", page_setup.build_menu(ed, self.menu_row, lambda change: self._refocus(change)))
-
-        # --- Görünüm
-        view_menu = QMenu(self)
-        self.ruler_action = action(view_menu, "ruler", "Cetvel", lambda on: self.ruler_button.setChecked(on),
-                                   checkable=True)
-        view_menu.addSeparator()
-        action(view_menu, "zoom_in", "Yakınlaştır", lambda: ed.set_zoom(ed.zoom() * 1.1), QKeySequence.ZoomIn)
-        action(view_menu, "zoom_out", "Uzaklaştır", lambda: ed.set_zoom(ed.zoom() / 1.1), QKeySequence.ZoomOut)
-        action(view_menu, None, "%100", lambda: ed.set_zoom(1.0))
-        action(view_menu, None, "Sayfa Genişliği", ed.fit_width)
-        action(view_menu, None, "Tam Sayfa", ed.fit_page)
-        view_menu.addSeparator()
-        action(view_menu, "customize", "Komut Çubuğunu Özelleştir…", self._customize_command_bar)
-        action(view_menu, None, "Düğme Sırasını Sıfırla", self.reset_bar_order)
-        view_menu.aboutToShow.connect(lambda: self.ruler_action.setChecked(self.ruler_button.isChecked()))
-        add_menu("Görünüm", view_menu)
-
-        # --- Gözden Geçir
-        review_menu = QMenu(self)
-        review_menu.addAction(self.spellcheck.live_action)
-        review_menu.addAction(self.spellcheck.next_action)
-        action(review_menu, "spell_check", "Dikte Sözlüğü…", lambda: self.dictation.open_vocabulary())
-        review_menu.addSeparator()
-        review_menu.addAction(self.act_translate)
-        action(review_menu, None, "Dil Paketleri…", self.show_language_packs)
-        review_menu.addSeparator()
-        review_menu.addAction(self.act_read_aloud)
-        add_menu("Gözden Geçir", review_menu)
-
-        # --- Yardım
-        help_menu = QMenu(self)
-        help_menu.addAction(self.act_help)
-        action(help_menu, None, "Klavye Kısayolları", lambda: self.show_help("kisayollar"))
-        help_menu.addSeparator()
-        action(help_menu, None, "Sözcük Hakkında", self.show_about)
-        help_menu.addSeparator()
-        action(help_menu, None, "Tanılama Günlüğü Klasörünü Aç", self._open_log_folder)
-        add_menu("Yardım", help_menu)
-        row.addStretch(1)
-
-    def _build_command_bar(self):
-        area = QWidget(objectName="commandArea")
-        area_layout = QHBoxLayout(area)
-        area_layout.setContentsMargins(8, 6, 8, 6)
-        bar = QFrame(objectName="commandBar")
-        bar_layout = QHBoxLayout(bar)
-        bar_layout.setContentsMargins(6, 4, 6, 4)
-        bar_layout.setSpacing(2)
-        area_layout.addWidget(bar)
-
-        # sığmayan düğmeler sağdaki » menüsünde; sağ tık özelleştirme menüsünü açar
-        tb = CommandBar()
-        tb.setContextMenuPolicy(Qt.CustomContextMenu)
-        tb.customContextMenuRequested.connect(lambda pos: self._command_bar_menu().exec(tb.mapToGlobal(pos)))
-        bar_layout.addWidget(tb, 1)
-        self.command_bar = tb
-        self.bar_items = []   # çubuktaki sırayla {key, label, group, widget}
-        self.bar_groups = []  # {name, items}
-        self._bar_group = None
+    def _build_actions(self):
+        """Tüm komut eylemlerini ve şeritte kullanılan hazır bileşenleri (yazı tipi kutusu, renk düğmeleri, tablo/resim/
+        simge menüleri, mikrofon…) kurar; yerleşimi şerit yapar (_build_ribbon, serit_sekmeleri.py)."""
         ed = self.editor
 
         # paragraf stili, yazı tipi ve boyutu
-        self._bar_start_group("Yazı Tipi")
         self.heading_box = QComboBox()
         for i, name in enumerate(styles.HEADING_NAMES):
             self.heading_box.addItem(name)
@@ -490,7 +366,7 @@ class MainWindow(QMainWindow):
         self.heading_box.setFixedWidth(112)
         self.heading_box.setToolTip("Stiller")
         self.heading_box.activated.connect(self._apply_heading)
-        self._bar_add("styles", "Stiller", self._padded(self.heading_box, 6))
+        self._reg("styles", self.heading_box)
 
         self.font_box = QFontComboBox()
         self.font_box.setCurrentFont(QFont(styles.DEFAULT_FAMILY))
@@ -498,7 +374,7 @@ class MainWindow(QMainWindow):
         self.font_box.setToolTip("Yazı Tipi")
         self.font_box.setMaxVisibleItems(16)
         self.font_box.textActivated.connect(self._apply_family)
-        self._bar_add("font", "Yazı Tipi", self._padded(self.font_box, 4))
+        self._reg("font", self.font_box)
 
         self.size_box = QComboBox()
         self.size_box.setEditable(True)
@@ -508,33 +384,28 @@ class MainWindow(QMainWindow):
         self.size_box.setToolTip("Yazı Tipi Boyutu")
         self.size_box.setMaxVisibleItems(16)
         self.size_box.textActivated.connect(self._apply_size)
-        self._bar_add("size", "Yazı Tipi Boyutu", self.size_box)
-        self._bar_add("grow_font", "Yazı Tipini Büyüt",
-                      self._action("grow_font", "Yazı Tipini Büyüt", "Ctrl+]", lambda: self._refocus(ed.step_size, 1)))
-        self._bar_add("shrink_font", "Yazı Tipini Küçült",
-                      self._action("shrink_font", "Yazı Tipini Küçült", "Ctrl+[", lambda: self._refocus(ed.step_size, -1)))
+        self._reg("size", self.size_box)
+        self._reg("grow_font", self._action("grow_font", "Yazı Tipini Büyüt", "Ctrl+]", lambda: self._refocus(ed.step_size, 1)))
+        self._reg("shrink_font", self._action("shrink_font", "Yazı Tipini Küçült", "Ctrl+[", lambda: self._refocus(ed.step_size, -1)))
 
         # karakter biçimleri
-        self._bar_start_group("Karakter Biçimi")
         self.act_bold = self._action("bold", "Kalın", QKeySequence.Bold, ed.set_bold, True)
         self.act_italic = self._action("italic", "İtalik", QKeySequence.Italic, ed.set_italic, True)
         self.act_underline = self._action("underline", "Altı Çizili", QKeySequence.Underline, ed.set_underline, True)
         self.act_strike = self._action("strike", "Üstü Çizili", None, ed.set_strike, True)
         for key, action in (("bold", self.act_bold), ("italic", self.act_italic),
                             ("underline", self.act_underline), ("strike", self.act_strike)):
-            self._bar_add(key, action.text(), action)
+            self._reg(key, action)
         self.highlight_button = ColorButton("highlight", "Metin Vurgu Rengi", "#FFFF00", highlight=True)
         self.highlight_button.colorChosen.connect(lambda c: self._refocus(ed.set_highlight, c))
-        self._bar_add("highlight", "Metin Vurgu Rengi", self.highlight_button)
+        self._reg("highlight", self.highlight_button)
         self.color_button = ColorButton("font_color", "Yazı Tipi Rengi", "#C00000")
         self.color_button.colorChosen.connect(lambda c: self._refocus(ed.set_text_color, c))
-        self._bar_add("font_color", "Yazı Tipi Rengi", self.color_button)
-        self._bar_add("clear_format", "Tüm Biçimlendirmeyi Temizle",
-                      self._action("clear_format", "Tüm Biçimlendirmeyi Temizle", "Ctrl+Space",
+        self._reg("font_color", self.color_button)
+        self._reg("clear_format", self._action("clear_format", "Tüm Biçimlendirmeyi Temizle", "Ctrl+Space",
                                    lambda: self._refocus(ed.clear_formatting)))
 
         # hizalama ve satır aralığı
-        self._bar_start_group("Paragraf")
         self.align_group = QActionGroup(self)
         self.align_actions = {}
         for icon_name, text, shortcut, flag in (
@@ -547,7 +418,7 @@ class MainWindow(QMainWindow):
                                   lambda _=False, f=flag: self._refocus(ed.set_paragraph_alignment, f), True)
             self.align_group.addAction(action)
             self.align_actions[flag] = action
-            self._bar_add(icon_name, text, action)
+            self._reg(icon_name, action)
 
         self.spacing_button = QToolButton()
         self.spacing_button.setIcon(icons.icon("line_spacing"))
@@ -564,50 +435,43 @@ class MainWindow(QMainWindow):
             self.spacing_group.addAction(action)
             self.spacing_actions[factor] = action
         self.spacing_button.setMenu(spacing_menu)
-        self._bar_add("line_spacing", "Satır ve Paragraf Aralığı", self.spacing_button)
+        self._reg("line_spacing", self.spacing_button)
 
         # listeler ve girinti
-        self._bar_start_group("Listeler ve Girinti")
         self.act_bullets = self._action("bullets", "Madde İşaretleri", "Ctrl+Shift+L",
                                         lambda: self._refocus(ed.toggle_list, True), True)
         self.act_numbers = self._action("numbers", "Numaralandırma", "Ctrl+Shift+N",
                                         lambda: self._refocus(ed.toggle_list, False), True)
-        self._bar_add("bullets", "Madde İşaretleri", self.act_bullets)
-        self._bar_add("numbers", "Numaralandırma", self.act_numbers)
-        self._bar_add("outdent", "Girintiyi Azalt",
-                      self._action("outdent", "Girintiyi Azalt", None, lambda: self._refocus(ed.change_indent, -1)))
-        self._bar_add("indent", "Girintiyi Artır",
-                      self._action("indent", "Girintiyi Artır", None, lambda: self._refocus(ed.change_indent, 1)))
+        self._reg("bullets", self.act_bullets)
+        self._reg("numbers", self.act_numbers)
+        self._reg("outdent", self._action("outdent", "Girintiyi Azalt", None, lambda: self._refocus(ed.change_indent, -1)))
+        self._reg("indent", self._action("indent", "Girintiyi Artır", None, lambda: self._refocus(ed.change_indent, 1)))
 
         # ekle ve sayfa düzeni
-        self._bar_start_group("Ekle ve Sayfa")
         self.table_button = self._build_table_button()
         self.table_menu = self.table_button.menu()
-        self._bar_add("table", "Tablo", self.table_button)
+        self._reg("table", self.table_button)
         self.image_button = self._build_image_button()
         self.image_menu = self.image_button.menu()
-        self._bar_add("image", "Resim", self.image_button)
+        self._reg("image", self.image_button)
         self.symbol_button = self._build_symbol_button()
         self.symbol_menu = self.symbol_button.menu()
-        self._bar_add("symbol", "Simge", self.symbol_button)
+        self._reg("symbol", self.symbol_button)
         self.act_link = self._action("link", "Bağlantı", "Ctrl+K", self.insert_link,
                                      tip="Bağlantı Ekle (web adresi ya da belgede bir yer)")
-        self._bar_add("link", "Bağlantı", self.act_link)
-        self._bar_add("page_layout", "Sayfa Düzeni", self._build_page_layout_button())
+        self._reg("link", self.act_link)
+        self.page_menu = page_setup.build_menu(self.editor, self, lambda change: self._refocus(change))
 
         # sesle yazma: kendi grubunda; denetleyici pencere kurulunca bağlanır (bkz. __init__)
-        self._bar_start_group("Bul ve Değiştir")
         self.act_find = self._action("find", "Bul", QKeySequence.Find, lambda: self.find(False))
         self.act_replace = self._action("replace", "Değiştir", QKeySequence.Replace, lambda: self.find(True))
-        self._bar_add("find", "Bul", self.act_find)
-        self._bar_add("replace", "Değiştir", self.act_replace)
+        self._reg("find", self.act_find)
+        self._reg("replace", self.act_replace)
 
-        self._bar_start_group("Gözden Geçir")
         self.act_translate = self._action("translate", "Çeviri", "Ctrl+Shift+T", self.show_translate,
                                           tip="Çeviri (bilgisayarda çalışır)")
-        self._bar_add("translate", "Çeviri", self.act_translate)
+        self._reg("translate", self.act_translate)
 
-        self._bar_start_group("Sesle Yazma")
         self.act_dictate = self._action("mic", "Sesle Yaz", "Ctrl+Shift+M", checkable=True)
         self.addAction(self.act_dictate)  # kısayol, düğme gizlense de çalışsın diye pencereye bağlanır
         self.mic_button = QToolButton(objectName="micButton")
@@ -615,7 +479,7 @@ class MainWindow(QMainWindow):
         self.mic_button.setIconSize(QSize(20, 20))
         self.mic_button.setFocusPolicy(Qt.NoFocus)
         self.mic_button.setPopupMode(QToolButton.MenuButtonPopup)  # ok: otomatik durdurma, gösterge, sözlük
-        self._bar_add("dictate", "Sesle Yaz", self.mic_button)
+        self._reg("dictate", self.mic_button)
 
         # sesli okuma: denetleyici pencere kurulunca bağlanır (bkz. __init__)
         self.act_read_aloud = self._action("read_aloud", "Sesli Oku", "Ctrl+Alt+Space", checkable=True,
@@ -626,151 +490,57 @@ class MainWindow(QMainWindow):
         self.read_button.setIconSize(QSize(20, 20))
         self.read_button.setFocusPolicy(Qt.NoFocus)
         self.read_button.setPopupMode(QToolButton.MenuButtonPopup)  # ok: duraklat, ses, hız
-        self._bar_add("read_aloud", "Sesli Oku", self.read_button)
+        self._reg("read_aloud", self.read_button)
 
-        self._bar_start_group("Yazı Tipleri")
-        self._bar_add("add_font", "Yazı Tipi Ekle…", self._action("add_font", "Yazı Tipi Ekle…", None, self._add_font,
+        self._reg("add_font", self._action("add_font", "Yazı Tipi Ekle…", None, self._add_font,
                                                                    tip="Yazı Tipi Ekle (.ttf / .otf)"))
-        self._bar_start_group(None)
 
-        # özelleştirme düğmesi çubuğun dışında: taşma menüsüne düşmez, hep görünür
-        customize = QToolButton()
-        customize.setIcon(icons.icon("customize"))
-        customize.setIconSize(QSize(20, 20))
-        customize.setToolTip("Komut Çubuğunu Özelleştir")
-        customize.setFocusPolicy(Qt.NoFocus)
-        customize.setPopupMode(QToolButton.InstantPopup)
-        customize.setMenu(QMenu(customize))
-        customize.menu().aboutToShow.connect(lambda: self._command_bar_menu(customize.menu()))
-        bar_layout.addWidget(customize, 0, Qt.AlignTop)
-        self.customize_button = customize
+        # pano, yakınlaştırma, bul-sonraki ve cetvel eylemleri
+        self.act_cut = self._action("cut", "Kes", None, ed.cut, tip="Kes (Ctrl+X)")
+        self.act_copy = self._action("copy", "Kopyala", None, ed.copy, tip="Kopyala (Ctrl+C)")
+        self.act_paste = self._action("paste", "Yapıştır", None, ed.paste, tip="Yapıştır (Ctrl+V)")
+        self.act_paste_text = self._action("paste_text", "Yalnızca Metni Koru", "Ctrl+Shift+V",
+                                           lambda: ed.paste(plain=True))
+        self.paste_menu = QMenu(self)
+        self.paste_menu.addAction(self.act_paste)
+        self.paste_menu.addAction(self.act_paste_text)
+        self.act_cut.setEnabled(False)
+        self.act_copy.setEnabled(False)
 
-        tb.orderChanged.connect(self._bar_order_changed)
-        self._apply_bar_visibility()
-        return area
+        def update_paste():
+            can_paste = ed.can_paste()
+            self.act_paste.setEnabled(can_paste)
+            self.act_paste_text.setEnabled(can_paste)
 
-    # --- komut çubuğu öğeleri ve özelleştirme ---------------------------------
+        QApplication.clipboard().dataChanged.connect(update_paste)
+        update_paste()
+        self._reg("cut", self.act_cut)
+        self._reg("copy", self.act_copy)
+        self._reg("paste", self.act_paste)
+        self._reg("paste_text", self.act_paste_text)
+        self._reg("zoom_in", self._action("zoom_in", "Yakınlaştır", QKeySequence.ZoomIn,
+                                          lambda: ed.set_zoom(ed.zoom() * 1.1)))
+        self._reg("zoom_out", self._action("zoom_out", "Uzaklaştır", QKeySequence.ZoomOut,
+                                           lambda: ed.set_zoom(ed.zoom() / 1.1)))
+        self._reg("zoom_100", self._action(None, "%100", None, lambda: ed.set_zoom(1.0),
+                                           tip="Yakınlaştırmayı %100 yap"))
+        self._reg("fit_width", self._action(None, "Sayfa Genişliği", None, ed.fit_width))
+        self._reg("fit_page", self._action(None, "Tam Sayfa", None, ed.fit_page))
+        self.ruler_action = self._action("ruler", "Cetvel", None, None, checkable=True)
+        self._reg("ruler", self.ruler_action)
+        self.addAction(self._action(None, "Sonraki Bul", "F3", lambda: self._find_next(1)))
+        self.addAction(self._action(None, "Önceki Bul", "Shift+F3", lambda: self._find_next(-1)))
 
-    def _padded(self, widget, right):
-        """Açılır kutunun sağına boşluk ekler (öğe gizlenince boşluk da gizlensin diye aynı kapta)."""
-        box = QWidget()
-        row = QHBoxLayout(box)
-        row.setContentsMargins(0, 0, right, 0)
-        row.setSpacing(0)
-        row.addWidget(widget)
-        return box
-
-    def _bar_start_group(self, name):
-        """Yeni düğme grubu başlatır; ayırıcılar gruplar arasına çubuk tarafından çizilir."""
-        if name is not None:
-            self._bar_group = {"name": name, "items": []}
-            self.bar_groups.append(self._bar_group)
-
-    def _bar_add(self, key, label, item):
-        """Çubuğa düğme/kutu ekler. QAction'lar QToolButton'a sarılır ve pencereye bağlanır: düğme gizlense de
-        kısayolu (Ctrl+B gibi) çalışmaya devam eder (gizli QAction'ın kısayolu çalışmaz)."""
+    def _reg(self, key, item):
+        """Eylemi kataloğa (eylemler) kaydeder ve pencereye bağlar (kısayolu her sekmede çalışsın); hazır
+        bileşenlerde (kutu, menülü düğme) yalnız düğmelerin odağı metinden almaması sağlanır."""
         if isinstance(item, QAction):
             self.addAction(item)
-            button = QToolButton()
-            button.setDefaultAction(item)
-            button.setIconSize(QSize(20, 20))  # ikonlar 20 px ızgarada çizilir; başka boyut bulanıklaştırır
-            button.setAutoRaise(True)
-            widget = button
-        else:
-            widget = item
-        for child in [widget] + widget.findChildren(QToolButton):
+            self.eylemler[key] = item
+            return
+        for child in [item] + item.findChildren(QToolButton):
             if isinstance(child, QToolButton):
                 child.setFocusPolicy(Qt.NoFocus)  # tıklayınca odak metinde kalsın
-        entry = self.command_bar.add_item(key, label, self._bar_group["name"], widget)
-        self._bar_group["items"].append(entry)
-        self.bar_items.append(entry)
-        return entry
-
-    def hidden_bar_items(self):
-        value = self.settings.value("commandbar/hidden", None)
-        if value is None:
-            return set()
-        if isinstance(value, str):
-            value = [v for v in value.split(",") if v]
-        return set(value)
-
-    def set_bar_item_visible(self, key, visible):
-        hidden = self.hidden_bar_items()
-        (hidden.discard if visible else hidden.add)(key)
-        self.settings.setValue("commandbar/hidden", ",".join(sorted(hidden)))
-        self._apply_bar_visibility()
-
-    def reset_command_bar(self):
-        self.settings.setValue("commandbar/hidden", "")
-        self._apply_bar_visibility()
-
-    def _apply_bar_visibility(self):
-        self.command_bar.set_hidden(self.hidden_bar_items())
-        order = self.settings.value("commandbar/order", "")
-        self.command_bar.set_order([k for k in str(order).split(",") if k])
-
-    def _bar_order_changed(self, order):
-        self.settings.setValue("commandbar/order", ",".join(order))
-
-    def reset_bar_order(self):
-        self.settings.setValue("commandbar/order", "")
-        self.command_bar.set_order([])
-
-    def _command_bar_menu(self, menu=None):
-        """Word'deki "Hızlı Erişim Araç Çubuğunu Özelleştir" gibi: işaretli düğmeler çubukta görünür."""
-        if menu is None:
-            menu = QMenu(self)
-            menu.setAttribute(Qt.WA_DeleteOnClose)
-        menu.clear()
-        title = menu.addAction("Komut Çubuğunda Gösterilecekler")
-        title.setEnabled(False)
-        hidden = self.hidden_bar_items()
-        for group in self.bar_groups:
-            submenu = menu.addMenu(group["name"])
-            shown = sum(e["key"] not in hidden for e in group["items"])
-            if shown == 0:
-                submenu.setTitle(f"{group['name']} (gizli)")
-            for entry in group["items"]:
-                action = submenu.addAction(bar_item_icon(entry["widget"]), entry["label"])
-                action.setCheckable(True)
-                action.setChecked(entry["key"] not in hidden)
-                action.toggled.connect(lambda on, k=entry["key"]: self.set_bar_item_visible(k, on))
-            submenu.addSeparator()
-            submenu.addAction("Tümünü Göster", lambda g=group: self._set_group_visible(g, True))
-            submenu.addAction("Tümünü Gizle", lambda g=group: self._set_group_visible(g, False))
-        menu.addSeparator()
-        menu.addAction("Komut Çubuğunu Özelleştir…", self._customize_command_bar)
-        hint = menu.addAction("Düğmeleri sürükleyerek sıralayın (menülü düğmeler için Alt + sürükle)")
-        hint.setEnabled(False)
-        order_reset = menu.addAction("Düğme Sırasını Sıfırla", self.reset_bar_order)
-        order_reset.setEnabled(bool(self.settings.value("commandbar/order", "")))
-        reset = menu.addAction("Gizlenenleri Geri Getir", self.reset_command_bar)
-        reset.setEnabled(bool(hidden))
-        return menu
-
-    def _set_group_visible(self, group, visible):
-        hidden = self.hidden_bar_items()
-        for entry in group["items"]:
-            (hidden.discard if visible else hidden.add)(entry["key"])
-        self.settings.setValue("commandbar/hidden", ",".join(sorted(hidden)))
-        self._apply_bar_visibility()
-
-    def _customize_command_bar(self):
-        dialog = CommandBarDialog(self.bar_groups, self.hidden_bar_items(), self)
-        if dialog.exec() == QDialog.Accepted:
-            self.settings.setValue("commandbar/hidden", ",".join(sorted(dialog.hidden())))
-            self._apply_bar_visibility()
-
-    def _build_page_layout_button(self):
-        """Sayfa Düzeni: kenar boşlukları, yönlendirme, kâğıt boyutu ve Sayfa Yapısı penceresi."""
-        button = QToolButton()
-        button.setIcon(icons.icon("page_layout"))
-        button.setIconSize(QSize(20, 20))
-        button.setToolTip("Sayfa Düzeni (kenar boşlukları, yönlendirme, boyut)")
-        button.setPopupMode(QToolButton.InstantPopup)
-        self.page_layout_menu = page_setup.build_menu(self.editor, button, lambda change: self._refocus(change))
-        button.setMenu(self.page_layout_menu)
-        return button
 
     def _build_image_button(self):
         """Resim: dosyadan/panodan ekleme ve seçili görselin döndürme, kırpma, boyut işlemleri."""
@@ -1948,6 +1718,10 @@ class MainWindow(QMainWindow):
         ed = self.editor
         fmt = ed.currentCharFormat()
         font = fmt.font()
+
+        has_selection = ed.textCursor().hasSelection()
+        self.act_cut.setEnabled(has_selection)
+        self.act_copy.setEnabled(has_selection)
 
         self.act_bold.setChecked(fmt.fontWeight() >= 600)
         self.act_italic.setChecked(font.italic())

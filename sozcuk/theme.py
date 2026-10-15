@@ -35,6 +35,10 @@ def _asset(name, svg_text):
 
 
 def stylesheet():
+    return _main_style() + serit_stil()
+
+
+def _main_style():
     chevron = _asset("chevron.svg", icons.chevron_svg(TEXT_MUTED))
     chevron_white = _asset("chevron-white.svg", icons.chevron_svg("#ffffff"))
     return f"""
@@ -58,16 +62,8 @@ QToolTip {{
 #header #fileButton::menu-indicator {{ image: url({chevron_white}); width: 12px; subcontrol-position: right center; right: 4px; }}
 #header #fileButton {{ padding-right: 22px; }}
 
-/* --- menü şeridi --- */
-#menuRow {{ background: {SURFACE}; border-bottom: 1px solid {BORDER}; }}
-#menuRow QToolButton {{ padding: 5px 10px; border: none; border-radius: 4px; background: transparent; }}
-#menuRow QToolButton:hover {{ background: {HOVER}; }}
-#menuRow QToolButton:pressed, #menuRow QToolButton[popupMode="1"]:on {{ background: {PRESSED}; }}
-#menuRow QToolButton::menu-indicator {{ image: none; width: 0px; }}
-
-/* --- komut çubuğu --- */
+/* --- komut alanı (şerit stili serit_stil() içinde) --- */
 #commandArea {{ background: {WINDOW}; }}
-#commandBar {{ background: {SURFACE}; border: 1px solid {BORDER}; border-radius: 8px; }}
 QToolButton {{
     border: 1px solid transparent; border-radius: 4px; padding: 3px; background: transparent;
 }}
@@ -166,6 +162,25 @@ QPushButton {{
 QPushButton:hover {{ background: {HOVER}; }}
 QPushButton:default {{ background: {ACCENT}; color: #ffffff; border-color: {ACCENT}; }}
 QPushButton:default:hover {{ background: {ACCENT_DARK}; }}
+"""
+
+
+def serit_stil():
+    """Sekmeli şerit (serit.py). Pencerenin stil sayfasına eklenir; üst pencerenin çocuğu olmayan açılır
+    çerçeveler (Qt.Popup) bunu kendileri uygular."""
+    return f"""
+#serit {{ background: {SURFACE}; border-bottom: 1px solid {BORDER}; }}
+#seritSekmeleri::tab {{ padding: 5px 14px; color: {TEXT}; border: none; background: transparent; }}
+#seritSekmeleri::tab:selected {{ color: {ACCENT}; border-bottom: 3px solid {ACCENT}; }}
+#seritSekmeleri::tab:hover:!selected {{ background: {HOVER}; }}
+#seritSekmeleri::tab:first {{ background: {ACCENT}; color: #ffffff; font-weight: 600; border-bottom: none; }}
+#seritYigin, #seritSayfasi {{ background: {SURFACE}; }}
+#seritGrupAdi {{ color: {TEXT_MUTED}; font-size: 11px; }}
+#seritAyirac {{ color: {BORDER}; }}
+#seritDugme {{ border: 1px solid transparent; border-radius: 4px; padding: 2px 4px; }}
+#seritDugme:hover {{ background: {HOVER}; }}
+#seritDugme:checked, #seritDugme:pressed {{ background: {CHECKED}; }}
+#seritAcilir {{ background: {SURFACE}; border: 1px solid {BORDER}; }}
 """
 
 

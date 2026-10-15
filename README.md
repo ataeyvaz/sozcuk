@@ -8,6 +8,7 @@ Yazım denetimi, sesle yazma, sesli okuma ve çeviri dahil her şey **bilgisayar
 
 ## Neler var
 
+- **Arayüz:** Word/Excel gibi sekmeli şerit (Dosya · Giriş · Ekle · Sayfa Düzeni · Gözden Geçir · Görünüm · Yardım), dar pencerede kendiliğinden daralan gruplar, `Ctrl+F1` ile şeridi daraltma, sağ tıkla **Hızlı Erişim** özelleştirme
 - **Belge:** başlık stilleri, yazı tipi/boyut/renk, hizalama, satır aralığı, listeler, girintiler, tablolar
 - **Sayfa:** gerçek A4 görünümü, cetveller, kâğıt boyutu (A4, A5, A3, B5, Letter, Legal, Executive), dikey/yatay, kenar boşlukları, **sayfa numarası** (Word'ün PAGE alanı olarak kaydedilir)
 - **Resimler:** dosyadan/panodan/sürükle-bırak, tutamaklarla boyutlandırma, kırpma, 90° ve fareyle döndürme

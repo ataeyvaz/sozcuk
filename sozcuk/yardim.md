@@ -15,9 +15,8 @@ Sözcük, Word belgeleriyle (.docx) çalışan, sade ve tamamen **bilgisayarın�
 
 ## Ekranın bölümleri
 
-- **Başlık şeridi (mavi):** solda **Dosya** menüsü, Kaydet, Geri Al ve Yinele; ortada belgenin adı ve kayıt durumu; sağda **Otomatik Kaydet** anahtarı ve **Yardım** düğmesi.
-- **Menü şeridi:** Dosya, Düzen, Biçim, Ekle, Sayfa Düzeni, Görünüm ve Yardım menüleri (bkz. [Menüler](konu:menuler)).
-- **Komut çubuğu:** yazı tipi, biçimlendirme, paragraf, liste, tablo, resim, simge, sayfa düzeni ve sesle yazma düğmeleri; sığmazsa iki satıra yayılır. Düğmelerin üzerinde fareyi bekletince adı ve kısayolu görünür.
+- **Başlık şeridi (mavi):** solda Kaydet, Geri Al, Yinele ve **Hızlı Erişim** düğmeleriniz; ortada belgenin adı ve kayıt durumu; sağda **Otomatik Kaydet** anahtarı ve **Yardım** düğmesi.
+- **Şerit:** Word ve Excel'deki gibi sekmeli şerit — **Dosya** menüsü, **Giriş**, **Ekle**, **Sayfa Düzeni**, **Gözden Geçir**, **Görünüm** ve **Yardım** sekmeleri; komutlar sekmelerde gruplanmıştır. Düğmelerin üzerinde fareyi bekletince adı ve kısayolu görünür (bkz. [Şerit ve Hızlı Erişim](konu:serit)).
 - **Cetveller:** sayfanın üstünde ve solunda; paragraf girintileri ve üst/alt kenar boşlukları buradan sürüklenerek ayarlanır.
 - **Sayfa:** gerçek kâğıt boyutunda (varsayılan A4) sayfalar halinde yazarsınız.
 - **Durum çubuğu (alt):** sayfa numarası, sözcük sayısı, dil, kayıt durumu, cetvel düğmesi, yakınlaştırma ve yazım denetimi durumu.
@@ -35,6 +34,7 @@ Sözcük'e eklenen özellikler, en yenisi en üstte.
 
 ## 16 Ekim 2026 — Sürüm 1.5
 
+- **Sekmeli şerit (Word/Excel gibi):** menü şeridi ve komut çubuğu yerine **Dosya**, **Giriş**, **Ekle**, **Sayfa Düzeni**, **Gözden Geçir**, **Görünüm** ve **Yardım** sekmeleri geldi. Komutlar gruplanmış büyük/küçük düğmelerle sekmelerde durur; pencere daraldıkça gruplar önce yazısız, sonra tek açılır düğmeye iner. `Ctrl+F1` ya da bir sekmeye çift tıklama şeridi daraltır. Bir düğmeye **sağ tıklayıp Hızlı Erişim Araç Çubuğuna Ekle** diyerek sık kullandığınız komutları başlıktaki Hızlı Erişim alanına koyabilirsiniz. Bütün kısayollar aynen çalışır. Bkz. [Şerit ve Hızlı Erişim](konu:serit).
 - **Eagle Office:** Sözcük ve hesap tablosu uygulaması Tabcel artık **Eagle Office** paketinin parçası. **Yardım → Sözcük Hakkında** penceresinde paket adı, paketteki uygulamalar ve iletişim e-postası (tıklanınca e-posta uygulamanız açılır) görünür; kurulum paketinin yayıncı adı da Eagle Office oldu.
 
 ## 7 Ekim 2026 — Sürüm 1.4
@@ -59,18 +59,15 @@ Sözcük'e eklenen özellikler, en yenisi en üstte.
 
 - **Çeviri ve dil paketleri:** `Ctrl+Shift+T` ile seçili metni ya da belgenin tamamını çevirin; **Gözden Geçir → Dil Paketleri…** ile başka dilleri indirin. Türkçe ⇄ İngilizce uygulamayla birlikte gelir. Çeviri bilgisayarınızda yapılır; internet yalnızca dil paketini bir kez indirmek için gerekir. Bkz. [Çeviri](konu:ceviri).
 - **Bağlantı (köprü):** `Ctrl+K` ile web adresi ya da belgede bir yer (ör. "2. sayfa, 5. satır") bağlantısı; `Ctrl` ile tıklayarak açılır. Bkz. [Bağlantılar](konu:baglanti).
-- **Sayfa numarası:** Sayfa Düzeni menüsünden açılır; konum (alt/üst — sol, orta, sağ), biçim ("1", "Sayfa 1", "1 / 12") ve başlangıç numarası seçilebilir. Ekranda, yazdırmada, PDF'te ve .docx'te görünür. Bkz. [Sayfa Düzeni](konu:sayfa).
+- **Sayfa numarası:** Ekle sekmesindeki **Sayfa Numarası** düğmesinden açılır; konum (alt/üst — sol, orta, sağ), biçim ("1", "Sayfa 1", "1 / 12") ve başlangıç numarası seçilebilir. Ekranda, yazdırmada, PDF'te ve .docx'te görünür. Bkz. [Sayfa Düzeni](konu:sayfa).
 - **Bul ve Değiştir:** `Ctrl+F` ile arama, `Ctrl+H` ile değiştirme; tüm eşleşmeler sayfada sarıyla işaretlenir, Türkçe harf kuralları gözetilir. Bkz. [Bul ve Değiştir](konu:bul).
 
 ## 17 Eylül 2026
 
-- **Menü şeridi:** Word'deki gibi konu başlıklarına göre menüler — Dosya, Düzen, Biçim, Ekle, Sayfa Düzeni, Görünüm, Yardım. Bkz. [Menüler](konu:menuler).
-- **İki satırlı komut çubuğu ve sürükleyerek sıralama:** düğmeler sığmazsa ikinci satıra geçer; düğmeler sürüklenerek istediğiniz sıraya dizilebilir. Bkz. [Komut Çubuğunu Özelleştirme](konu:cubuk).
 - **Word'ün açtığı diğer biçimler:** eski Word belgeleri (.doc, .dot), .docm, .dotx, .dotm, .rtf, .odt (LibreOffice), .txt, web sayfaları (.htm, .html, .mht), Word 2003 XML, Works (.wps) ve WordPerfect (.wpd) açılabilir; Farklı Kaydet'e .doc, .rtf, .odt, .txt ve .html eklendi. Bkz. [Dosya Biçimleri](konu:bicimler).
 - **Google Drive ve OneDrive ile canlı çalışma:** Drive'daki Word belgelerini açıp düzenleyin; yazmaya kısa ara verdiğinizde belge kendiliğinden Drive'a kaydedilir. Belge başka yerde değişirse Sözcük fark eder. Bkz. [Google Drive ve OneDrive](konu:bulut).
 - **Yardım ve Nasıl Kullanılır:** bu pencere. `F1`, başlıktaki **?** düğmesi ya da **Dosya → Yardım ve Nasıl Kullanılır** ile açılır; konular aranabilir.
 - **Sayfa Düzeni:** kenar boşluğu hazır ayarları, dikey/yatay yönlendirme, kâğıt boyutları (A4, A5, A3, B5, Letter, Legal, Executive) ve önizlemeli **Sayfa Yapısı** penceresi. Bkz. [Sayfa Düzeni](konu:sayfa).
-- **Komut çubuğunu özelleştirme:** düğmeleri gösterip gizleyin; pencere darsa sığmayan düğmeler **»** menüsünde. Bkz. [Komut Çubuğunu Özelleştirme](konu:cubuk).
 - **Resimler:** dosyadan, panodan ya da sürükle-bırakla resim ekleme; tutamaklarla boyutlandırma, kırpma, 90° ve fareyle döndürme. Bkz. [Resimler](konu:resim).
 - **Simgeler:** son kullanılan simgeler ve kategorili, aranabilir simge penceresi (₺, oklar, matematik, ASCII, kutu çizgileri, emoji…). Bkz. [Simgeler](konu:simge).
 - **Dikey cetvel:** üst ve alt kenar boşlukları cetvelden sürüklenerek ayarlanabilir.
@@ -85,23 +82,38 @@ Sözcük'e eklenen özellikler, en yenisi en üstte.
 - Word (.docx) açma/kaydetme, PDF'i düzenlenebilir metin olarak açma, PDF olarak dışa aktarma, yazdırma.
 - Otomatik kaydetme ve beklenmedik kapanmada belge kurtarma.
 
-<!-- konu: menuler | Menüler | more -->
-# Menüler
+<!-- konu: serit | Şerit ve Hızlı Erişim | more -->
+# Şerit ve Hızlı Erişim
 
-Başlığın altındaki menü şeridinde komutlar konularına göre toplanmıştır. Komut çubuğundaki düğmelerle aynı işi yaparlar; bir düğmeyi çubuktan gizleseniz bile komut menüde durur.
+Başlığın altındaki **şerit**, komutları Word ve Excel'deki gibi sekmelere ve gruplara ayırır. Sekme adına tıklayarak o sekmenin komutlarını görürsünüz.
 
-| Menü | İçindekiler |
+| Sekme | Grupları ve komutları |
 |---|---|
-| **Dosya** | Yeni, Aç, Google Drive'dan Aç, Kaydet, Farklı Kaydet, PDF Olarak Dışa Aktar, Ses Dosyasından Yazıya Dök, Şifre ile Koru, Şifreyi Kaldır, Yazdır, Yardım, Tanılama Günlüğü, Kapat |
-| **Düzen** | Geri Al, Yinele, Kes, Kopyala, Yapıştır, Yalnızca Metni Koru, Tümünü Seç, Bul, Değiştir, Sonraki/Önceki Bul, Sonraki Yazım Hatası |
-| **Biçim** | Stiller, Kalın/İtalik/Altı Çizili/Üstü Çizili, Yazı Tipi Boyutu, Yazı Tipi Rengi, Metin Vurgu Rengi, Hizalama, Satır Aralığı, Listeler ve Girinti, Biçimlendirmeyi Temizle, Yazı Tipi Ekle |
-| **Ekle** | Tablo, Resim, Simge, Bağlantı, Sesle Yaz |
-| **Sayfa Düzeni** | Kenar Boşlukları, Yönlendirme (Dikey/Yatay), Boyut (A4, A5, A3, B5, Letter, Legal, Executive), Sayfa Numarası, Sayfa Yapısı… |
-| **Görünüm** | Cetvel, Yakınlaştır/Uzaklaştır, %100, Sayfa Genişliği, Tam Sayfa, Komut Çubuğunu Özelleştir, Düğme Sırasını Sıfırla |
-| **Gözden Geçir** | Yazarken Yazım Denetimi, Sonraki Yazım Hatası, Dikte Sözlüğü, Çeviri, Dil Paketleri, Sesli Oku |
-| **Yardım** | Yardım ve Nasıl Kullanılır (F1), Klavye Kısayolları, Tanılama Günlüğü Klasörünü Aç |
+| **Dosya** | Açılır menü: Yeni, Aç, Google Drive/OneDrive'dan Aç, Kaydet, Farklı Kaydet, PDF Olarak Dışa Aktar, Ses Dosyasından Yazıya Dök, Şifre ile Koru, Şifreyi Kaldır, Yazdır, Yardım, Tanılama Günlüğü, Kapat |
+| **Giriş** | **Pano** (Yapıştır, Yalnızca Metni Koru, Kes, Kopyala) · **Yazı Tipi** (yazı tipi, boyut, büyüt/küçült, kalın, italik, altı/üstü çizili, vurgu ve yazı rengi, biçimi temizle, yazı tipi ekle) · **Paragraf** (madde işaretleri, numaralandırma, girinti, satır aralığı, hizalama) · **Stiller** · **Düzenleme** (Bul, Değiştir) · **Ses** (Sesle Yaz) |
+| **Ekle** | Tablo, Resim, Bağlantı, Sayfa Numarası, Simge |
+| **Sayfa Düzeni** | Kenar Boşlukları, Yönlendirme (Dikey/Yatay), Boyut (A4, A5, A3, B5, Letter, Legal, Executive); köşedeki **↘** düğmesi Sayfa Yapısı penceresini açar |
+| **Gözden Geçir** | Yazım Denetimi (Sonraki Hata, Yazarken Yazım Denetimi, Dikte Sözlüğü), Çeviri, Dil Paketleri, Sesli Oku |
+| **Görünüm** | Cetvel, Yakınlaştır, Uzaklaştır, %100, Sayfa Genişliği, Tam Sayfa |
+| **Yardım** | Yardım (F1), Klavye Kısayolları, Sözcük Hakkında, Tanılama Günlüğü Klasörü |
 
-Menülerde komutların kısayolları da yazar.
+Kısayollar hangi sekme açık olursa olsun çalışır; düğmelerin ipucunda da yazar.
+
+## Pencere dar olduğunda
+
+Şerit pencereye sığmazsa gruplar öncelik sırasıyla önce yazısız küçük düğmelere, sonra tek bir açılır düğmeye iner (düğmeye tıklayınca grubun komutları açılır). Pencereyi genişletirseniz eski hâline döner.
+
+## Şeridi daraltma
+
+`Ctrl+F1` tuşlarına basın ya da bir sekmeye **çift tıklayın**: şerit gizlenir, yalnız sekme adları kalır; belgeye daha çok yer açılır. Daraltılmışken bir sekmeye tıklarsanız komutlar belgenin üstünde geçici olarak açılır, komutu seçince kapanır. Yeniden `Ctrl+F1` ya da çift tıklama şeridi geri getirir.
+
+## Hızlı Erişim
+
+Başlık şeridinde Kaydet, Geri Al ve Yinele'nin yanında kendi komutlarınızı tutabilirsiniz:
+
+- Şeritteki bir düğmeye **sağ tıklayıp Hızlı Erişim Araç Çubuğuna Ekle**'yi seçin.
+- Eklediğiniz düğmeye sağ tıklayıp **Hızlı Erişim Araç Çubuğundan Kaldır**'ı seçerek çıkarırsınız.
+- En çok 12 komut eklenebilir; liste bilgisayarınızda saklanır ve sonraki açılışlarda korunur.
 
 <!-- konu: dosya | Dosya İşlemleri | open -->
 # Dosya İşlemleri
@@ -296,7 +308,7 @@ Yeni belgelerin Google Dokümanlar biçimine çevrilmemesi için drive.google.co
 <!-- konu: bicim | Metin Biçimlendirme | bold -->
 # Metin Biçimlendirme
 
-Biçimlendirmek istediğiniz metni seçin (ya da yazmadan önce biçimi seçin) ve komut çubuğundaki düğmeleri kullanın.
+Biçimlendirmek istediğiniz metni seçin (ya da yazmadan önce biçimi seçin) ve **Giriş** sekmesindeki düğmeleri kullanın.
 
 ## Yazı tipi
 
@@ -365,7 +377,7 @@ Dikey cetveldeki gri/beyaz sınırın üzerine gelince imleç ↕ şeklini alır
 <!-- konu: sayfa | Sayfa Düzeni | page_layout -->
 # Sayfa Düzeni
 
-Komut çubuğundaki **Sayfa Düzeni** düğmesi (ya da menü şeridindeki **Sayfa Düzeni** menüsü) belgenin kâğıt boyutunu, yönlendirmesini ve kenar boşluklarını ayarlar. Ayarlar tüm belgeye uygulanır, .docx dosyasına kaydedilir, yazdırma ve PDF'e de yansır.
+**Sayfa Düzeni** sekmesi belgenin kâğıt boyutunu, yönlendirmesini ve kenar boşluklarını ayarlar. Ayarlar tüm belgeye uygulanır, .docx dosyasına kaydedilir, yazdırma ve PDF'e de yansır.
 
 ## Kenar Boşlukları
 
@@ -388,7 +400,7 @@ A4, A5, A3, B5 (JIS), Letter, Legal ve Executive. Listede olmayan bir boyut içi
 
 ## Sayfa Numarası
 
-**Sayfa Düzeni → Sayfa Numarası** menüsünden **Sayfa Numarası Ekle** işaretlenince belgenin her sayfasına numara konur.
+**Ekle → Sayfa Numarası** düğmesinden **Sayfa Numarası Ekle** işaretlenince belgenin her sayfasına numara konur.
 
 - **Konum:** Alt Orta (varsayılan), Alt Sağ, Alt Sol, Üst Sağ, Üst Sol, Üst Orta.
 - **Biçim:** yalnızca numara ("1"), "Sayfa 1" ya da "1 / 12" (toplam sayfa sayısıyla birlikte).
@@ -416,7 +428,7 @@ Dört kenar boşluğunu, yönlendirmeyi ve kâğıt boyutunu tek yerde, canlı �
 
 ## Satır, sütun ve hücreler
 
-İmleç tablodayken **Tablo** menüsünden ya da sağ tık menüsünden:
+İmleç tablodayken **Ekle → Tablo** menüsünden ya da sağ tık menüsünden:
 
 - **Ekle:** üste/alta satır, sola/sağa sütun.
 - **Sil:** satırları, sütunları ya da tüm tabloyu sil.
@@ -477,7 +489,7 @@ Simgeler imlecin yazı biçimiyle sıradan karakter olarak eklenir.
 <!-- konu: baglanti | Bağlantılar | link -->
 # Bağlantılar
 
-Metne köprü eklemek için `Ctrl+K` tuşlarına basın; aynı komut **Ekle** menüsünde ve komut çubuğundaki zincir düğmesindedir.
+Metne köprü eklemek için `Ctrl+K` tuşlarına basın; aynı komut **Ekle** sekmesindeki **Bağlantı** düğmesindedir.
 
 ## Bağlantı ekleme
 
@@ -504,7 +516,7 @@ Belgeyi .docx olarak kaydettiğinizde bağlantılar Word'ün kendi köprüleri o
 <!-- konu: bul | Bul ve Değiştir | find -->
 # Bul ve Değiştir
 
-Belgede metin aramak için `Ctrl+F`, bulduğunu değiştirmek için `Ctrl+H` tuşlarına basın. Aynı komutlar **Düzen** menüsünde ve komut çubuğundaki büyüteç ve değiştirme düğmelerindedir.
+Belgede metin aramak için `Ctrl+F`, bulduğunu değiştirmek için `Ctrl+H` tuşlarına basın. Aynı komutlar **Giriş** sekmesindeki **Düzenleme** grubundadır.
 
 ## Arama
 
@@ -553,7 +565,7 @@ Sağ tık menüsünde de Kes, Kopyala, Yapıştır ve Yalnızca Metni Koru bulun
 <!-- konu: ceviri | Çeviri | translate -->
 # Çeviri
 
-Metni başka bir dile çevirmek için `Ctrl+Shift+T` tuşlarına basın; aynı komut **Gözden Geçir** menüsünde ve komut çubuğundaki küre düğmesindedir.
+Metni başka bir dile çevirmek için `Ctrl+Shift+T` tuşlarına basın; aynı komut **Gözden Geçir** sekmesindeki **Çeviri** düğmesindedir.
 
 ## Kullanım
 
@@ -702,7 +714,7 @@ Sözcük, yazdığınız Türkçe metni doğal bir sesle okur. Okuma **tamamen b
 ## Kullanım
 
 1. Okunmasını istediğiniz yeri seçin. Seçim yapmazsanız okuma, imlecin bulunduğu cümleden başlayıp belgenin sonuna kadar sürer.
-2. Komut çubuğundaki **Sesli Oku** düğmesine tıklayın ya da `Ctrl+Alt+Space` tuşlarına basın. Okunan cümle sayfada açık maviyle işaretlenir ve görünür kalır.
+2. **Gözden Geçir** sekmesindeki **Sesli Oku** düğmesine tıklayın ya da `Ctrl+Alt+Space` tuşlarına basın. Okunan cümle sayfada açık maviyle işaretlenir ve görünür kalır.
 3. Durdurmak için düğmeye yeniden tıklayın ya da `Ctrl+Alt+Space`'e basın.
 
 Okuma sürerken belgeyi değiştirirseniz okuma durur (işaretlenen yerler kaymasın diye).
@@ -749,35 +761,6 @@ Tanıma bir kelimeyi sürekli yanlış yazıyorsa (ör. "diktek" yerine "tiktik"
 - Yakınlaştırma yalnızca görünümü değiştirir; yazdırmayı ve belgeyi etkilemez. Son kullanılan düzey hatırlanır.
 - **Cetvel** düğmesi cetvelleri gösterir/gizler.
 - Durum çubuğunun solunda bulunduğunuz **sayfa** ve belgenin **sözcük sayısı** görünür.
-
-<!-- konu: cubuk | Komut Çubuğunu Özelleştirme | customize -->
-# Komut Çubuğunu Özelleştirme
-
-Komut çubuğunu kendinize göre düzenleyebilirsiniz: düğmeleri gizleyebilir, sıralarını değiştirebilirsiniz.
-
-## İki satır
-
-Düğmeler pencereye sığmazsa çubuk kendiliğinden **ikinci satıra** yayılır; pencereyi genişletirseniz yeniden tek satıra iner. İki satıra da sığmayanlar çubuğun sağındaki **»** menüsüne düşer.
-
-## Düğmelerin sırasını değiştirme
-
-- Bir düğmeyi **tutup sürükleyin**; bırakacağınız yeri mavi çizgi gösterir.
-- Tablo, Resim, Renk gibi **menüsü olan düğmeleri** sürüklemek için `Alt` tuşunu basılı tutarak sürükleyin (basit tıklama menüyü açar).
-- Düğmeler gruplar hâlinde durur; taşıdığınız düğme bırakıldığı yerdeki gruba katılır ve ayırıcı çizgiler kendiliğinden düzenlenir.
-- Sıra sonraki açılışlarda korunur. **Görünüm → Düğme Sırasını Sıfırla** (ya da özelleştirme menüsündeki aynı komut) varsayılan sıraya döner.
-
-## Düğmeleri gösterme ve gizleme
-
-- Çubuğun **en sağındaki özelleştir düğmesine** tıklayın ya da çubuğa **sağ tıklayın**.
-- Menüde düğmeler gruplar halindedir (Yazı Tipi, Karakter Biçimi, Paragraf, Listeler ve Girinti, Ekle ve Sayfa, Sesle Yazma, Yazı Tipleri). İşaretli olanlar çubukta görünür; bir gruba **Tümünü Göster** / **Tümünü Gizle** uygulanabilir.
-- **Komut Çubuğunu Özelleştir…** tüm düğmeleri ikonlarıyla, işaret kutulu bir listede gösterir.
-- **Gizlenenleri Geri Getir** tüm düğmeleri yeniden gösterir.
-
-Gizlediğiniz düğmelerin **klavye kısayolları çalışmaya devam eder** (ör. Kalın düğmesi gizliyken `Ctrl+B`). Seçiminiz sonraki açılışlarda hatırlanır.
-
-## Pencere dar olduğunda
-
-Sığmayan düğmeler çubuğun sağındaki **»** düğmesinin menüsüne taşınır; tablo, resim, renk gibi menülü düğmeler orada alt menü olarak açılır.
 
 <!-- konu: kisayollar | Klavye Kısayolları | keyboard -->
 # Klavye Kısayolları
@@ -840,6 +823,7 @@ Sığmayan düğmeler çubuğun sağındaki **»** düğmesinin menüsüne taş�
 | Aynı paragrafta alt satır | `Shift+Enter` |
 | Resim kırpmayı uygula / vazgeç | `Enter` / `Esc` |
 | Yakınlaştır / uzaklaştır | `Ctrl` + fare tekerleği |
+| Şeridi daralt / aç | `Ctrl+F1` |
 
 <!-- konu: gizlilik | Gizlilik ve Sorun Giderme | info -->
 # Gizlilik ve Sorun Giderme
