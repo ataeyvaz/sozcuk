@@ -546,3 +546,8 @@ Format:
 - **Karar (kullanıcı):** uygulanmayacak; fikir olarak kalsın, sonra değerlendirilecek.
 - **Değerlendirme (tahmin, bu bilgisayarda ölçülmedi):** temiz basılı Türkçe belge/ekran görüntüsünde düzenlenebilir metin iyi çıkar (hata çoğunlukla ı/i, ş, ğ); paragraf/başlık/liste PDF açmadaki gibi tahmin edilir; tablo, çok sütun, çarpık/gölgeli fotoğraf, el yazısı zayıf; yazı tipi ve renk geri gelmez. Taranmış (metinsiz) PDF'leri de açmayı sağlar (bugün hata veriyor). Windows yazım denetimi OCR hatalarını işaretler.
 - **Yol önerisi:** önce Windows'un yerleşik OCR'ı (boyut eklemez, çevrimdışı; Türkçe OCR bileşeni yüklü olmalı), yedek olarak Tesseract (Apache 2.0, +30–100 MB). Karar öncesi bu bilgisayarda gerçek tarama + telefon fotoğrafıyla ölçüm yapılabilir. Bulut OCR yok (kural: her şey yerel).
+
+## [2026-10-16] — Sürüm 1.5 paketlendi ve kuruldu
+- `dist/Sozcuk/` **561 MB**; `dist/Sozcuk-1.5-kurulum.exe` **351 MB** (Inno Setup 2 dk 48 sn). Paketli `.exe` doğrudan açıldı: hatasız başladı, yazım denetimi hazır.
+- Kurulum paketi sessiz kipte (`/VERYSILENT`, UAC onayıyla) çalıştırıldı → `C:\Program Files\Sözcük` (önceki kurulumun üzerine, çıkış kodu 0); kurulu `Sozcuk.exe` açılıp denendi, günlükte hata yok.
+- **Elle doğrulanmalı (kullanıcı):** kurulu uygulamada Hakkında penceresi (Eagle Office + e-posta bağlantısı), şerit sekmeleri, Dosya menüsü, Hızlı Erişim sağ tık, Ctrl+F1.
