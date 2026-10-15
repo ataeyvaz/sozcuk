@@ -33,6 +33,10 @@ Sözcük, Word belgeleriyle (.docx) çalışan, sade ve tamamen **bilgisayarın�
 
 Sözcük'e eklenen özellikler, en yenisi en üstte.
 
+## 16 Ekim 2026 — Sürüm 1.5
+
+- **Eagle Office:** Sözcük ve hesap tablosu uygulaması Tabcel artık **Eagle Office** paketinin parçası. **Yardım → Sözcük Hakkında** penceresinde paket adı, paketteki uygulamalar ve iletişim e-postası (tıklanınca e-posta uygulamanız açılır) görünür; kurulum paketinin yayıncı adı da Eagle Office oldu.
+
 ## 7 Ekim 2026 — Sürüm 1.4
 
 - **Ses dosyasından yazıya dök:** **Dosya → Ses Dosyasından Yazıya Dök…** ile bir ses kaydındaki (mp3, wav, opus, ogg, flac) konuşmayı metne çevirin. Dil ve kalite seçilir, ilerleme ve kalan süre görünür, istenirse iptal edilir; sonuç belgeye eklenir, panoya kopyalanır ya da .txt / .srt (altyazı) olarak kaydedilir. Tamamen bilgisayarınızda çalışır; "Dengeli" kalite dikteyle aynı modeli kullanır. Bkz. [Ses Dosyasından Yazıya Dök](konu:dosyadan).

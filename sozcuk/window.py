@@ -83,9 +83,9 @@ from .vocabulary import Vocabulary
 from .editor import Editor
 from .find import FindBar
 from .rulers import DocumentArea
-from . import DEVELOPERS, __version__
+from . import __version__
+from .hakkinda import AboutDialog
 from .widgets import (
-    AboutDialog,
     ColorButton,
     CommandBar,
     CommandBarDialog,
@@ -1114,7 +1114,7 @@ class MainWindow(QMainWindow):
         self.find_bar.open(replace=replace)
 
     def show_about(self):
-        AboutDialog(self, __version__, DEVELOPERS).exec()
+        AboutDialog(self).exec()
 
     def show_help(self, topic=None):
         """Yardım ve Nasıl Kullanılır penceresi (içerik: sozcuk/yardim.md)."""

@@ -2,7 +2,7 @@
 
 Word'ün kalabalık arayüzü yerine, gerçekten kullanılan özellikleri sade bir yüzle sunan **Türkçe masaüstü kelime işlemci**. Windows için; Python 3.11 ve PySide6 ile yazıldı.
 
-**Developed By Usta ve Ata**
+**Eagle Office** paketi (Sözcük · Tabcel) — **Developed By Usta ve Ata**
 
 Yazım denetimi, sesle yazma, sesli okuma ve çeviri dahil her şey **bilgisayarda** çalışır: belgeleriniz hiçbir sunucuya gönderilmez.
 

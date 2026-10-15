@@ -103,7 +103,7 @@ Bu eski ikili biçimleri biçimlendirmesiyle okuyan güvenilir, lisansı uygun b
 
 ### Faz 4 — Cilalama ve paketleme
 **Durum:** Uygulandı (2026-09-19)
-- Künye: **Developed By Usta ve Ata** — Yardım → Sözcük Hakkında penceresinde, sürüm ve kullanılan açık kaynak bileşenlerle birlikte
+- Künye: **Developed By Usta ve Ata**; ürün ailesinin ortak adı **Eagle Office** (Sözcük + Tabcel) — Yardım → Sözcük Hakkında penceresinde, sürüm, iletişim e-postası (`mailto:`) ve kullanılan açık kaynak bileşenlerle birlikte (Sürüm 1.5)
 - Uygulama ikonu: `araclar/ikon_uret.py` ile üretilen çok boyutlu `sozcuk.ico`
 - **PyInstaller** paketi (`sozcuk.spec`, klasör biçiminde): `dist/Sozcuk/` ≈ 2,0 GB (gömülü dil paketleri dahil); yardım metni ve diller pakete konur, konuşma tanıma modeli ilk kullanımda indirilir
 - **Inno Setup** kurulum paketi (`kurulum/sozcuk.iss`): `dist/Sozcuk-1.0-kurulum.exe` ≈ 1,31 GB; Başlat menüsü ve isteğe bağlı masaüstü kısayolu, "Birlikte aç" listesine kayıt, isteğe bağlı .docx ilişkilendirmesi, kaldırma desteği

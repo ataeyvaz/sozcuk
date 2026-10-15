@@ -3,8 +3,12 @@
 import sys
 from pathlib import Path
 
-__version__ = "1.4"
+__version__ = "1.5"
 DEVELOPERS = "Developed By Usta ve Ata"
+APP_NAME = "Sözcük"
+PAKET_ADI = "Eagle Office"  # ürün ailesinin ortak adı (Sözcük ve Tabcel bu paketin parçasıdır)
+PAKET_URUNLERI = ((APP_NAME, "kelime işlemci"), ("Tabcel", "hesap tablosu"))  # Tabcel'dekiyle aynı kalmalı
+ILETISIM_EPOSTA = "ataeyvaz@gmail.com"
 
 
 def resource_dir():

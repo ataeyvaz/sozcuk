@@ -7,8 +7,9 @@
 ; Adresler ve boyutlar Argos paket dizininden alındı (https://github.com/argosopentech/argospm-index).
 
 #define AppName "Sözcük"
-#define AppVersion "1.4"
-#define AppPublisher "Usta ve Ata"
+#define AppVersion "1.5"
+#define AppPublisher "Eagle Office"
+#define AppContact "mailto:ataeyvaz@gmail.com"
 #define AppExe "Sozcuk.exe"
 
 [Setup]
@@ -17,6 +18,8 @@ AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
 AppPublisher={#AppPublisher}
+AppSupportURL={#AppContact}
+AppContact={#AppContact}
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=yes
