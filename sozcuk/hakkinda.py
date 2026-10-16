@@ -1,10 +1,13 @@
 """Sözcük Hakkında penceresi: paket adı, sürüm, künye, iletişim ve kullanılan açık kaynak bileşenler."""
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QDialog, QDialogButtonBox, QLabel, QVBoxLayout
+from PySide6.QtGui import QFont, QPixmap
+from PySide6.QtWidgets import QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QVBoxLayout
 
-from . import APP_NAME, DEVELOPERS, ILETISIM_EPOSTA, PAKET_ADI, PAKET_URUNLERI, __version__, theme
+from . import APP_NAME, DEVELOPERS, ILETISIM_EPOSTA, PAKET_ADI, PAKET_URUNLERI, __version__, resource_dir, theme
+
+LOGO_FILE = "eagle-office-logo.png"
+LOGO_WIDTH = 120  # mantıksal piksel; dosya 360 px, yüksek DPI'da keskin kalır
 
 # (ad, ne için, lisans) — yeni bağımlılık eklenince buraya ve README'ye yazılır
 CREDITS = [
@@ -48,6 +51,16 @@ class AboutDialog(QDialog):
         layout.setContentsMargins(20, 18, 20, 14)
         layout.setSpacing(10)
 
+        header = QHBoxLayout()
+        header.setSpacing(14)
+        logo = self._logo_label()
+        if logo is not None:
+            header.addWidget(logo, 0, Qt.AlignTop)
+        titles = QVBoxLayout()
+        titles.setSpacing(4)
+        header.addLayout(titles, 1)
+        layout.addLayout(header)
+
         suite = QLabel(PAKET_ADI)
         suite_font = suite.font()
         suite_font.setPointSizeF(suite_font.pointSizeF() + 1)
@@ -55,7 +68,7 @@ class AboutDialog(QDialog):
         suite_font.setLetterSpacing(QFont.PercentageSpacing, 108)
         suite.setFont(suite_font)
         suite.setStyleSheet(f"color: {theme.TEXT_MUTED};")
-        layout.addWidget(suite)
+        titles.addWidget(suite)
 
         title = QLabel(APP_NAME)
         font = title.font()
@@ -63,11 +76,12 @@ class AboutDialog(QDialog):
         font.setBold(True)
         title.setFont(font)
         title.setStyleSheet(f"color: {theme.ACCENT};")
-        layout.addWidget(title)
+        titles.addWidget(title)
 
         subtitle = QLabel(f"Sürüm {__version__}  ·  Türkçe kelime işlemci")
         subtitle.setStyleSheet(f"color: {theme.TEXT_MUTED};")
-        layout.addWidget(subtitle)
+        titles.addWidget(subtitle)
+        titles.addStretch(1)
 
         credit = QLabel(DEVELOPERS)
         credit_font = credit.font()
@@ -100,3 +114,17 @@ class AboutDialog(QDialog):
         close_button.setDefault(True)
         buttons.accepted.connect(self.accept)
         layout.addWidget(buttons)
+
+    @staticmethod
+    def _logo_label():
+        """Eagle Office logosu; dosya yoksa (geliştirme ortamında eksikse) başlık logosuz görünür."""
+        pixmap = QPixmap(str(resource_dir() / LOGO_FILE))
+        if pixmap.isNull():
+            return None
+        scaled = pixmap.scaledToWidth(LOGO_WIDTH * 2, Qt.SmoothTransformation)
+        scaled.setDevicePixelRatio(2)
+        label = QLabel()
+        label.setPixmap(scaled)
+        label.setFixedSize(LOGO_WIDTH, round(scaled.height() / 2))
+        label.setObjectName("aboutLogo")
+        return label

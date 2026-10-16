@@ -57,6 +57,14 @@ class HakkindaTesti(unittest.TestCase):
         self.assertIn(f"mailto:{ILETISIM_EPOSTA}", baglanti.text())
         self.assertTrue(baglanti.openExternalLinks())
 
+    def test_logo_dosyasi_ve_pencerede_gorunur(self):
+        from sozcuk import resource_dir
+        self.assertTrue((resource_dir() / "eagle-office-logo.png").is_file())
+        dialog = AboutDialog()  # etiket, pencere yaşadıkça geçerli
+        logo = dialog.findChild(QLabel, "aboutLogo")
+        self.assertIsNotNone(logo)
+        self.assertFalse(logo.pixmap().isNull())
+
     def test_menu_eylemi_pencereyi_acar(self):
         from sozcuk.window import MainWindow
         acilan = []

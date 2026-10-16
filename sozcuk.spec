@@ -14,6 +14,7 @@ project = Path(SPECPATH)
 
 datas = [
     (str(project / "sozcuk" / "yardim.md"), "sozcuk"),
+    (str(project / "sozcuk" / "eagle-office-logo.png"), "sozcuk"),
     (str(project / "sozcuk.ico"), "."),
 ]
 # sesli okuma sesleri: model + ayar dosyası çiftleri
