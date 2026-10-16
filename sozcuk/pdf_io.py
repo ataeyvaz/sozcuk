@@ -8,6 +8,7 @@ extract() Qt'ye dokunmaz ve arka plan iş parçacığında çalışabilir; build
 """
 
 import re
+import unicodedata
 from collections import Counter
 from dataclasses import dataclass, field
 
@@ -26,6 +27,33 @@ STYLE_WORDS = ("bold", "italic", "oblique", "regular", "semibold", "light", "med
 
 class PdfError(Exception):
     pass
+
+
+# Word'ün "PDF olarak kaydet"i Calibri'nin bitişik harf (ligatür) glifleri için ToUnicode tablosuna U+FFFD yazar;
+# metin "Eği�m", "sa�ş" gibi bozuk çıkar. Glif numaraları Calibri'nin kendisinden (GSUB 'liga' tablosu) okunmuştur
+# (Calibri ve Calibri Kalın'da aynı). Yalnızca Calibri için geçerlidir; başka yazı tiplerinde U+FFFD olduğu gibi kalır.
+CALIBRI_LIGATURES = {
+    0x137: "fı", 0x14C: "ft", 0x19E: "tf", 0x19F: "ti", 0x1A8: "tı", 0x1AB: "tti", 0x1B4: "ttı",
+}
+_ligature_patched = False
+
+
+def _patch_calibri_ligatures():
+    global _ligature_patched
+    if _ligature_patched:
+        return
+    from pdfminer.pdffont import PDFCIDFont
+
+    original = PDFCIDFont.to_unichr
+
+    def to_unichr(self, cid):
+        text = original(self, cid)
+        if text == "\ufffd" and "calibri" in str(getattr(self, "basefont", "")).lower():
+            return CALIBRI_LIGATURES.get(cid, text)
+        return text
+
+    PDFCIDFont.to_unichr = to_unichr
+    _ligature_patched = True
 
 
 @dataclass
@@ -74,6 +102,11 @@ def _line_runs(line):
         text = obj.get_text()
         if text in ("\n", "\r"):
             continue
+        if text and "\ufb00" <= text[0] <= "\ufb06":
+            text = unicodedata.normalize("NFKC", text)       # ﬁ → fi, ﬂ → fl …
+        text = text.replace("\ufffd", "")                    # okunamayan simge (ör. emoji): bozuk karakter yerine atla
+        if not text:
+            continue
         if isinstance(obj, LTChar):
             family, bold, italic = _font_info(obj.fontname)
             size = round(obj.size * 2) / 2
@@ -110,6 +143,7 @@ def extract(path):
     from pdfminer.layout import LAParams, LTTextContainer, LTTextLine
     from pdfminer.pdfparser import PDFSyntaxError
 
+    _patch_calibri_ligatures()
     paragraphs = []
     try:
         pages = list(extract_pages(str(path), laparams=LAParams(line_margin=0.5)))

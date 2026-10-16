@@ -865,8 +865,8 @@ class Editor(QGraphicsView):
         self.verticalScrollBar().setValue(0)
         self.notify()
 
-    def print_document(self, printer):
-        """Belgeyi ekrandaki sayfa boşlukları olmadan gerçek kâğıt ölçüleriyle yazdırır (PDF dışa aktarma da buradan)."""
+    def _print_clone(self):
+        """Belgenin yazdırma/dışa aktarma kopyası: ekrandaki sayfa boşlukları yok, gerçek kâğıt ölçüleri var."""
         clone = self.document().clone()
         top, bottom = self.page_margins()
         fmt = clone.rootFrame().frameFormat()
@@ -875,6 +875,45 @@ class Editor(QGraphicsView):
         clone.rootFrame().setFrameFormat(fmt)
         width, height = self.page_size()
         clone.setPageSize(QSizeF(width, height))
+        return clone
+
+    def page_images(self, pages, dpi=150):
+        """İstenen sayfaları (1'den başlayan numaralar; None = hepsi) beyaz zeminli QImage olarak üretir:
+        (sayfa_no, toplam, görüntü) verir. Sayfa numarası ayarı varsa o da çizilir."""
+        clone = self._print_clone()
+        width, height = self.page_size()
+        total = max(1, clone.pageCount())
+        config = page_numbers.settings(self.document())
+        scale = dpi / 96.0
+        for page in (range(1, total + 1) if pages is None else pages):
+            if not 1 <= page <= total:
+                continue
+            image = QImage(round(width * scale), round(height * scale), QImage.Format_RGB32)
+            image.fill(Qt.white)
+            image.setDotsPerMeterX(round(dpi / 0.0254))
+            image.setDotsPerMeterY(round(dpi / 0.0254))
+            painter = QPainter(image)
+            try:
+                painter.setRenderHint(QPainter.Antialiasing)
+                painter.setRenderHint(QPainter.TextAntialiasing)
+                painter.setRenderHint(QPainter.SmoothPixmapTransform)
+                painter.scale(scale, scale)
+                painter.translate(0, -(page - 1) * height)
+                clone.drawContents(painter, QRectF(0, (page - 1) * height, width, height))
+                painter.translate(0, (page - 1) * height)
+                if config.enabled:
+                    page_numbers.draw(painter, self.document(), QRectF(0, 0, width, height), page, total, config)
+            finally:
+                painter.end()
+            yield page, total, image
+
+    def page_total(self):
+        return max(1, self._print_clone().pageCount())
+
+    def print_document(self, printer):
+        """Belgeyi ekrandaki sayfa boşlukları olmadan gerçek kâğıt ölçüleriyle yazdırır (PDF dışa aktarma da buradan)."""
+        clone = self._print_clone()
+        width, height = self.page_size()
         config = page_numbers.settings(self.document())
         if not config.enabled:
             clone.print_(printer)

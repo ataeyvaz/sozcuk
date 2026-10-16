@@ -34,6 +34,7 @@ Sözcük'e eklenen özellikler, en yenisi en üstte.
 
 ## 16 Ekim 2026 — Sürüm 1.5
 
+- **JPEG olarak kaydet:** **Dosya → JPEG Olarak Kaydet…** belgenin her sayfasını (ya da seçtiğiniz sayfaları) `ornek01.jpeg`, `ornek02.jpeg` … biçiminde ayrı resimler olarak kaydeder; çözünürlük ve kalite seçilebilir. Bkz. [JPEG Olarak Kaydetme](konu:jpeg).
 - **Sekmeli şerit (Word/Excel gibi):** menü şeridi ve komut çubuğu yerine **Dosya**, **Giriş**, **Ekle**, **Sayfa Düzeni**, **Gözden Geçir**, **Görünüm** ve **Yardım** sekmeleri geldi. Komutlar gruplanmış büyük/küçük düğmelerle sekmelerde durur; pencere daraldıkça gruplar önce yazısız, sonra tek açılır düğmeye iner. `Ctrl+F1` ya da bir sekmeye çift tıklama şeridi daraltır. Bir düğmeye **sağ tıklayıp Hızlı Erişim Araç Çubuğuna Ekle** diyerek sık kullandığınız komutları başlıktaki Hızlı Erişim alanına koyabilirsiniz. Bütün kısayollar aynen çalışır. Bkz. [Şerit ve Hızlı Erişim](konu:serit).
 - **Eagle Office:** Sözcük ve hesap tablosu uygulaması Tabcel artık **Eagle Office** paketinin parçası. **Yardım → Sözcük Hakkında** penceresinde paket adı, paketteki uygulamalar ve iletişim e-postası (tıklanınca e-posta uygulamanız açılır) görünür; kurulum paketinin yayıncı adı da Eagle Office oldu.
 
@@ -89,7 +90,7 @@ Başlığın altındaki **şerit**, komutları Word ve Excel'deki gibi sekmelere
 
 | Sekme | Grupları ve komutları |
 |---|---|
-| **Dosya** | Açılır menü: Yeni, Aç, Google Drive/OneDrive'dan Aç, Kaydet, Farklı Kaydet, PDF Olarak Dışa Aktar, Ses Dosyasından Yazıya Dök, Şifre ile Koru, Şifreyi Kaldır, Yazdır, Yardım, Tanılama Günlüğü, Kapat |
+| **Dosya** | Açılır menü: Yeni, Aç, Google Drive/OneDrive'dan Aç, Kaydet, Farklı Kaydet, PDF Olarak Dışa Aktar, JPEG Olarak Kaydet, Ses Dosyasından Yazıya Dök, Şifre ile Koru, Şifreyi Kaldır, Yazdır, Yardım, Tanılama Günlüğü, Kapat |
 | **Giriş** | **Pano** (Yapıştır, Yalnızca Metni Koru, Kes, Kopyala) · **Yazı Tipi** (yazı tipi, boyut, büyüt/küçült, kalın, italik, altı/üstü çizili, vurgu ve yazı rengi, biçimi temizle, yazı tipi ekle) · **Paragraf** (madde işaretleri, numaralandırma, girinti, satır aralığı, hizalama) · **Stiller** · **Düzenleme** (Bul, Değiştir) · **Ses** (Sesle Yaz) |
 | **Ekle** | Tablo, Resim, Bağlantı, Sayfa Numarası, Simge |
 | **Sayfa Düzeni** | Kenar Boşlukları, Yönlendirme (Dikey/Yatay), Boyut (A4, A5, A3, B5, Letter, Legal, Executive); köşedeki **↘** düğmesi Sayfa Yapısı penceresini açar |
@@ -129,6 +130,7 @@ Dosya işlemleri başlık şeridinin solundaki **Dosya** menüsündedir.
 | Farklı Kaydet… | `F12` | Yeni bir ad, konum ya da biçimle (.docx, .doc, .rtf, .odt, .txt, .html) kaydeder. |
 | Google Drive'a Kaydet… / OneDrive'a Kaydet… | | Belgeyi Drive klasörünüze kaydeder; bundan sonra canlı kaydedilir. |
 | PDF Olarak Dışa Aktar… | | Belgeyi kâğıt boyutu ve kenar boşluklarıyla PDF'e çevirir. |
+| JPEG Olarak Kaydet… | | Belgenin sayfalarını (hepsini ya da seçtiklerinizi) ayrı JPEG dosyaları olarak kaydeder; ör. `ornek01.jpeg`, `ornek02.jpeg`. PDF'ten açıp düzenlediğiniz belgede de çalışır. Ayrıntı: [JPEG Olarak Kaydetme](konu:jpeg). |
 | Şifre ile Koru… | | Belgeye parola ekler ya da parolayı değiştirir (bkz. [Şifreli Belgeler](konu:sifreli)). |
 | Şifreyi Kaldır | | Belgenin parolasını kaldırır; belge şifresiz kaydedilir. |
 | Yazdır… | `Ctrl+P` | Yazıcı seçme penceresini açar. |
@@ -139,7 +141,7 @@ Sözcük .docx dosyalarını açar ve kaydeder: yazı tipleri, renkler, başlık
 
 ## PDF açma
 
-PDF dosyaları düzenlenebilir metne dönüştürülerek açılır: paragraflar, başlıklar ve listeler algılanır. Sayfa düzeni, tablolar ve resimler birebir korunmayabilir. Kaydettiğinizde belge .docx olarak kaydedilir; PDF'in kendisi değişmez. Taranmış (fotoğraf halindeki) PDF'lerde seçilebilir metin olmadığı için açılamaz.
+PDF dosyaları düzenlenebilir metne dönüştürülerek açılır: paragraflar, başlıklar ve listeler algılanır. Sayfa düzeni, tablolar ve resimler birebir korunmayabilir. Kaydettiğinizde belge .docx olarak kaydedilir; PDF'in kendisi değişmez. Word'den PDF'e kaydedilmiş belgelerde bitişik harfler (ti, tı, ft, fi…) doğru okunur; okunamayan simgeler (ör. emoji) bozuk karakter yerine atlanır. Taranmış (fotoğraf halindeki) PDF'lerde seçilebilir metin olmadığı için açılamaz.
 
 ## Otomatik kaydetme ve kurtarma
 
@@ -666,6 +668,24 @@ Dikte edilen metni `Ctrl+Z` ile tek adımda geri alabilirsiniz.
 
 - Net ve normal hızda konuşun; noktalama işaretleri çoğunlukla kendiliğinden konur.
 - "Mikrofon bulunamadı" uyarısında Windows ses ayarlarından mikrofonun bağlı ve izinli olduğunu denetleyin.
+
+<!-- konu: jpeg | JPEG Olarak Kaydetme | image -->
+# JPEG Olarak Kaydetme
+
+Belgenin sayfalarını resim olarak saklamak için **Dosya → JPEG Olarak Kaydet…** komutunu kullanın. PDF'i açıp düzenledikten sonra da, düz bir belgede de aynı şekilde çalışır; resimler **şu anki** (düzenlenmiş) belgeden üretilir.
+
+1. Komutu seçin; pencerede belgenin kaç sayfa olduğu yazar.
+2. **Tüm sayfalar** ya da **Seçilen sayfalar** (örn. `1-3, 5, 8-`) seçin.
+3. Dosya adını (varsayılan belge adı), klasörü, çözünürlüğü ve kaliteyi ayarlayın.
+4. **Kaydet**'e basın.
+
+Dosyalar adın sonuna sayfa numarası eklenerek yazılır: 30 sayfalık `ornek.pdf` için `ornek01.jpeg` … `ornek30.jpeg`; 100 sayfayı aşan belgelerde numara üç haneli olur. Resim belgenin kâğıt boyutundadır (varsayılan A4, 210×297 mm) ve çözünürlük bilgisi dosyaya yazılır; bu yüzden herhangi bir görüntüleyiciden yazdırırken tek A4 sayfaya kenarlıksız sığar. Aynı adlı dosya varsa üzerine yazılır. Sayfa numarası ayarı açıksa resimde de görünür.
+
+| Çözünürlük | Kullanım |
+|---|---|
+| Ekran (96 dpi) | küçük önizleme |
+| Normal (150 dpi) | genel kullanım (varsayılan) |
+| Yüksek (200 dpi) / Baskı (300 dpi) | okunaklı arşiv, baskı; dosyalar büyür |
 
 <!-- konu: dosyadan | Ses Dosyasından Yazıya Dök | mic -->
 # Ses Dosyasından Yazıya Dök

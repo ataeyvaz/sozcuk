@@ -66,6 +66,7 @@ from . import (
     logbook,
     odt_io,
     page_setup,
+    jpeg_export,
     pdf_io,
     rtf_io,
     styles,
@@ -699,6 +700,7 @@ class MainWindow(HizliErisim, QMainWindow):
             (None, "Farklı Kaydet…", "F12", self.save_as),
             "cloud_save",
             ("pdf", "PDF Olarak Dışa Aktar…", None, self.export_pdf),
+            ("image", "JPEG Olarak Kaydet…", None, self.export_jpeg),
             None,
             ("mic", "Ses Dosyasından Yazıya Dök…", None, self.transcribe_from_file),
             None,
@@ -1422,6 +1424,31 @@ class MainWindow(HizliErisim, QMainWindow):
             f"“{path.name}” olarak dışa aktarıldı.",
             [("Aç", lambda: QDesktopServices.openUrl(QUrl.fromLocalFile(str(path))))],
         )
+
+    def export_jpeg(self):
+        total = self.editor.page_total()
+        stem = Path(self.display_name).stem
+        dialog = jpeg_export.JpegExportDialog(self, total, stem, self._default_dir())
+        if dialog.exec() != QDialog.Accepted:
+            return
+        v = dialog.result_values()
+        saved, failed = [], []
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            for page, count, image in self.editor.page_images(v["pages"], v["dpi"]):
+                path = v["folder"] / jpeg_export.file_name(v["stem"], page, count)
+                (saved if image.save(str(path), "JPEG", v["quality"]) else failed).append(path)
+                QApplication.processEvents()
+        finally:
+            QApplication.restoreOverrideCursor()
+        if failed:
+            QMessageBox.critical(self, "Kaydedilemedi", f"{len(failed)} sayfa kaydedilemedi (ilki: {failed[0].name}). "
+                                 "Dosya açık ya da klasör yazmaya kapalı olabilir.")
+        if saved:
+            self.show_message(
+                f"{len(saved)} sayfa JPEG olarak kaydedildi.",
+                [("Klasörü Aç", lambda: QDesktopServices.openUrl(QUrl.fromLocalFile(str(v["folder"]))))],
+            )
 
     def _prepare_printer(self, printer):
         # belgenin kâğıt boyutu ve yönlendirmesi; bilinen boyutlar (A4, Letter…) yazıcıda adıyla eşleşir

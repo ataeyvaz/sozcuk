@@ -564,3 +564,16 @@ Format:
 - **Hakkında penceresi:** logo sol üstte (120 px, yüksek DPI için 2×), yanında Eagle Office / Sözcük / sürüm; `sozcuk.spec` logoyu pakete koyar; `test_hakkinda` logonun varlığını denetler (24/24).
 - **Paket:** `dist/Sozcuk` 561 MB; `dist/EagleOffice-1.0-kurulum.exe` **395 MB** (Sözcük 1.5 + Tabcel 0.1; ISCC 4 dk 43 sn). Tabcel `dist` (15 Eki) yeniden derlenmedi, güncelliği kaynak dosya tarihleriyle doğrulandı.
 - **Açık:** birleşik kurulum **kurulup denenmedi** (kurulum sihirbazı gerçek ortamda elle denenmeli: seçim ekranı, tek uygulama seçimi, eski ayrı kurulumları kaldırma sorusu, kısayollar, kaldırma). Tabcel'in kendi Hakkında penceresine logo eklenmedi (Tabcel projesi). Sürüm/commit: bu işler commit edilmedi.
+
+## [2026-10-16] — JPEG olarak kaydet (sayfa sayfa)
+- **İstek (kullanıcı):** PDF açılıp düzenlendikten sonra (ya da açar açmaz) her sayfa/seçilen sayfalar `ornek01.jpeg` gibi kaydedilebilmeli; sonra Tabcel'e de uygulanacak.
+- **Yapıldı:** `Dosya → JPEG Olarak Kaydet…` (`window.export_jpeg`); `sozcuk/jpeg_export.py` (pencere: tüm/seçili sayfalar `1-3, 5, 8-`, ad, klasör, çözünürlük 96–300 dpi, kalite; `parse_pages`, `file_name`); `editor.page_images/page_total/_print_clone` (PDF dışa aktarma ile aynı sayfa düzeni, sayfa numarası dâhil). Resimler **düzenlenmiş belgeden** üretilir, özgün PDF'ten değil (PDF zaten düzenlenebilir metne çevriliyor). Numara en az 2 hane (`ornek01.jpeg`), 100+ sayfada 3 hane. Yardım: konu `jpeg`, Dosya tablosu, Yenilikler. `testler/test_jpeg_export.py`.
+- **Doğrulama:** testler geçti (ekransız; sayfa boyutu/sayısı, aralık, ad). Ekransız ortamda yazı tipi olmadığından metin kutucuk çıktı — gerçek görünüm **elle denenmeli**.
+- **Tabcel için:** `parse_pages`/`file_name`/pencere ortak kullanılabilir (Tabcel'de sayfa = sayfa/sayfa aralığı kavramı farklı, belirsiz).
+- **Yazdırma boyutu (kullanıcı isteği):** JPEG'ler belgenin kâğıt boyutunda (A4: 1240×1754 @150 dpi) ve dpi bilgisiyle yazılır → görüntüleyiciden yazdırınca 210×297 mm'ye oturur. Test eklendi.
+
+## [2026-10-16] — PDF'te bozuk karakter düzeltmesi (FuelErpTeknikEgitimDokumani.pdf)
+- **Sorun (kullanıcı):** PDF açılınca çok karakter yanlış ("Eği�m", "sa�ş", "hazırlanmış�r").
+- **Neden (doğrulandı):** Word'ün PDF'i Calibri'nin bitişik harf glifleri (ti, tı, ft, fı, tti, ttı, tf) için ToUnicode'a U+FFFD yazmış; metin PDF'te yok. Glif→harf eşlemesi Calibri'nin GSUB 'liga' tablosundan okundu. Ayrıca ﬁ/ﬂ/ﬀ/ﬄ karakterleri (ör. "ﬁnans") düz harfe açılıyordu.
+- **Yapıldı:** `pdf_io.CALIBRI_LIGATURES` + `_patch_calibri_ligatures()` (pdfminer `PDFCIDFont.to_unichr` sarmalayıcı; yalnız Calibri), U+FB00–FB06 NFKC, kalan U+FFFD atlanır. Sonuç: örnek PDF'te U+FFFD 1119 → 0 (51'i Segoe UI Emoji'ydi, PDF'te metin karşılığı yok → atlandı, emoji kaybolur). Yeni `testler/test_pdf_io.py`; yardım notu eklendi.
+- **Sınır:** yama yalnız Calibri'nin glif numaralarına dayanır; başka yazı tiplerinde (Cambria, Aptos…) benzer ligatür bozukluğu çıkarsa ayrıca eşlenmeli (belirsiz, o PDF'lerle denenmedi). Başka bir Calibri sürümünün glif numaraları farklıysa yanlış harf çıkabilir (bu PDF'te bağlama bakılarak doğrulandı).
