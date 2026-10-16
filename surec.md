@@ -577,3 +577,6 @@ Format:
 - **Neden (doğrulandı):** Word'ün PDF'i Calibri'nin bitişik harf glifleri (ti, tı, ft, fı, tti, ttı, tf) için ToUnicode'a U+FFFD yazmış; metin PDF'te yok. Glif→harf eşlemesi Calibri'nin GSUB 'liga' tablosundan okundu. Ayrıca ﬁ/ﬂ/ﬀ/ﬄ karakterleri (ör. "ﬁnans") düz harfe açılıyordu.
 - **Yapıldı:** `pdf_io.CALIBRI_LIGATURES` + `_patch_calibri_ligatures()` (pdfminer `PDFCIDFont.to_unichr` sarmalayıcı; yalnız Calibri), U+FB00–FB06 NFKC, kalan U+FFFD atlanır. Sonuç: örnek PDF'te U+FFFD 1119 → 0 (51'i Segoe UI Emoji'ydi, PDF'te metin karşılığı yok → atlandı, emoji kaybolur). Yeni `testler/test_pdf_io.py`; yardım notu eklendi.
 - **Sınır:** yama yalnız Calibri'nin glif numaralarına dayanır; başka yazı tiplerinde (Cambria, Aptos…) benzer ligatür bozukluğu çıkarsa ayrıca eşlenmeli (belirsiz, o PDF'lerle denenmedi). Başka bir Calibri sürümünün glif numaraları farklıysa yanlış harf çıkabilir (bu PDF'te bağlama bakılarak doğrulandı).
+
+## [2026-10-16] — Yardım: "Sözcük Neler Yapar?" özeti
+- Yardımın başına (`konu:ozet`) tüm yetenekleri başlıklara ayıran özet konusu eklendi; her madde ilgili konuya bağlı, içerik konu metinleriyle karşılaştırılarak yazıldı. Yeni özellik eklenince bu özet de güncellenir (CLAUDE/yardım kuralı).

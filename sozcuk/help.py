@@ -133,7 +133,7 @@ class HelpWindow(QWidget):
         layout.addWidget(splitter, 1)
 
         self._filter("")
-        last = settings.value("help/topic", "baslarken") if settings is not None else "baslarken"
+        last = settings.value("help/topic", "ozet") if settings is not None else "ozet"
         self.open_topic(last if last in self.by_key else self.topics[0].key)
 
     # --- konular -----------------------------------------------------------

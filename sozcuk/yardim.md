@@ -8,6 +8,57 @@ Yazım kuralları:
   yeni kısayol varsa "Klavye Kısayolları" tablosuna ekleyin (test, tablodaki kısayolların uygulamada tanımlı olduğunu denetler).
 -->
 
+<!-- konu: ozet | Sözcük Neler Yapar? | info -->
+# Sözcük Neler Yapar?
+
+Sözcük, Word belgeleriyle çalışan ve her şeyi **bilgisayarınızda** yapan bir kelime işlemcidir; yazdıklarınız, sesiniz ve belgeleriniz hiçbir sunucuya gönderilmez. Aşağıda tüm yetenekler başlıklarıyla sıralanmıştır; ayrıntı için bağlantılara tıklayın.
+
+## Belgeleri açma ve kaydetme
+
+- **Word belgeleri** (.docx, .doc), .rtf, .odt, .txt ve web sayfalarını açar; belgeyi .docx, .doc, .rtf, .odt, .txt ya da .html olarak kaydeder (bkz. [Dosya Biçimleri](konu:bicimler), [Dosya İşlemleri](konu:dosya)).
+- **PDF açar** ve düzenlenebilir metne çevirir; Word'den üretilmiş PDF'lerde Türkçe karakterler ve bitişik harfler doğru okunur (bkz. [Dosya İşlemleri](konu:dosya)).
+- **PDF olarak dışa aktarır**; belgeyi kâğıt boyutu ve kenar boşluklarıyla PDF'e çevirir.
+- **JPEG olarak kaydeder:** belgenin (ya da PDF'ten açıp düzenlediğiniz belgenin) her sayfasını, ya da seçtiğiniz sayfaları, A4 yazdırma boyutunda `ornek01.jpeg`, `ornek02.jpeg` … biçiminde ayrı resimler olarak saklar (bkz. [JPEG Olarak Kaydetme](konu:jpeg)).
+- **Şifreyle korur:** belgeye parola koyar, parolayı kaldırır (bkz. [Şifreli Belgeler](konu:sifreli)).
+- **Google Drive ve OneDrive:** bilgisayarınızdaki Drive/OneDrive klasöründen belge açar, oraya kaydeder (bkz. [Google Drive ve OneDrive](konu:bulut)).
+- **Otomatik kaydeder** ve beklenmedik kapanmalarda belgeyi **kurtarır** (bkz. [Dosya İşlemleri](konu:dosya)).
+- **Yazdırır.**
+
+## Yazma ve biçimlendirme
+
+- Yazı tipi, boyut, kalın, italik, altı/üstü çizili, yazı ve vurgu rengi, stiller, biçimi temizleme, kendi yazı tipinizi ekleme (bkz. [Metin Biçimlendirme](konu:bicim)).
+- Madde işaretli ve numaralı listeler, girintiler, hizalama, satır aralığı (bkz. [Paragraflar ve Listeler](konu:paragraf)).
+- Kes, kopyala, yapıştır; yalnızca metni yapıştırma (bkz. [Kopyalama ve Yapıştırma](konu:yapistir)).
+- Bul ve değiştir (bkz. [Bul ve Değiştir](konu:bul)).
+
+## Sayfa ve yerleşim
+
+- Kâğıt boyutu (A4, A5, A3, B5, Letter, Legal, Executive), yönlendirme, kenar boşlukları, sayfa numarası (bkz. [Sayfa Düzeni](konu:sayfa)).
+- Cetveller: girintiler ve kenar boşlukları sürükleyerek ayarlanır (bkz. [Cetveller](konu:cetvel)).
+- Yakınlaştırma, sayfa genişliği ve tam sayfa görünümü (bkz. [Görünüm ve Yakınlaştırma](konu:gorunum)).
+
+## Belgeye öğe ekleme
+
+- **Tablolar:** satır/sütun ekleme ve silme, hücre birleştirme ve bölme, Excel'den tablo yapıştırma (bkz. [Tablolar](konu:tablo)).
+- **Resimler:** dosyadan, panodan ya da sürükle-bırakla ekleme, boyutlandırma, kırpma (bkz. [Resimler](konu:resim)).
+- **Simgeler** ve **bağlantılar** (bkz. [Simgeler](konu:simge), [Bağlantılar](konu:baglanti)).
+
+## Dil ve ses (hepsi çevrimdışı, bilgisayarınızda)
+
+- **Yazım denetimi:** yazarken kırmızı altı çizgi, öneriler, sonraki hataya gitme (bkz. [Yazım Denetimi](konu:yazim)).
+- **Çeviri:** seçili metni ya da belgeyi çevirir; dil paketleri bir kez indirilir (bkz. [Çeviri](konu:ceviri)).
+- **Sesle yazma (dikte):** mikrofona konuşarak yazar (bkz. [Sesle Yazma](konu:dikte)); sık kullandığınız sözcükleri **Dikte Sözlüğü** ile öğretirsiniz (bkz. [Dikte Sözlüğü](konu:sozluk)).
+- **Ses dosyasından yazıya döker:** kayıtlı bir ses dosyasını metne çevirir (bkz. [Ses Dosyasından Yazıya Dök](konu:dosyadan)).
+- **Sesli okuma:** belgeyi (imlecin bulunduğu yerden) ya da seçili metni yüksek sesle okur (bkz. [Sesli Okuma](konu:sesli)).
+
+## Kullanım kolaylığı
+
+- **Sekmeli şerit** (Giriş, Ekle, Sayfa Düzeni, Gözden Geçir, Görünüm, Yardım) ve sık kullandığınız komutlar için **Hızlı Erişim** (bkz. [Şerit ve Hızlı Erişim](konu:serit)).
+- Tüm komutların **klavye kısayolları** (bkz. [Klavye Kısayolları](konu:kisayollar)).
+- Gizlilik ve sorun giderme: tanılama günlüğü yalnızca bilgisayarınızda tutulur (bkz. [Gizlilik ve Sorun Giderme](konu:gizlilik)).
+
+Yeni eklenenleri görmek için [Yenilikler](konu:yenilikler) konusuna bakın.
+
 <!-- konu: baslarken | Başlarken | new -->
 # Sözcük'e Hoş Geldiniz
 
