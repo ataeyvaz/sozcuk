@@ -580,3 +580,8 @@ Format:
 
 ## [2026-10-16] — Yardım: "Sözcük Neler Yapar?" özeti
 - Yardımın başına (`konu:ozet`) tüm yetenekleri başlıklara ayıran özet konusu eklendi; her madde ilgili konuya bağlı, içerik konu metinleriyle karşılaştırılarak yazıldı. Yeni özellik eklenince bu özet de güncellenir (CLAUDE/yardım kuralı).
+
+## [2026-10-16] — Eagle Office 1.1 paketlendi ve kuruldu
+- Paket sürümü 1.0 → **1.1** (`kurulum/eagle-office.iss` `SuiteVersion`). Sözcük sürüm etiketi 1.5 olarak kaldı (içinde JPEG kaydetme, PDF Calibri düzeltmesi ve yeni yardım özeti var); Tabcel 0.1 (dist yeniden derlenmedi).
+- `dist/EagleOffice-1.1-kurulum.exe` **394.568.503 bayt** (ISCC 3 dk 56 sn). UAC'li sessiz kurulum: çıkış kodu 0, 1.0 kurulumunun üzerine (aynı AppId) → `C:\Program Files\Eagle Office\{Sözcük,Tabcel}`; kayıt defterinde "Eagle Office 1.1"; Sözcük.exe 16:38 tarihli. Kurulu Sözcük 8 sn açık kaldı (çökmedi).
+- **Elle doğrulanmalı:** kurulu uygulamada JPEG Olarak Kaydet, PDF açma, yeni yardım özeti.

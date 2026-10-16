@@ -13,7 +13,7 @@
 ; Ek çeviri dilleri Sözcük'ün "Özel kurulum"unda seçilebilir (kurulum sırasında internetten indirilir).
 
 #define SuiteName "Eagle Office"
-#define SuiteVersion "1.0"
+#define SuiteVersion "1.1"
 #define AppPublisher "Eagle Office"
 #define AppContact "mailto:ataeyvaz@gmail.com"
 #define SozcukName "Sözcük"
