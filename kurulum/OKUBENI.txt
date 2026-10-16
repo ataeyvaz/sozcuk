@@ -1,0 +1,48 @@
+EAGLE OFFICE 1.1 - KURULUM NOTU
+================================
+
+Eagle Office; Sözcük (kelime işlemci) ve Tabcel (e-tablo) uygulamalarını tek kurulumda sunar.
+Her şey bilgisayarınızda çalışır; belgeleriniz hiçbir sunucuya gönderilmez.
+
+KURULUM
+-------
+1. Zip dosyasını açın (ilk adımdaki "Windows korumalı" uyarısı için aşağıya bakın).
+2. "EagleOffice-1.1-kurulum.exe" dosyasına çift tıklayın.
+3. Sihirbazda kurmak istediğiniz uygulamaları seçin (ikisi de varsayılan olarak seçilidir),
+   "İleri" ve "Kur" ile devam edin.
+4. Kurulum bitince Başlat menüsündeki "Eagle Office" klasöründen uygulamaları açabilirsiniz.
+
+"WINDOWS BİLGİSAYARINIZI KORUDU" UYARISI
+----------------------------------------
+Kurulumu çalıştırırken mavi bir "Windows bilgisayarınızı korudu (SmartScreen)" penceresi
+çıkabilir. Bunun nedeni, programın henüz ücretli bir kod imzası taşımamasıdır; dosyada zararlı
+bir şey olduğu anlamına gelmez. Üç yoldan biriyle geçebilirsiniz:
+
+YOL 1 - Uyarı çıktığında (en kolayı)
+   a) "Daha fazla bilgi" yazısına tıklayın.
+   b) Çıkan "Yine de çalıştır" düğmesine tıklayın.
+
+YOL 2 - Zip'i açmadan önce (uyarı hiç çıkmaz)
+   a) İndirdiğiniz zip dosyasına sağ tıklayın, "Özellikler"i seçin.
+   b) Altta "Engellemeyi kaldır" kutusunu işaretleyin, "Tamam"a basın.
+   c) Zip'i ondan sonra açın.
+
+YOL 3 - Zip'i açtıktan sonra
+   a) "EagleOffice-1.1-kurulum.exe" dosyasına sağ tıklayın, "Özellikler"i seçin.
+   b) "Engellemeyi kaldır" kutusunu işaretleyip "Tamam"a basın, sonra kurulumu çalıştırın.
+
+Kurulum sırasında "Bu uygulamanın cihazınızda değişiklik yapmasına izin vermek istiyor
+musunuz?" sorusu da çıkabilir; "Evet" deyin (programlar "Program Files" klasörüne kurulur).
+
+ESKİ SÜRÜM
+----------
+Bilgisayarınızda ayrı kurulmuş eski bir Sözcük ya da Tabcel varsa kurulum, bunları kaldırmak
+isteyip istemediğinizi sorar. Belgeleriniz ve ayarlarınız silinmez.
+
+KALDIRMA
+--------
+Ayarlar > Uygulamalar bölümünden "Eagle Office" seçilip kaldırılabilir.
+
+İLETİŞİM
+--------
+Soru ve önerileriniz için: ataeyvaz@gmail.com

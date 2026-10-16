@@ -585,3 +585,8 @@ Format:
 - Paket sürümü 1.0 → **1.1** (`kurulum/eagle-office.iss` `SuiteVersion`). Sözcük sürüm etiketi 1.5 olarak kaldı (içinde JPEG kaydetme, PDF Calibri düzeltmesi ve yeni yardım özeti var); Tabcel 0.1 (dist yeniden derlenmedi).
 - `dist/EagleOffice-1.1-kurulum.exe` **394.568.503 bayt** (ISCC 3 dk 56 sn). UAC'li sessiz kurulum: çıkış kodu 0, 1.0 kurulumunun üzerine (aynı AppId) → `C:\Program Files\Eagle Office\{Sözcük,Tabcel}`; kayıt defterinde "Eagle Office 1.1"; Sözcük.exe 16:38 tarihli. Kurulu Sözcük 8 sn açık kaldı (çökmedi).
 - **Elle doğrulanmalı:** kurulu uygulamada JPEG Olarak Kaydet, PDF açma, yeni yardım özeti.
+
+## [2026-10-16] — OKUBENI.txt kurulumdan çıkarıldı; dağıtım zip'i
+- **Karar (kullanıcı):** OKUBENI.txt kurulum programının içinde olmayacak (SmartScreen uyarısı kurulum başlamadan çıktığı için içeride işe yaramaz); `eagle-office.iss`'te OKUBENI'ye dair hiçbir satır kalmadı. Not yalnızca zip'te ve mailde dağıtılır.
+- **Dağıtım:** `dist/EagleOffice-1.1.zip` (394.197.482 bayt) = `EagleOffice-1.1-kurulum.exe` (394.568.503 bayt, yeniden derlendi, ISCC 3 dk 54 sn) + `OKUBENI.txt`. Bilgisayardaki kurulu 1.1 ile içerik aynı (tek fark yoktur; Okubeni hiç kurulmamıştı).
+- `kurulum/OKUBENI.txt` notun depodaki asıl kopyası (dist git'te yok); zip'e giren kopya `dist/OKUBENI.txt` — metin değişirse ikisi de güncellenir.
