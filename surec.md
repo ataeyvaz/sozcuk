@@ -594,4 +594,4 @@ Format:
 ## [2026-10-17] — GitHub bağlantısı, Eagle Office ailesi, BabaKartalVoice zip'i
 - **Depo:** https://github.com/ataeyvaz/sozcuk (main). README'ye 'Eagle Office ailesi' bölümü eklendi: Sözcük · Tabcel · EaglePDF (kardeş depolara bağlantılar).
 - **Karar (kullanıcı):** `babakartalvoice-kayitlar.zip` (7,7 MB, kişisel ses kayıtları) GitHub'a gönderilmez: `.gitignore`'a eklendi; dosyanın kopyası `C:\Users\Ata\Desktop\BabaKartalVoice\babakartalvoice-kayitlar.zip` içine alındı (hedefte aynı ad yoktu, bayt bayt aynı doğrulandı; adın sonuna 01 eklenmesine gerek kalmadı). Sözcük klasöründeki asıl dosya yerinde duruyor (git yok sayar).
-- **Not:** Kurulum paketi (Eagle Office 1.2: Sözcük + Tabcel + EaglePDF, akıllı sürüm denetimi) betiği EaglePDF deposundaki `yapi/kurulum/` altında; Sözcük'teki `kurulum/eagle-office.iss` yalnız eski 1.1 paketidir.
+- **Not:** Kurulum paketi (Eagle Office 1.2: Sözcük + Tabcel + EaglePDF, akıllı sürüm denetimi) betiği https://github.com/ataeyvaz/eagle-office deposunda (`kurulum/`); Sözcük'teki `kurulum/eagle-office.iss` yalnız eski 1.1 paketidir.
