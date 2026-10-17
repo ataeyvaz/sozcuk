@@ -590,3 +590,8 @@ Format:
 - **Karar (kullanıcı):** OKUBENI.txt kurulum programının içinde olmayacak (SmartScreen uyarısı kurulum başlamadan çıktığı için içeride işe yaramaz); `eagle-office.iss`'te OKUBENI'ye dair hiçbir satır kalmadı. Not yalnızca zip'te ve mailde dağıtılır.
 - **Dağıtım:** `dist/EagleOffice-1.1.zip` (394.197.482 bayt) = `EagleOffice-1.1-kurulum.exe` (394.568.503 bayt, yeniden derlendi, ISCC 3 dk 54 sn) + `OKUBENI.txt`. Bilgisayardaki kurulu 1.1 ile içerik aynı (tek fark yoktur; Okubeni hiç kurulmamıştı).
 - `kurulum/OKUBENI.txt` notun depodaki asıl kopyası (dist git'te yok); zip'e giren kopya `dist/OKUBENI.txt` — metin değişirse ikisi de güncellenir.
+
+## [2026-10-17] — GitHub bağlantısı, Eagle Office ailesi, BabaKartalVoice zip'i
+- **Depo:** https://github.com/ataeyvaz/sozcuk (main). README'ye 'Eagle Office ailesi' bölümü eklendi: Sözcük · Tabcel · EaglePDF (kardeş depolara bağlantılar).
+- **Karar (kullanıcı):** `babakartalvoice-kayitlar.zip` (7,7 MB, kişisel ses kayıtları) GitHub'a gönderilmez: `.gitignore`'a eklendi; dosyanın kopyası `C:\Users\Ata\Desktop\BabaKartalVoice\babakartalvoice-kayitlar.zip` içine alındı (hedefte aynı ad yoktu, bayt bayt aynı doğrulandı; adın sonuna 01 eklenmesine gerek kalmadı). Sözcük klasöründeki asıl dosya yerinde duruyor (git yok sayar).
+- **Not:** Kurulum paketi (Eagle Office 1.2: Sözcük + Tabcel + EaglePDF, akıllı sürüm denetimi) betiği EaglePDF deposundaki `yapi/kurulum/` altında; Sözcük'teki `kurulum/eagle-office.iss` yalnız eski 1.1 paketidir.

@@ -17,3 +17,6 @@ sozcuk/diller/translate-*/
 # Geçici / kişisel
 ss.png
 *.log
+
+# BabaKartalVoice ses kayıtları (kişisel veri, ~8 MB): GitHub'a GÖNDERİLMEZ; asıl kopya Desktop\BabaKartalVoice\ içinde
+babakartalvoice-kayitlar.zip

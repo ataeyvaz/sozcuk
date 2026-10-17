@@ -2,9 +2,19 @@
 
 Word'ün kalabalık arayüzü yerine, gerçekten kullanılan özellikleri sade bir yüzle sunan **Türkçe masaüstü kelime işlemci**. Windows için; Python 3.11 ve PySide6 ile yazıldı.
 
-**Eagle Office** paketi (Sözcük · Tabcel) — **Developed By Usta ve Ata**
+**Eagle Office** ailesi (Sözcük · Tabcel · EaglePDF) — **Developed By Usta ve Ata**
 
 Yazım denetimi, sesle yazma, sesli okuma ve çeviri dahil her şey **bilgisayarda** çalışır: belgeleriniz hiçbir sunucuya gönderilmez.
+
+## Eagle Office ailesi
+
+Üç uygulama aynı görünüm diline sahiptir, hepsi bilgisayarınızda çalışır (belgeleriniz hiçbir sunucuya gönderilmez) ve tek kurulum paketiyle de kurulabilir:
+
+- **[Sözcük](https://github.com/ataeyvaz/sozcuk)** — Türkçe kelime işlemci ← bu depo
+- **[Tabcel](https://github.com/ataeyvaz/tabcel)** — Türkçe hesap tablosu
+- **[EaglePDF](https://github.com/ataeyvaz/eaglepdf)** — Türkçe PDF görüntüleyici ve düzenleyici
+
+Kurulum paketi, kurulu uygulamaların sürümünü denetler: güncel olanlara dokunmaz, yalnızca eksik ya da eski olanları kurar.
 
 ## Neler var
 
