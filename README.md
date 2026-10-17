@@ -72,6 +72,14 @@ Sonuç: `dist\Sozcuk\` (taşınabilir klasör, ≈560 MB) ve `dist\Sozcuk-1.3-ku
 | `kurulum/` | Inno Setup kurulum betiği |
 | `plan.md`, `surec.md` | proje planı ve değişiklik günlüğü |
 
+## Lisans
+
+Sözcük'ün kaynak kodu **GNU Affero Genel Kamu Lisansı v3 (AGPL-3.0)** altındadır: bkz. [`LICENSE`](LICENSE). Ücretsizdir; satılmaz. Kodu inceleyebilir, değiştirebilir ve paylaşabilirsiniz; değiştirilmiş hâlini dağıtırsanız aynı lisansla ve kaynağıyla birlikte dağıtmanız gerekir.
+
+**Ses modeli ayrı lisanslıdır:** `sozcuk/sesler/ata.onnx` (ve `.onnx.json`) kod lisansının kapsamında değildir; dfki Türkçe temel modelinden eğitildiği için **CC BY-NC-SA 4.0** altındadır (ticari kullanıma kapalı, aynı lisansla paylaşım). Kullandığımız açık kaynak bileşenlerin hepsi AGPL-3.0 ile uyumludur (aşağıdaki liste).
+
+Sözcük, Tabcel ve EaglePDF'i tek pakette kuran depo: [Eagle Office](https://github.com/ataeyvaz/eagle-office).
+
 ## Kullanılan açık kaynak bileşenler
 
 PySide6 (Qt, LGPL) · python-docx (MIT) · pdfminer.six (MIT) · olefile (BSD) · comtypes (MIT) ·
